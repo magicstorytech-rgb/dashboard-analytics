@@ -158,12 +158,18 @@
             font-weight: 600;
         }
         
+        .chart-and-retention {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
         .chart-container {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
             border: 2px solid #cc0000;
             border-radius: 12px;
             padding: 25px;
-            margin-bottom: 30px;
             box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
         }
         
@@ -178,24 +184,26 @@
             border: 2px solid #cc0000;
             border-radius: 12px;
             padding: 25px;
-            margin-bottom: 30px;
             box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
         }
         
         .quiz-stats {
             display: grid;
-            gap: 15px;
+            gap: 8px;
+            max-height: 340px;
+            overflow-y: auto;
         }
         
         .quiz-row {
             background: rgba(0, 0, 0, 0.5);
             border-left: 4px solid #cc0000;
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s;
+            font-size: 12px;
         }
         
         .quiz-row:hover {
@@ -206,12 +214,11 @@
         .quiz-step {
             color: #ffffff;
             font-weight: 600;
-            font-size: 14px;
         }
         
         .quiz-count {
             color: #ff3333;
-            font-size: 20px;
+            font-size: 14px;
             font-weight: 800;
         }
         
@@ -261,11 +268,18 @@
             border-left: 4px solid #00ff00;
             background: rgba(0, 255, 0, 0.05);
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            animation: checkoutPulse 0.6s ease;
         }
         
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes checkoutPulse {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .spy-header {
@@ -357,6 +371,9 @@
             .main-grid {
                 grid-template-columns: 1fr;
             }
+            .chart-and-retention {
+                grid-template-columns: 1fr;
+            }
             .spy-columns {
                 grid-template-columns: 1fr;
             }
@@ -428,17 +445,19 @@
             </div>
         </div>
 
-        <div class="chart-container">
-            <div class="section-title">⏰ Horário de Pico - Últimas 24h</div>
-            <div class="chart-wrapper">
-                <canvas id="peakHourChart"></canvas>
+        <div class="chart-and-retention">
+            <div class="chart-container">
+                <div class="section-title">⏰ Horário de Pico - Começando Agora</div>
+                <div class="chart-wrapper">
+                    <canvas id="peakHourChart"></canvas>
+                </div>
             </div>
-        </div>
 
-        <div class="quiz-retention">
-            <div class="section-title">📈 Retenção do Quiz</div>
-            <div class="quiz-stats" id="quiz-stats">
-                <div class="empty-state">Carregando dados...</div>
+            <div class="quiz-retention">
+                <div class="section-title">📈 Retenção Quiz</div>
+                <div class="quiz-stats" id="quiz-stats">
+                    <div class="empty-state">Carregando...</div>
+                </div>
             </div>
         </div>
 
@@ -454,6 +473,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Audio para notificação de checkout -->
+    <audio id="checkoutSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -473,6 +497,9 @@
 
         let allSessions = [];
         let peakHourChart = null;
+        let peakHourData = {};
+        let lastCheckoutIds = new Set();
+        let startTime = Date.now();
 
         function isOnline(lastActivity) {
             if (!lastActivity) return false;
@@ -497,6 +524,30 @@
             return '📱 Visualizando Página Inicial';
         }
 
+        function playCheckoutSound() {
+            // Criar som de notificação usando Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // Criar beep duplo
+            for (let i = 0; i < 2; i++) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = 800 + (i * 200);
+                osc.type = 'sine';
+                
+                gain.gain.setValueAtTime(0.3, now + (i * 0.15));
+                gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.15) + 0.1);
+                
+                osc.start(now + (i * 0.15));
+                osc.stop(now + (i * 0.15) + 0.1);
+            }
+        }
+
         function updateStats() {
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
@@ -505,6 +556,14 @@
             const startedQuiz = allSessions.filter(s => s.events?.quiz_started).length;
             const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
             const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
+
+            // Verificar novos checkouts e tocar som
+            allSessions.forEach(session => {
+                if (session.events?.checkout_clicked && !lastCheckoutIds.has(session.id)) {
+                    lastCheckoutIds.add(session.id);
+                    playCheckoutSound();
+                }
+            });
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
@@ -575,11 +634,19 @@
         }
 
         function updatePeakHourChart() {
-            const hours = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
-            const data = [
-                45, 52, 38, 41, 55, 62, 78, 95, 120, 145, 168, 182,
-                195, 188, 172, 165, 158, 142, 128, 115, 98, 85, 72, 58
-            ];
+            // Gerar horas a partir de agora
+            const now = new Date();
+            const hours = [];
+            for (let i = 0; i < 24; i++) {
+                const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
+                hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+            }
+
+            // Contar visitantes por hora
+            const data = hours.map((_, index) => {
+                const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
+                return peakHourData[hour] || 0;
+            });
 
             const ctx = document.getElementById('peakHourChart').getContext('2d');
             
@@ -626,7 +693,9 @@
                             },
                             ticks: {
                                 color: '#999999',
-                                font: { size: 10 }
+                                font: { size: 10 },
+                                maxRotation: 45,
+                                minRotation: 45
                             }
                         },
                         y: {
@@ -705,6 +774,14 @@
             }).join('');
         }
 
+        function recordHourlyData(session) {
+            if (session.enteredAt) {
+                const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
+                const hour = date.getHours();
+                peakHourData[hour] = (peakHourData[hour] || 0) + 1;
+            }
+        }
+
         const q = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
         
         onSnapshot(q, (snapshot) => {
@@ -712,6 +789,9 @@
                 id: doc.id,
                 ...doc.data()
             }));
+            
+            // Registrar dados horários
+            allSessions.forEach(recordHourlyData);
             
             updateStats();
             updateQuizRetention();
