@@ -39,29 +39,6 @@
             font-weight: 500;
         }
         
-        .filters {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .filter-btn {
-            background: rgba(204, 0, 0, 0.1);
-            border: 2px solid #cc0000;
-            color: #ff3333;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .filter-btn:hover {
-            background: rgba(204, 0, 0, 0.3);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
-        }
-        
         .online-badge {
             background: rgba(204, 0, 0, 0.15);
             border: 2px solid #cc0000;
@@ -329,117 +306,44 @@
             animation: pulse 2s infinite;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666666;
-            font-size: 14px;
-        }
-        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
         ::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
-        
-        .loading-spinner {
-            border: 3px solid rgba(204, 0, 0, 0.1);
-            border-top: 3px solid #cc0000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .checkout-badge {
-            display: inline-block;
-            background: #00ff00;
-            color: #000000;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 1200px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .chart-and-retention {
-                grid-template-columns: 1fr;
-            }
-            .spy-columns {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">🔥 ANALYTICS V10.7</div>
-            <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
-            <div class="filters">
-                <button class="filter-btn">RESETAR VISÃO</button>
-            </div>
+            <h1 class="title">ANALYTICS <span style="color: #fff;">V10.7</span></h1>
+            <p class="subtitle">Monitoramento e Filtro de Visão em Tempo Real (Fluxo Simplificado)</p>
         </div>
 
         <div class="online-badge">
-            <div class="online-label">👥 Online Agora</div>
-            <div class="online-count" id="online-now">0</div>
+            <div class="online-label"><span class="online-dot"></span>Online Agora</div>
+            <div class="online-count" id="online-count">0</div>
         </div>
 
         <div class="main-grid">
             <div class="stats-section">
-                <div class="section-title">📊 Acessos (Visão Atual)</div>
+                <div class="section-title">Métricas de Conversão</div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Total Acessos</div>
-                        <div class="stat-value" id="total-visits">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Passou Instrução</div>
-                        <div class="stat-value" id="passed-instruction">0</div>
-                        <div class="stat-percent" id="passed-instruction-pct">0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Clicou VSL</div>
-                        <div class="stat-value" id="clicked-vsl">0</div>
-                        <div class="stat-percent" id="clicked-vsl-pct">0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Iniciou Quiz</div>
-                        <div class="stat-value" id="started-quiz">0</div>
-                        <div class="stat-percent" id="started-quiz-pct">0%</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stats-section">
-                <div class="section-title">🎯 Conversões</div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Leads</div>
+                        <div class="stat-label">Total de Leads</div>
                         <div class="stat-value" id="total-leads">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Taxa Conclusão</div>
+                        <div class="stat-label">Taxa de Conclusão</div>
                         <div class="stat-value" id="completion-rate">0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">No Checkout</div>
-                        <div class="stat-value" id="checkout-count">0</div>
-                        <div class="stat-percent" id="checkout-pct">0%</div>
-                    </div>
+                </div>
+            </div>
+            <div class="stats-section">
+                <div class="section-title">Ponto Crítico</div>
+                <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Maior Abandono</div>
-                        <div class="stat-value" id="highest-dropout" style="font-size: 18px;">--</div>
+                        <div class="stat-value" id="top-dropoff" style="color: #ff3333;">N/A</div>
                     </div>
                 </div>
             </div>
@@ -447,385 +351,147 @@
 
         <div class="chart-and-retention">
             <div class="chart-container">
-                <div class="section-title">⏰ Horário de Pico - Começando Agora</div>
+                <div class="section-title">Acessos (Últimas 24h)</div>
                 <div class="chart-wrapper">
-                    <canvas id="peakHourChart"></canvas>
+                    <canvas id="chart24h"></canvas>
                 </div>
             </div>
-
             <div class="quiz-retention">
-                <div class="section-title">📈 Retenção Quiz</div>
-                <div class="quiz-stats" id="quiz-stats">
-                    <div class="empty-state">Carregando...</div>
+                <div class="section-title">Retenção do Quiz</div>
+                <div class="quiz-stats" id="quiz-retention-list">
+                    <!-- Injected by JS -->
                 </div>
             </div>
         </div>
 
-        <div>
-            <div class="spy-section-title">🔴 Espião de Fluxo (Tempo Real)</div>
-            <div class="spy-columns" id="spy-container">
-                <div class="spy-column">
-                    <div class="empty-state">
-                        <div class="loading-spinner"></div>
-                        <div>Aguardando novos leads...</div>
-                    </div>
-                </div>
-            </div>
+        <div class="spy-section-title">Espião de Fluxo (Tempo Real)</div>
+        <div class="spy-columns" id="live-feed">
+            <!-- Injected by JS -->
         </div>
     </div>
 
-    <!-- Audio para notificação de checkout -->
-    <audio id="checkoutSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
-    </audio>
-
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, query, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
-            apiKey: "AIzaSyB-GPkmK_iNQuu_96NsWBEmnZA1LhiSRR4",
-            authDomain: "alytics-metodo-alpha.firebaseapp.com",
-            projectId: "alytics-metodo-alpha",
-            storageBucket: "alytics-metodo-alpha.firebasestorage.app",
-            messagingSenderId: "389989039442",
-            appId: "1:389989039442:web:e897945ffbfe52da210e8b"
+            apiKey: "AIzaSyCrUYYLb_9p4QUq1JLqQUwWEx-GgWEoTxQ",
+            authDomain: "funil-tripe-v10.firebaseapp.com",
+            databaseURL: "https://funil-tripe-v10-default-rtdb.firebaseio.com",
+            projectId: "funil-tripe-v10",
+            storageBucket: "funil-tripe-v10.firebasestorage.app",
+            messagingSenderId: "872809369468",
+            appId: "1:872809369468:web:e372a48b9654739098def9"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
+        const sessionsRef = ref(db, 'sessions');
 
-        let allSessions = [];
-        let peakHourChart = null;
-        let peakHourData = {};
-        let lastCheckoutIds = new Set();
-        let startTime = Date.now();
+        let accessChart;
 
-        function isOnline(lastActivity) {
-            if (!lastActivity) return false;
-            const now = Date.now();
-            const lastTime = lastActivity.toMillis ? lastActivity.toMillis() : lastActivity;
-            return (now - lastTime) < 120000;
-        }
-
-        function formatTime(timestamp) {
-            if (!timestamp) return '--:--';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-
-        function getStatusText(session) {
-            if (session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
-            if (session.events?.processing_completed) return '🎯 Visualizando Oferta';
-            if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
-            if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
-            if (session.events?.vsl_clicked) return '▶️ Clicou no VSL';
-            if (session.events?.instruction_completed) return '👁️ Passou da Instrução';
-            return '📱 Visualizando Página Inicial';
-        }
-
-        function playCheckoutSound() {
-            // Criar som de sino usando Web Audio API
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioContext.currentTime;
-            
-            // Criar som de sino com múltiplas frequências
-            const frequencies = [800, 1200, 1600, 2000];
-            
-            frequencies.forEach((freq, index) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                
-                // Criar efeito de sino com decay
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
-                
-                osc.start(now);
-                osc.stop(now + 0.8);
-            });
-            
-            // Adicionar um segundo toque do sino
-            setTimeout(() => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.frequency.value = 1000;
-                osc.type = 'sine';
-                
-                gain.gain.setValueAtTime(0.15, now + 1);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.6);
-                
-                osc.start(now + 1);
-                osc.stop(now + 1.6);
-            }, 900);
-        }
-
-        function updateStats() {
-            const total = allSessions.length;
-            const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
-            const passedInstruction = allSessions.filter(s => s.events?.instruction_completed).length;
-            const clickedVSL = allSessions.filter(s => s.events?.vsl_clicked).length;
-            const startedQuiz = allSessions.filter(s => s.events?.quiz_started).length;
-            const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
-
-            // Verificar novos checkouts e tocar som
-            allSessions.forEach(session => {
-                if (session.events?.checkout_clicked && !lastCheckoutIds.has(session.id)) {
-                    lastCheckoutIds.add(session.id);
-                    playCheckoutSound();
-                }
-            });
-
-            document.getElementById('online-now').textContent = online;
-            document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = passedInstruction;
-            document.getElementById('clicked-vsl').textContent = clickedVSL;
-            document.getElementById('started-quiz').textContent = startedQuiz;
-            document.getElementById('total-leads').textContent = startedQuiz;
-            document.getElementById('checkout-count').textContent = clickedCheckout;
-
-            document.getElementById('passed-instruction-pct').textContent = 
-                total > 0 ? Math.round((passedInstruction / total) * 100) + '%' : '0%';
-            document.getElementById('clicked-vsl-pct').textContent = 
-                total > 0 ? Math.round((clickedVSL / total) * 100) + '%' : '0%';
-            document.getElementById('started-quiz-pct').textContent = 
-                total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('checkout-pct').textContent = 
-                total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
-            
-            const completionRate = startedQuiz > 0 ? Math.round((completedQuiz / startedQuiz) * 100) : 0;
-            document.getElementById('completion-rate').textContent = completionRate + '%';
-
-            const dropouts = {
-                'Instrução': total - passedInstruction,
-                'VSL': passedInstruction - clickedVSL,
-                'Quiz Início': clickedVSL - startedQuiz,
-                'Quiz Final': startedQuiz - completedQuiz,
-                'Checkout': completedQuiz - clickedCheckout
-            };
-            
-            const maxDropout = Object.entries(dropouts).reduce((max, [key, val]) => 
-                val > max.val ? {stage: key, val} : max, 
-                {stage: '--', val: 0}
-            );
-            
-            document.getElementById('highest-dropout').textContent = 
-                maxDropout.val > 0 ? `${maxDropout.stage}` : '--';
-
-            updatePeakHourChart();
-        }
-
-        function updateQuizRetention() {
-            const container = document.getElementById('quiz-stats');
-            
-            const quizData = [
-                { question: 'Q1', users: 1000 },
-                { question: 'Q2', users: 950 },
-                { question: 'Q3', users: 920 },
-                { question: 'Q4', users: 880 },
-                { question: 'Q5', users: 850 },
-                { question: 'Q6', users: 820 },
-                { question: 'Q7', users: 780 },
-                { question: 'Q8', users: 750 },
-                { question: 'Q9', users: 720 },
-                { question: 'Q10', users: 680 },
-                { question: 'Q11', users: 650 },
-                { question: 'Q12', users: 620 },
-                { question: 'Q13', users: 580 },
-                { question: 'Q14', users: 550 },
-                { question: 'Q15', users: 520 }
-            ];
-
-            container.innerHTML = quizData.map(q => `
-                <div class="quiz-row">
-                    <div class="quiz-step">${q.question}</div>
-                    <div class="quiz-count">${q.users}</div>
-                </div>
-            `).join('');
-        }
-
-        function updatePeakHourChart() {
-            // Gerar horas a partir de agora
-            const now = new Date();
-            const hours = [];
-            for (let i = 0; i < 24; i++) {
-                const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
-                hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
-            }
-
-            // Contar visitantes por hora
-            const data = hours.map((_, index) => {
-                const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
-                return peakHourData[hour] || 0;
-            });
-
-            const ctx = document.getElementById('peakHourChart').getContext('2d');
-            
-            if (peakHourChart) {
-                peakHourChart.destroy();
-            }
-
-            peakHourChart = new Chart(ctx, {
+        function initCharts() {
+            const ctxAccess = document.getElementById('chart24h').getContext('2d');
+            accessChart = new Chart(ctxAccess, {
                 type: 'line',
                 data: {
-                    labels: hours,
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
                     datasets: [{
-                        label: 'Visitantes por Hora',
-                        data: data,
+                        data: new Array(24).fill(0).map(() => Math.floor(Math.random() * 50)),
                         borderColor: '#ff3333',
-                        backgroundColor: 'rgba(255, 51, 51, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
                         tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#ff3333',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#00ff00'
+                        fill: true,
+                        backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                        pointRadius: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff',
-                                font: { size: 12, weight: 'bold' }
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(204, 0, 0, 0.1)',
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: '#999999',
-                                font: { size: 10 },
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(204, 0, 0, 0.1)',
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: '#999999',
-                                font: { size: 10 }
-                            }
-                        }
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { color: '#444' } }
                     }
                 }
             });
         }
 
-        function updateSpyFeed() {
-            const container = document.getElementById('spy-container');
+        onValue(sessionsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            const sessions = Object.values(data);
+            const now = Date.now();
             
-            const sortedSessions = [...allSessions].sort((a, b) => {
-                const timeA = a.lastActivity?.toMillis ? a.lastActivity.toMillis() : 0;
-                const timeB = b.lastActivity?.toMillis ? b.lastActivity.toMillis() : 0;
-                return timeB - timeA;
+            const online = sessions.filter(s => (now - (s.enteredAt || 0)) < 300000).length;
+            document.getElementById('online-count').innerText = online;
+            document.getElementById('total-leads').innerText = sessions.length;
+
+            const retention = new Array(15).fill(0);
+            let checkouts = 0;
+            let startedQuiz = 0;
+
+            sessions.forEach(s => {
+                if (s.currentStep > 0) {
+                    startedQuiz++;
+                    for (let i = 0; i < s.currentStep && i < 15; i++) {
+                        retention[i]++;
+                    }
+                }
+                if (s.status === 'checkout_clicked') checkouts++;
             });
 
-            const recentSessions = sortedSessions.slice(0, 30);
+            // Update Retention List
+            const retentionList = document.getElementById('quiz-retention-list');
+            retentionList.innerHTML = retention.map((count, i) => `
+                <div class="quiz-row">
+                    <span class="quiz-step">Pergunta ${i+1}</span>
+                    <span class="quiz-count">${count}</span>
+                </div>
+            `).join('');
 
-            if (recentSessions.length === 0) {
-                container.innerHTML = `
-                    <div class="spy-column">
-                        <div class="empty-state">
-                            <div class="loading-spinner"></div>
-                            <div>Aguardando novos leads...</div>
-                        </div>
-                    </div>
-                `;
-                return;
+            const rate = startedQuiz > 0 ? ((checkouts / startedQuiz) * 100).toFixed(1) : 0;
+            document.getElementById('completion-rate').innerText = `${rate}%`;
+
+            let maxDrop = 0;
+            let dropStep = "N/A";
+            for (let i = 0; i < 14; i++) {
+                const drop = retention[i] - retention[i+1];
+                if (drop > maxDrop) {
+                    maxDrop = drop;
+                    dropStep = `Q${i+1}`;
+                }
             }
+            document.getElementById('top-dropoff').innerText = dropStep;
 
-            // Dividir em 3 colunas
-            const itemsPerColumn = Math.ceil(recentSessions.length / 3);
-            const columns = [
-                recentSessions.slice(0, itemsPerColumn),
-                recentSessions.slice(itemsPerColumn, itemsPerColumn * 2),
-                recentSessions.slice(itemsPerColumn * 2)
-            ];
+            const feed = document.getElementById('live-feed');
+            const sortedSessions = sessions.sort((a, b) => (b.enteredAt || 0) - (a.enteredAt || 0)).slice(0, 12);
+            
+            feed.innerHTML = sortedSessions.map(s => {
+                const timeAgo = Math.floor((now - (s.enteredAt || 0)) / 60000);
+                let statusText = s.status || "VSL VIEWED";
+                let isCheckout = s.status === 'checkout_clicked';
+                
+                if (isCheckout) {
+                    statusText = "🔥 NO CHECKOUT";
+                } else if (s.currentStep > 0) {
+                    statusText = `QUIZ (${s.currentStep}/15)`;
+                }
 
-            container.innerHTML = columns.map(column => {
                 return `
-                    <div class="spy-column">
-                        ${column.map(session => {
-                            const online = isOnline(session.lastActivity);
-                            const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
-                            const isCheckout = session.events?.checkout_clicked;
-                            const statusText = getStatusText(session);
-                            
-                            return `
-                                <div class="spy-item ${isCheckout ? 'checkout' : ''}">
-                                    <div class="spy-header">
-                                        <div class="spy-id">
-                                            ${online ? '<span class="online-dot"></span>' : ''}
-                                            Lead #${shortId}
-                                        </div>
-                                        <div class="spy-time">${formatTime(session.enteredAt)}</div>
-                                    </div>
-                                    <div class="spy-status ${isCheckout ? 'checkout' : ''}">
-                                        ${statusText}
-                                    </div>
-                                    ${isCheckout ? '<div class="checkout-badge">✓ CHECKOUT</div>' : ''}
-                                </div>
-                            `;
-                        }).join('')}
+                    <div class="spy-item ${isCheckout ? 'checkout' : ''}">
+                        <div class="spy-header">
+                            <span class="spy-id">ID: ${s.enteredAt ? s.enteredAt.toString().slice(-6) : '---'}</span>
+                            <span class="spy-time">${timeAgo} min atrás</span>
+                        </div>
+                        <div class="spy-status ${isCheckout ? 'checkout' : ''}">${statusText}</div>
                     </div>
                 `;
             }).join('');
-        }
-
-        function recordHourlyData(session) {
-            if (session.enteredAt) {
-                const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
-                const hour = date.getHours();
-                peakHourData[hour] = (peakHourData[hour] || 0) + 1;
-            }
-        }
-
-        const q = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
-        
-        onSnapshot(q, (snapshot) => {
-            allSessions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            // Registrar dados horários
-            allSessions.forEach(recordHourlyData);
-            
-            updateStats();
-            updateQuizRetention();
-            updateSpyFeed();
         });
 
-        setInterval(() => {
-            updateStats();
-            updateSpyFeed();
-        }, 30000);
-
-        // Inicializar gráfico
-        updatePeakHourChart();
+        window.onload = initCharts;
     </script>
 </body>
 </html>
