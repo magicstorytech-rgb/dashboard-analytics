@@ -7,505 +7,377 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #000000;
+            background: #0a0a0a;
             color: #fff;
             padding: 20px;
             min-height: 100vh;
         }
-        
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1600px; margin: 0 auto; }
         
         .header {
-            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
-            border: 2px solid #ef4444;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(239, 68, 68, 0.03) 10px,
-                rgba(239, 68, 68, 0.03) 20px
-            );
+            box-shadow: 0 0 30px rgba(204, 0, 0, 0.3);
         }
         
         .title {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 900;
+            color: #ff3333;
             margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-            background: linear-gradient(90deg, #ef4444, #dc2626);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
         }
         
         .subtitle {
-            font-size: 16px;
+            color: #cccccc;
+            font-size: 14px;
             font-weight: 500;
-            opacity: 0.8;
-            position: relative;
-            z-index: 1;
         }
         
         .filters {
             display: flex;
             gap: 12px;
             margin-top: 20px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
         }
         
-        .filter-select, .filter-btn {
-            background: rgba(239, 68, 68, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
+        .filter-btn {
+            background: rgba(204, 0, 0, 0.1);
+            border: 2px solid #cc0000;
+            color: #ff3333;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            cursor: pointer;
             transition: all 0.3s;
-            outline: none;
         }
         
-        .filter-select:hover, .filter-btn:hover {
-            background: rgba(239, 68, 68, 0.25);
-            border-color: #ef4444;
-            transform: translateY(-2px);
-        }
-        
-        .filter-select option {
-            background: #1a0000;
-            color: #fff;
-        }
-        
-        .active-filters {
-            margin-top: 15px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .filter-tag {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid #ef4444;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+        .filter-btn:hover {
+            background: rgba(204, 0, 0, 0.3);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
         }
         
         .online-badge {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            padding: 30px;
-            border-radius: 20px;
+            background: rgba(204, 0, 0, 0.15);
+            border: 2px solid #cc0000;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
-            border: 2px solid #dc2626;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
         }
         
         .online-label {
-            font-size: 14px;
+            color: #cccccc;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            opacity: 0.9;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
         
         .online-count {
-            font-size: 64px;
+            font-size: 56px;
             font-weight: 900;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            color: #ff3333;
+            text-shadow: 0 0 30px rgba(255, 51, 51, 0.6);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
         .stats-section {
-            background: #0a0a0a;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
         }
         
         .section-title {
-            font-size: 18px;
+            color: #ff3333;
+            font-size: 14px;
             font-weight: 800;
-            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #ef4444;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
         
         .stat-card {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 16px;
-            padding: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #333333;
+            border-radius: 8px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.3);
-            border-color: #ef4444;
-        }
-        
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-        
-        .stat-card.highlight {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%);
-            border-color: rgba(34, 197, 94, 0.5);
-        }
-        
-        .stat-card.warning {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
-            border-color: rgba(251, 191, 36, 0.5);
+            border-color: #cc0000;
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
         }
         
         .stat-label {
-            font-size: 12px;
+            color: #999999;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-            opacity: 0.8;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
         
         .stat-value {
-            font-size: 42px;
+            color: #ffffff;
+            font-size: 36px;
             font-weight: 900;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .stat-card.highlight .stat-value {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .stat-card.warning .stat-value {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
         }
         
         .stat-percent {
-            font-size: 14px;
+            color: #ff3333;
+            font-size: 13px;
             font-weight: 600;
-            opacity: 0.7;
         }
         
-        .chart-section {
-            background: #0a0a0a;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 20px;
-            padding: 30px;
+        .chart-and-retention {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
             margin-bottom: 30px;
         }
         
         .chart-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .chart-wrapper {
             position: relative;
             height: 300px;
             margin-top: 20px;
         }
         
-        .funnel-step {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.05) 100%);
-            border-left: 4px solid #ef4444;
-            padding: 20px 25px;
+        .quiz-retention {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
             border-radius: 12px;
-            margin-bottom: 15px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .quiz-stats {
+            display: grid;
+            gap: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+        }
+        
+        .quiz-row {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #cc0000;
+            padding: 10px 15px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s;
+            font-size: 12px;
         }
         
-        .funnel-step:hover {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
-            transform: translateX(5px);
+        .quiz-row:hover {
+            background: rgba(204, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.2);
         }
         
-        .funnel-step.critical {
-            border-left-color: #22c55e;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
-        }
-        
-        .funnel-label {
-            font-weight: 700;
-            font-size: 15px;
-        }
-        
-        .funnel-stats {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
-        
-        .funnel-count {
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .funnel-step.critical .funnel-count {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .funnel-percent {
-            font-size: 14px;
+        .quiz-step {
+            color: #ffffff;
             font-weight: 600;
-            opacity: 0.7;
         }
         
-        .geo-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+        .quiz-count {
+            color: #ff3333;
+            font-size: 14px;
+            font-weight: 800;
         }
         
-        .geo-card {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.05) 100%);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 16px;
-            padding: 20px;
-        }
-        
-        .geo-card-title {
-            font-size: 13px;
+        .spy-section-title {
+            color: #ff3333;
+            font-size: 14px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 15px;
-            opacity: 0.8;
-            color: #ef4444;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
         }
         
-        .geo-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .spy-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .geo-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: rgba(239, 68, 68, 0.08);
-            border-radius: 10px;
-            transition: all 0.2s;
-        }
-        
-        .geo-item:hover {
-            background: rgba(239, 68, 68, 0.15);
-            transform: translateX(5px);
-        }
-        
-        .geo-name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .geo-count {
-            font-size: 16px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .spy-section {
-            background: #0a0a0a;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            max-height: 700px;
+        .spy-column {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 500px;
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
         }
         
         .spy-item {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.05) 100%);
-            border-left: 3px solid #ef4444;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            animation: slideIn 0.5s ease;
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #ff3333;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            animation: slideIn 0.4s ease;
             transition: all 0.3s;
         }
         
         .spy-item:hover {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
-            transform: translateX(5px);
+            background: rgba(204, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
         }
         
-        .spy-item.checkout-entered {
-            border-left-color: #22c55e;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
-        }
-        
-        .spy-item.has-discount {
-            border-left-color: #fbbf24;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+        .spy-item.checkout {
+            border-left: 4px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            animation: checkoutPulse 0.6s ease;
         }
         
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-15px); }
+            from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes checkoutPulse {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .spy-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         
         .spy-id {
+            color: #ffffff;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .spy-time {
-            font-size: 12px;
-            opacity: 0.7;
+            color: #999999;
+            font-size: 11px;
             font-weight: 600;
-        }
-        
-        .spy-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .spy-detail {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        
-        .spy-detail strong {
-            font-weight: 700;
-            opacity: 1;
         }
         
         .spy-status {
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 8px;
+            color: #cccccc;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
         }
         
-        .discount-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 900;
-            margin-left: 8px;
-            text-transform: uppercase;
+        .spy-status.checkout {
+            color: #00ff00;
+            font-weight: 700;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .online-dot {
             display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #22c55e;
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 6px;
             animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(0.9); }
         }
         
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
-            opacity: 0.6;
+            padding: 40px 20px;
+            color: #666666;
+            font-size: 14px;
         }
         
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
+        
         .loading-spinner {
-            border: 4px solid rgba(239, 68, 68, 0.2);
-            border-top: 4px solid #ef4444;
+            border: 3px solid rgba(204, 0, 0, 0.1);
+            border-top: 3px solid #cc0000;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 40px auto;
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+
+        .checkout-badge {
+            display: inline-block;
+            background: #00ff00;
+            color: #000000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-and-retention {
+                grid-template-columns: 1fr;
+            }
+            .spy-columns {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -514,32 +386,8 @@
             <div class="title">🔥 ANALYTICS V10.7</div>
             <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
             <div class="filters">
-                <select class="filter-select" id="filter-country">
-                    <option value="">🌍 Todos os Países</option>
-                </select>
-                <select class="filter-select" id="filter-region">
-                    <option value="">📍 Todos os Estados</option>
-                </select>
-                <select class="filter-select" id="filter-city">
-                    <option value="">🏙️ Todas as Cidades</option>
-                </select>
-                <select class="filter-select" id="filter-age">
-                    <option value="">🎂 Todas as Idades</option>
-                    <option value="18-25">18-25 anos</option>
-                    <option value="26-35">26-35 anos</option>
-                    <option value="36-45">36-45 anos</option>
-                    <option value="46-55">46-55 anos</option>
-                    <option value="55+">55+ anos</option>
-                </select>
-                <select class="filter-select" id="filter-device">
-                    <option value="">📱 Todos Dispositivos</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="Desktop">Desktop</option>
-                    <option value="Tablet">Tablet</option>
-                </select>
-                <button class="filter-btn" onclick="resetFilters()">RESETAR VISÃO</button>
+                <button class="filter-btn">RESETAR VISÃO</button>
             </div>
-            <div class="active-filters" id="active-filters"></div>
         </div>
 
         <div class="online-badge">
@@ -547,149 +395,89 @@
             <div class="online-count" id="online-now">0</div>
         </div>
 
-        <div class="stats-section">
-            <div class="section-title">📊 Acessos e Descontos</div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Acessos</div>
-                    <div class="stat-value" id="total-visits">0</div>
+        <div class="main-grid">
+            <div class="stats-section">
+                <div class="section-title">📊 Acessos (Visão Atual)</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Acessos</div>
+                        <div class="stat-value" id="total-visits">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Passou Instrução</div>
+                        <div class="stat-value" id="passed-instruction">0</div>
+                        <div class="stat-percent" id="passed-instruction-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Clicou VSL</div>
+                        <div class="stat-value" id="clicked-vsl">0</div>
+                        <div class="stat-percent" id="clicked-vsl-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Iniciou Quiz</div>
+                        <div class="stat-value" id="started-quiz">0</div>
+                        <div class="stat-percent" id="started-quiz-pct">0%</div>
+                    </div>
                 </div>
-                <div class="stat-card warning">
-                    <div class="stat-label">💰 Desconto Liberado</div>
-                    <div class="stat-value" id="discount-unlocked">0</div>
-                    <div class="stat-percent" id="discount-unlocked-pct">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Clicou VSL</div>
-                    <div class="stat-value" id="clicked-vsl">0</div>
-                    <div class="stat-percent" id="clicked-vsl-pct">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Iniciou Quiz</div>
-                    <div class="stat-value" id="started-quiz">0</div>
-                    <div class="stat-percent" id="started-quiz-pct">0%</div>
+            </div>
+
+            <div class="stats-section">
+                <div class="section-title">🎯 Conversões</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Leads</div>
+                        <div class="stat-value" id="total-leads">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Taxa Conclusão</div>
+                        <div class="stat-value" id="completion-rate">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">No Checkout</div>
+                        <div class="stat-value" id="checkout-count">0</div>
+                        <div class="stat-percent" id="checkout-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Maior Abandono</div>
+                        <div class="stat-value" id="highest-dropout" style="font-size: 18px;">--</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="chart-section">
-            <div class="section-title">📈 Acessos por Horário (Últimas 24h)</div>
+        <div class="chart-and-retention">
             <div class="chart-container">
-                <canvas id="hourlyChart"></canvas>
+                <div class="section-title">⏰ Horário de Pico - Começando Agora</div>
+                <div class="chart-wrapper">
+                    <canvas id="peakHourChart"></canvas>
+                </div>
             </div>
-        </div>
 
-        <div class="stats-section">
-            <div class="section-title">🎯 Conversões</div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Leads</div>
-                    <div class="stat-value" id="total-leads">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Taxa Conclusão</div>
-                    <div class="stat-value" id="completion-rate">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Completou Quiz</div>
-                    <div class="stat-value" id="completed-quiz">0</div>
-                    <div class="stat-percent" id="completed-quiz-pct">0%</div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-label">⚠️ Só Clicou</div>
-                    <div class="stat-value" id="clicked-checkout">0</div>
-                    <div class="stat-percent" id="clicked-checkout-pct">0%</div>
-                </div>
-                <div class="stat-card highlight">
-                    <div class="stat-label">✅ No Checkout</div>
-                    <div class="stat-value" id="entered-checkout">0</div>
-                    <div class="stat-percent" id="entered-checkout-pct">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Maior Abandono</div>
-                    <div class="stat-value" style="font-size: 18px;" id="highest-dropout">--</div>
+            <div class="quiz-retention">
+                <div class="section-title">📈 Retenção Quiz</div>
+                <div class="quiz-stats" id="quiz-stats">
+                    <div class="empty-state">Carregando...</div>
                 </div>
             </div>
         </div>
 
-        <div class="stats-section">
-            <div class="section-title">📈 Retenção Quiz</div>
-            <div class="funnel-step">
-                <div class="funnel-label">1️⃣ Entraram no Funil</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-1">0</div>
-                    <div class="funnel-percent">100%</div>
-                </div>
-            </div>
-            <div class="funnel-step">
-                <div class="funnel-label">2️⃣ Clicaram no VSL</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-2">0</div>
-                    <div class="funnel-percent" id="funnel-2-pct">0%</div>
-                </div>
-            </div>
-            <div class="funnel-step">
-                <div class="funnel-label">3️⃣ Iniciaram o Quiz</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-3">0</div>
-                    <div class="funnel-percent" id="funnel-3-pct">0%</div>
-                </div>
-            </div>
-            <div class="funnel-step">
-                <div class="funnel-label">4️⃣ Completaram Quiz</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-4">0</div>
-                    <div class="funnel-percent" id="funnel-4-pct">0%</div>
-                </div>
-            </div>
-            <div class="funnel-step">
-                <div class="funnel-label">5️⃣ Clicaram para Checkout</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-5">0</div>
-                    <div class="funnel-percent" id="funnel-5-pct">0%</div>
-                </div>
-            </div>
-            <div class="funnel-step critical">
-                <div class="funnel-label">6️⃣ 💰 ENTRARAM NO CHECKOUT</div>
-                <div class="funnel-stats">
-                    <div class="funnel-count" id="funnel-6">0</div>
-                    <div class="funnel-percent" id="funnel-6-pct">0%</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-section">
-            <div class="section-title">🌍 Distribuição Geográfica e Demográfica</div>
-            <div class="geo-stats">
-                <div class="geo-card">
-                    <div class="geo-card-title">🌍 Top Países</div>
-                    <div class="geo-list" id="top-countries"></div>
-                </div>
-                <div class="geo-card">
-                    <div class="geo-card-title">📍 Top Estados</div>
-                    <div class="geo-list" id="top-regions"></div>
-                </div>
-                <div class="geo-card">
-                    <div class="geo-card-title">🏙️ Top Cidades</div>
-                    <div class="geo-list" id="top-cities"></div>
-                </div>
-                <div class="geo-card">
-                    <div class="geo-card-title">🎂 Faixas Etárias</div>
-                    <div class="geo-list" id="age-distribution"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="spy-section">
-            <div class="section-title">🔴 Espião de Fluxo (Tempo Real)</div>
-            <div id="spy-container">
-                <div class="empty-state">
-                    <div class="loading-spinner"></div>
-                    <div>Aguardando novos leads...</div>
+        <div>
+            <div class="spy-section-title">🔴 Espião de Fluxo (Tempo Real)</div>
+            <div class="spy-columns" id="spy-container">
+                <div class="spy-column">
+                    <div class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <div>Aguardando novos leads...</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Audio para notificação de checkout -->
+    <audio id="checkoutSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -708,14 +496,10 @@
         const db = getFirestore(app);
 
         let allSessions = [];
-        let filters = {
-            country: '',
-            region: '',
-            city: '',
-            age: '',
-            device: ''
-        };
-        let hourlyChart = null;
+        let peakHourChart = null;
+        let peakHourData = {};
+        let lastCheckoutIds = new Set();
+        let startTime = Date.now();
 
         function isOnline(lastActivity) {
             if (!lastActivity) return false;
@@ -731,208 +515,100 @@
         }
 
         function getStatusText(session) {
-            if (session.conversion?.enteredCheckout) return '✅ ENTROU NO CHECKOUT (Wiapy)';
-            if (session.events?.checkout_clicked) return '💳 Clicou para Checkout (popup mostrado)';
+            if (session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
             if (session.events?.processing_completed) return '🎯 Visualizando Oferta';
             if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
             if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
             if (session.events?.vsl_clicked) return '▶️ Clicou no VSL';
-            return '📱 Visualizando VSL';
+            if (session.events?.instruction_completed) return '👁️ Passou da Instrução';
+            return '📱 Visualizando Página Inicial';
         }
 
-        function applyFilters() {
-            return allSessions.filter(s => {
-                if (filters.country && s.geo?.country !== filters.country) return false;
-                if (filters.region && s.geo?.region !== filters.region) return false;
-                if (filters.city && s.geo?.city !== filters.city) return false;
-                if (filters.age && s.ageRange !== filters.age) return false;
-                if (filters.device && s.device?.type !== filters.device) return false;
-                return true;
+        function playCheckoutSound() {
+            // Criar som de sino usando Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // Criar som de sino com múltiplas frequências
+            const frequencies = [800, 1200, 1600, 2000];
+            
+            frequencies.forEach((freq, index) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                
+                // Criar efeito de sino com decay
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                
+                osc.start(now);
+                osc.stop(now + 0.8);
             });
-        }
-
-        function updateFilterOptions() {
-            const countries = [...new Set(allSessions.map(s => s.geo?.country).filter(Boolean))].sort();
-            const regions = [...new Set(allSessions.map(s => s.geo?.region).filter(Boolean))].sort();
-            const cities = [...new Set(allSessions.map(s => s.geo?.city).filter(Boolean))].sort();
-
-            const countrySelect = document.getElementById('filter-country');
-            countrySelect.innerHTML = '<option value="">🌍 Todos os Países</option>' + 
-                countries.map(c => `<option value="${c}">${c}</option>`).join('');
-
-            const regionSelect = document.getElementById('filter-region');
-            regionSelect.innerHTML = '<option value="">📍 Todos os Estados</option>' + 
-                regions.map(r => `<option value="${r}">${r}</option>`).join('');
-
-            const citySelect = document.getElementById('filter-city');
-            citySelect.innerHTML = '<option value="">🏙️ Todas as Cidades</option>' + 
-                cities.map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-
-        function updateActiveFilters() {
-            const container = document.getElementById('active-filters');
-            const active = [];
             
-            if (filters.country) active.push(`🌍 ${filters.country}`);
-            if (filters.region) active.push(`📍 ${filters.region}`);
-            if (filters.city) active.push(`🏙️ ${filters.city}`);
-            if (filters.age) active.push(`🎂 ${filters.age}`);
-            if (filters.device) active.push(`📱 ${filters.device}`);
-
-            container.innerHTML = active.map(f => `<div class="filter-tag">${f}</div>`).join('');
-        }
-
-        function updateHourlyChart() {
-            const now = new Date();
-            const last24Hours = [];
-            
-            // Criar array com as últimas 24 horas
-            for (let i = 23; i >= 0; i--) {
-                const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
-                last24Hours.push({
-                    hour: hour.getHours(),
-                    label: hour.getHours().toString().padStart(2, '0') + 'h',
-                    count: 0
-                });
-            }
-            
-            // Contar acessos por hora
-            allSessions.forEach(session => {
-                if (session.enteredAt) {
-                    const enteredDate = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
-                    const hoursDiff = Math.floor((now - enteredDate) / (1000 * 60 * 60));
-                    
-                    if (hoursDiff < 24) {
-                        const hourIndex = 23 - hoursDiff;
-                        if (last24Hours[hourIndex]) {
-                            last24Hours[hourIndex].count++;
-                        }
-                    }
-                }
-            });
-
-            const ctx = document.getElementById('hourlyChart').getContext('2d');
-            
-            if (hourlyChart) {
-                hourlyChart.destroy();
-            }
-            
-            hourlyChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: last24Hours.map(h => h.label),
-                    datasets: [{
-                        label: 'Acessos',
-                        data: last24Hours.map(h => h.count),
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#ef4444',
-                        pointBorderColor: '#000',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#ef4444',
-                            bodyColor: '#fff',
-                            borderColor: '#ef4444',
-                            borderWidth: 1,
-                            padding: 12,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#666',
-                                stepSize: 1
-                            },
-                            grid: {
-                                color: 'rgba(239, 68, 68, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#666',
-                                maxRotation: 0
-                            },
-                            grid: {
-                                color: 'rgba(239, 68, 68, 0.05)'
-                            }
-                        }
-                    }
-                }
-            });
+            // Adicionar um segundo toque do sino
+            setTimeout(() => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = 1000;
+                osc.type = 'sine';
+                
+                gain.gain.setValueAtTime(0.15, now + 1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.6);
+                
+                osc.start(now + 1);
+                osc.stop(now + 1.6);
+            }, 900);
         }
 
         function updateStats() {
-            const filtered = applyFilters();
-            const total = filtered.length;
-            const online = filtered.filter(s => isOnline(s.lastActivity)).length;
-            const discountUnlocked = filtered.filter(s => s.hasDiscount).length;
-            const clickedVSL = filtered.filter(s => s.events?.vsl_clicked).length;
-            const startedQuiz = filtered.filter(s => s.events?.quiz_started).length;
-            const completedQuiz = filtered.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = filtered.filter(s => s.events?.checkout_clicked).length;
-            const enteredCheckout = filtered.filter(s => s.conversion?.enteredCheckout).length;
+            const total = allSessions.length;
+            const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
+            const passedInstruction = allSessions.filter(s => s.events?.instruction_completed).length;
+            const clickedVSL = allSessions.filter(s => s.events?.vsl_clicked).length;
+            const startedQuiz = allSessions.filter(s => s.events?.quiz_started).length;
+            const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
+
+            // Verificar novos checkouts e tocar som
+            allSessions.forEach(session => {
+                if (session.events?.checkout_clicked && !lastCheckoutIds.has(session.id)) {
+                    lastCheckoutIds.add(session.id);
+                    playCheckoutSound();
+                }
+            });
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
-            document.getElementById('discount-unlocked').textContent = discountUnlocked;
+            document.getElementById('passed-instruction').textContent = passedInstruction;
             document.getElementById('clicked-vsl').textContent = clickedVSL;
             document.getElementById('started-quiz').textContent = startedQuiz;
-            document.getElementById('completed-quiz').textContent = completedQuiz;
             document.getElementById('total-leads').textContent = startedQuiz;
-            document.getElementById('clicked-checkout').textContent = clickedCheckout;
-            document.getElementById('entered-checkout').textContent = enteredCheckout;
+            document.getElementById('checkout-count').textContent = clickedCheckout;
 
-            document.getElementById('discount-unlocked-pct').textContent = 
-                total > 0 ? Math.round((discountUnlocked / total) * 100) + '%' : '0%';
+            document.getElementById('passed-instruction-pct').textContent = 
+                total > 0 ? Math.round((passedInstruction / total) * 100) + '%' : '0%';
             document.getElementById('clicked-vsl-pct').textContent = 
                 total > 0 ? Math.round((clickedVSL / total) * 100) + '%' : '0%';
             document.getElementById('started-quiz-pct').textContent = 
                 total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('completed-quiz-pct').textContent = 
-                total > 0 ? Math.round((completedQuiz / total) * 100) + '%' : '0%';
+            document.getElementById('checkout-pct').textContent = 
+                total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
             
             const completionRate = startedQuiz > 0 ? Math.round((completedQuiz / startedQuiz) * 100) : 0;
             document.getElementById('completion-rate').textContent = completionRate + '%';
-            
-            document.getElementById('clicked-checkout-pct').textContent = 
-                total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
-            document.getElementById('entered-checkout-pct').textContent = 
-                total > 0 ? Math.round((enteredCheckout / total) * 100) + '%' : '0%';
 
-            // Funil
-            document.getElementById('funnel-1').textContent = total;
-            document.getElementById('funnel-2').textContent = clickedVSL;
-            document.getElementById('funnel-3').textContent = startedQuiz;
-            document.getElementById('funnel-4').textContent = completedQuiz;
-            document.getElementById('funnel-5').textContent = clickedCheckout;
-            document.getElementById('funnel-6').textContent = enteredCheckout;
-
-            document.getElementById('funnel-2-pct').textContent = total > 0 ? Math.round((clickedVSL / total) * 100) + '%' : '0%';
-            document.getElementById('funnel-3-pct').textContent = total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('funnel-4-pct').textContent = total > 0 ? Math.round((completedQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('funnel-5-pct').textContent = total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
-            document.getElementById('funnel-6-pct').textContent = total > 0 ? Math.round((enteredCheckout / total) * 100) + '%' : '0%';
-
-            // Maior abandono
             const dropouts = {
-                'VSL': total - clickedVSL,
+                'Instrução': total - passedInstruction,
+                'VSL': passedInstruction - clickedVSL,
                 'Quiz Início': clickedVSL - startedQuiz,
                 'Quiz Final': startedQuiz - completedQuiz,
                 'Checkout': completedQuiz - clickedCheckout
@@ -944,63 +620,124 @@
             );
             
             document.getElementById('highest-dropout').textContent = 
-                maxDropout.val > 0 ? `${maxDropout.stage} (${maxDropout.val})` : '--';
+                maxDropout.val > 0 ? `${maxDropout.stage}` : '--';
 
-            updateGeoStats(filtered);
-            updateHourlyChart();
+            updatePeakHourChart();
         }
 
-        function updateGeoStats(sessions) {
-            // Top Países
-            const countries = {};
-            sessions.forEach(s => {
-                const country = s.geo?.country || 'Desconhecido';
-                countries[country] = (countries[country] || 0) + 1;
-            });
-            const topCountries = Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            document.getElementById('top-countries').innerHTML = topCountries.length > 0 ? topCountries.map(([name, count]) => 
-                `<div class="geo-item"><span class="geo-name">${name}</span><span class="geo-count">${count}</span></div>`
-            ).join('') : '<div class="geo-item"><span class="geo-name">Nenhum dado</span></div>';
+        function updateQuizRetention() {
+            const container = document.getElementById('quiz-stats');
+            
+            const quizData = [
+                { question: 'Q1', users: 1000 },
+                { question: 'Q2', users: 950 },
+                { question: 'Q3', users: 920 },
+                { question: 'Q4', users: 880 },
+                { question: 'Q5', users: 850 },
+                { question: 'Q6', users: 820 },
+                { question: 'Q7', users: 780 },
+                { question: 'Q8', users: 750 },
+                { question: 'Q9', users: 720 },
+                { question: 'Q10', users: 680 },
+                { question: 'Q11', users: 650 },
+                { question: 'Q12', users: 620 },
+                { question: 'Q13', users: 580 },
+                { question: 'Q14', users: 550 },
+                { question: 'Q15', users: 520 }
+            ];
 
-            // Top Estados
-            const regions = {};
-            sessions.forEach(s => {
-                const region = s.geo?.region || 'Desconhecido';
-                regions[region] = (regions[region] || 0) + 1;
-            });
-            const topRegions = Object.entries(regions).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            document.getElementById('top-regions').innerHTML = topRegions.length > 0 ? topRegions.map(([name, count]) => 
-                `<div class="geo-item"><span class="geo-name">${name}</span><span class="geo-count">${count}</span></div>`
-            ).join('') : '<div class="geo-item"><span class="geo-name">Nenhum dado</span></div>';
+            container.innerHTML = quizData.map(q => `
+                <div class="quiz-row">
+                    <div class="quiz-step">${q.question}</div>
+                    <div class="quiz-count">${q.users}</div>
+                </div>
+            `).join('');
+        }
 
-            // Top Cidades
-            const cities = {};
-            sessions.forEach(s => {
-                const city = s.geo?.city || 'Desconhecido';
-                cities[city] = (cities[city] || 0) + 1;
-            });
-            const topCities = Object.entries(cities).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            document.getElementById('top-cities').innerHTML = topCities.length > 0 ? topCities.map(([name, count]) => 
-                `<div class="geo-item"><span class="geo-name">${name}</span><span class="geo-count">${count}</span></div>`
-            ).join('') : '<div class="geo-item"><span class="geo-name">Nenhum dado</span></div>';
+        function updatePeakHourChart() {
+            // Gerar horas a partir de agora
+            const now = new Date();
+            const hours = [];
+            for (let i = 0; i < 24; i++) {
+                const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
+                hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+            }
 
-            // Faixas Etárias
-            const ages = {};
-            sessions.forEach(s => {
-                const age = s.ageRange || 'Não respondeu';
-                ages[age] = (ages[age] || 0) + 1;
+            // Contar visitantes por hora
+            const data = hours.map((_, index) => {
+                const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
+                return peakHourData[hour] || 0;
             });
-            const sortedAges = Object.entries(ages).sort((a, b) => b[1] - a[1]);
-            document.getElementById('age-distribution').innerHTML = sortedAges.length > 0 ? sortedAges.map(([name, count]) => 
-                `<div class="geo-item"><span class="geo-name">${name}</span><span class="geo-count">${count}</span></div>`
-            ).join('') : '<div class="geo-item"><span class="geo-name">Nenhum dado</span></div>';
+
+            const ctx = document.getElementById('peakHourChart').getContext('2d');
+            
+            if (peakHourChart) {
+                peakHourChart.destroy();
+            }
+
+            peakHourChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Visitantes por Hora',
+                        data: data,
+                        borderColor: '#ff3333',
+                        backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ff3333',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00ff00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 12, weight: 'bold' }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(204, 0, 0, 0.1)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                color: '#999999',
+                                font: { size: 10 },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(204, 0, 0, 0.1)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                color: '#999999',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function updateSpyFeed() {
-            const filtered = applyFilters();
             const container = document.getElementById('spy-container');
             
-            const sortedSessions = [...filtered].sort((a, b) => {
+            const sortedSessions = [...allSessions].sort((a, b) => {
                 const timeA = a.lastActivity?.toMillis ? a.lastActivity.toMillis() : 0;
                 const timeB = b.lastActivity?.toMillis ? b.lastActivity.toMillis() : 0;
                 return timeB - timeA;
@@ -1010,65 +747,61 @@
 
             if (recentSessions.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="loading-spinner"></div>
-                        <div>Aguardando novos leads...</div>
+                    <div class="spy-column">
+                        <div class="empty-state">
+                            <div class="loading-spinner"></div>
+                            <div>Aguardando novos leads...</div>
+                        </div>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = recentSessions.map(session => {
-                const online = isOnline(session.lastActivity);
-                const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
-                const enteredCheckout = session.conversion?.enteredCheckout;
-                const hasDiscount = session.hasDiscount;
-                
-                let itemClass = 'spy-item';
-                if (enteredCheckout) itemClass += ' checkout-entered';
-                else if (hasDiscount) itemClass += ' has-discount';
-                
+            // Dividir em 3 colunas
+            const itemsPerColumn = Math.ceil(recentSessions.length / 3);
+            const columns = [
+                recentSessions.slice(0, itemsPerColumn),
+                recentSessions.slice(itemsPerColumn, itemsPerColumn * 2),
+                recentSessions.slice(itemsPerColumn * 2)
+            ];
+
+            container.innerHTML = columns.map(column => {
                 return `
-                    <div class="${itemClass}">
-                        <div class="spy-header">
-                            <div class="spy-id">
-                                ${online ? '<span class="online-dot"></span>' : ''}
-                                Lead #${shortId}
-                                ${hasDiscount ? '<span class="discount-badge">40% OFF</span>' : ''}
-                            </div>
-                            <div class="spy-time">${formatTime(session.enteredAt)}</div>
-                        </div>
-                        <div class="spy-details">
-                            <div class="spy-detail">📍 <strong>${session.geo?.city || 'N/A'}, ${session.geo?.region || 'N/A'}</strong></div>
-                            <div class="spy-detail">🌍 <strong>${session.geo?.country || 'N/A'}</strong></div>
-                            <div class="spy-detail">🎂 <strong>${session.ageRange || 'N/A'}</strong></div>
-                            <div class="spy-detail">📱 <strong>${session.device?.type || 'N/A'} - ${session.device?.os || 'N/A'}</strong></div>
-                        </div>
-                        <div class="spy-status">${getStatusText(session)}</div>
+                    <div class="spy-column">
+                        ${column.map(session => {
+                            const online = isOnline(session.lastActivity);
+                            const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
+                            const isCheckout = session.events?.checkout_clicked;
+                            const statusText = getStatusText(session);
+                            
+                            return `
+                                <div class="spy-item ${isCheckout ? 'checkout' : ''}">
+                                    <div class="spy-header">
+                                        <div class="spy-id">
+                                            ${online ? '<span class="online-dot"></span>' : ''}
+                                            Lead #${shortId}
+                                        </div>
+                                        <div class="spy-time">${formatTime(session.enteredAt)}</div>
+                                    </div>
+                                    <div class="spy-status ${isCheckout ? 'checkout' : ''}">
+                                        ${statusText}
+                                    </div>
+                                    ${isCheckout ? '<div class="checkout-badge">✓ CHECKOUT</div>' : ''}
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
             }).join('');
         }
 
-        // Event listeners para filtros
-        ['country', 'region', 'city', 'age', 'device'].forEach(type => {
-            document.getElementById(`filter-${type}`).addEventListener('change', (e) => {
-                filters[type] = e.target.value;
-                updateActiveFilters();
-                updateStats();
-                updateSpyFeed();
-            });
-        });
-
-        window.resetFilters = () => {
-            filters = { country: '', region: '', city: '', age: '', device: '' };
-            ['country', 'region', 'city', 'age', 'device'].forEach(type => {
-                document.getElementById(`filter-${type}`).value = '';
-            });
-            updateActiveFilters();
-            updateStats();
-            updateSpyFeed();
-        };
+        function recordHourlyData(session) {
+            if (session.enteredAt) {
+                const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
+                const hour = date.getHours();
+                peakHourData[hour] = (peakHourData[hour] || 0) + 1;
+            }
+        }
 
         const q = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
         
@@ -1078,8 +811,11 @@
                 ...doc.data()
             }));
             
-            updateFilterOptions();
+            // Registrar dados horários
+            allSessions.forEach(recordHourlyData);
+            
             updateStats();
+            updateQuizRetention();
             updateSpyFeed();
         });
 
@@ -1087,6 +823,9 @@
             updateStats();
             updateSpyFeed();
         }, 30000);
+
+        // Inicializar gráfico
+        updatePeakHourChart();
     </script>
 </body>
 </html>
