@@ -1,124 +1,76 @@
-# Dashboard Analytics TRIPE v10.7
+# Dashboard Analytics - Protocolo TRIPE
 
-Dashboard em tempo real para monitoramento de funil de vendas com Firebase.
+Dashboard de analytics em tempo real com tema vermelho e preto.
 
-## Estrutura do Projeto
+## 🚀 Deploy no Vercel
 
-```
-dashboard-html/
-├── index.html          # Página principal (único arquivo HTML)
-├── vercel.json         # Configuração do Vercel
-├── .gitignore          # Arquivos a ignorar no Git
-└── README.md           # Este arquivo
-```
+### Opção 1 - Via GitHub (Recomendado)
 
-## Como Fazer Deploy no Vercel
+1. Crie um repositório no GitHub
+2. Faça upload destes arquivos
+3. Acesse [vercel.com](https://vercel.com)
+4. Clique em "Import Project"
+5. Selecione seu repositório
+6. Deploy automático! ✅
 
-### Passo 1: Criar Repositório no GitHub
-
-1. Acesse [github.com](https://github.com) e faça login
-2. Clique no ícone `+` no canto superior direito
-3. Selecione "New repository"
-4. Nomeie como `dashboard-analytics` (ou outro nome de sua preferência)
-5. Deixe como "Public" (para Vercel conseguir acessar)
-6. Clique em "Create repository"
-
-### Passo 2: Fazer Upload dos Arquivos
-
-Você tem duas opções:
-
-#### Opção A: Usando Git (Recomendado)
+### Opção 2 - Via CLI
 
 ```bash
-# No terminal, navegue até a pasta do projeto
-cd /caminho/para/dashboard-html
-
-# Inicializar repositório Git
-git init
-
-# Adicionar todos os arquivos
-git add .
-
-# Fazer commit inicial
-git commit -m "Initial commit - Dashboard Analytics"
-
-# Adicionar repositório remoto (substitua SEU_USUARIO e SEU_REPO)
-git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git
-
-# Fazer push para GitHub
-git branch -M main
-git push -u origin main
+npm i -g vercel
+vercel
 ```
 
-#### Opção B: Usando Interface do GitHub
+### Opção 3 - Arrastar e Soltar
 
-1. Acesse seu repositório no GitHub
-2. Clique em "Add file" > "Upload files"
-3. Selecione os arquivos:
-   - `index.html`
-   - `vercel.json`
-   - `.gitignore`
-   - `README.md`
-4. Clique em "Commit changes"
+1. Acesse [vercel.com](https://vercel.com)
+2. Arraste esta pasta para a área de upload
+3. Deploy instantâneo! ✅
 
-### Passo 3: Fazer Deploy no Vercel
+## 📊 Funcionalidades
 
-1. Acesse [vercel.com](https://vercel.com) e faça login com sua conta GitHub
-2. Clique em "New Project"
-3. Selecione seu repositório `dashboard-analytics`
-4. Clique em "Import"
-5. Na página de configuração:
-   - **Framework Preset**: Deixe como "Other"
-   - **Build Command**: Deixe vazio
-   - **Output Directory**: Deixe como `.`
-6. Clique em "Deploy"
+- ✅ Monitoramento em tempo real
+- ✅ Gráfico de acessos por horário (24h)
+- ✅ Rastreamento de desconto 40% OFF
+- ✅ Filtros geográficos e demográficos
+- ✅ Espião de fluxo ao vivo
+- ✅ Tema vermelho e preto
 
-Pronto! Seu dashboard estará online em alguns segundos!
+## 🔧 Configuração
 
-## Configuração do Firebase
+O Firebase já está configurado. Se precisar alterar:
 
-O dashboard já vem configurado com Firebase. Se quiser usar sua própria instância:
+Edite as credenciais em `index.html`:
 
-1. Abra `index.html`
-2. Procure por `firebaseConfig`
-3. Substitua os valores pelas suas credenciais do Firebase
-
-## Estrutura de Dados Firebase
-
-O dashboard espera dados no Firestore com a seguinte estrutura:
-
-```
-collections/
-└── sessions
-    ├── sessionId (string)
-    ├── enteredAt (timestamp)
-    ├── lastActivity (timestamp)
-    ├── quizProgress (number)
-    └── events (object)
-        ├── instruction_completed (boolean)
-        ├── vsl_clicked (boolean)
-        ├── quiz_started (boolean)
-        ├── quiz_completed (boolean)
-        └── checkout_clicked (boolean)
+```javascript
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO",
+    projectId: "SEU_PROJETO",
+    // ...
+};
 ```
 
-## Troubleshooting
+## 📁 Estrutura
 
-### Erro: "Cannot find module"
-- Certifique-se de que todos os arquivos estão no repositório
-- Verifique se o `vercel.json` está correto
+```
+dashboard-project/
+├── index.html      # Dashboard completo
+├── vercel.json     # Config do Vercel
+├── .gitignore      # Arquivos ignorados
+└── README.md       # Este arquivo
+```
 
-### Dashboard não carrega dados
-- Verifique as credenciais do Firebase
-- Confirme que o Firestore tem dados na collection `sessions`
-- Abra o Console do navegador (F12) para ver erros
+## 🎨 Personalização
 
-### Erro no Vercel durante build
-- Certifique-se de que não há `package.json` na raiz (para projetos estáticos puros)
-- Se tiver `package.json`, deixe o `buildCommand` vazio no `vercel.json`
+Cores principais (no CSS):
+- Vermelho: `#ef4444`
+- Preto: `#000000`
+- Verde (sucesso): `#22c55e`
+- Amarelo (desconto): `#fbbf24`
 
-## Suporte
+## 📝 Notas
 
-Para mais informações:
-- [Documentação Vercel](https://vercel.com/docs)
-- [Documentação Firebase](https://firebase.google.com/docs)
+- Dashboard atualiza a cada 30 segundos
+- Gráfico mostra últimas 24 horas
+- Filtros salvos no navegador
+- Responsivo para mobile
