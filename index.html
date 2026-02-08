@@ -519,7 +519,6 @@
 
         let allSessions = [];
         let peakHourChart = null;
-        let peakHourData = {};
         let lastCheckoutIds = new Set();
         let startTime = Date.now();
 
@@ -530,10 +529,24 @@
             return (now - lastTime) < 120000;
         }
 
-        function formatTime(timestamp) {
-            if (!timestamp) return '--:--';
+        function formatTimeAgo(timestamp) {
+            if (!timestamp) return 'agora';
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'agora';
+            if (diffMins === 1) return 'há 1 minuto';
+            if (diffMins < 60) return `há ${diffMins} minutos`;
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours === 1) return 'há 1 hora';
+            if (diffHours < 24) return `há ${diffHours} horas`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays === 1) return 'há 1 dia';
+            return `há ${diffDays} dias`;
         }
 
         function getStatusText(session) {
@@ -646,28 +659,42 @@
         function updateQuizRetention() {
             const container = document.getElementById('quiz-stats');
             
-            const quizData = [
-                { question: 'Q1', users: 1000 },
-                { question: 'Q2', users: 950 },
-                { question: 'Q3', users: 920 },
-                { question: 'Q4', users: 880 },
-                { question: 'Q5', users: 850 },
-                { question: 'Q6', users: 820 },
-                { question: 'Q7', users: 780 },
-                { question: 'Q8', users: 750 },
-                { question: 'Q9', users: 720 },
-                { question: 'Q10', users: 680 },
-                { question: 'Q11', users: 650 },
-                { question: 'Q12', users: 620 },
-                { question: 'Q13', users: 580 },
-                { question: 'Q14', users: 550 },
-                { question: 'Q15', users: 520 }
-            ];
+            // Contar quantas pessoas chegaram em cada pergunta
+            const quizProgress = {};
+            for (let i = 1; i <= 15; i++) {
+                quizProgress[i] = 0;
+            }
+            
+            allSessions.forEach(session => {
+                const progress = session.quizProgress || 0;
+                // Contar todas as perguntas que a pessoa passou
+                for (let i = 1; i <= progress; i++) {
+                    quizProgress[i]++;
+                }
+            });
+            
+            const total = allSessions.filter(s => s.events?.quiz_started).length;
+            
+            if (total === 0) {
+                container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
+                return;
+            }
+            
+            const quizData = [];
+            for (let i = 1; i <= 15; i++) {
+                const count = quizProgress[i];
+                const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+                quizData.push({
+                    question: `Q${i}`,
+                    users: count,
+                    percentage: percentage
+                });
+            }
 
             container.innerHTML = quizData.map(q => `
                 <div class="quiz-row">
                     <div class="quiz-step">${q.question}</div>
-                    <div class="quiz-count">${q.users}</div>
+                    <div class="quiz-count">${q.users} (${q.percentage}%)</div>
                 </div>
             `).join('');
         }
@@ -675,14 +702,34 @@
         function updatePeakHourChart() {
             const now = new Date();
             const hours = [];
+            const hourCounts = {};
+            
+            // Criar labels das próximas 24 horas
             for (let i = 0; i < 24; i++) {
                 const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
                 hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+                hourCounts[i] = 0;
             }
 
+            // Contar SESSÕES ÚNICAS por hora (não eventos)
+            const sessionsByHour = {};
+            allSessions.forEach(session => {
+                if (session.enteredAt) {
+                    const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
+                    const sessionHour = date.getHours();
+                    
+                    // Contar cada sessão apenas UMA VEZ
+                    if (!sessionsByHour[sessionHour]) {
+                        sessionsByHour[sessionHour] = new Set();
+                    }
+                    sessionsByHour[sessionHour].add(session.sessionId || session.id);
+                }
+            });
+
+            // Mapear para o array de dados
             const data = hours.map((_, index) => {
                 const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
-                return peakHourData[hour] || 0;
+                return sessionsByHour[hour] ? sessionsByHour[hour].size : 0;
             });
 
             const ctx = document.getElementById('peakHourChart').getContext('2d');
@@ -696,7 +743,7 @@
                 data: {
                     labels: hours,
                     datasets: [{
-                        label: 'Visitantes por Hora',
+                        label: 'Visitantes Únicos',
                         data: data,
                         borderColor: '#ff3333',
                         backgroundColor: 'rgba(255, 51, 51, 0.1)',
@@ -736,13 +783,15 @@
                             }
                         },
                         y: {
+                            beginAtZero: true,
                             grid: {
                                 color: 'rgba(204, 0, 0, 0.1)',
                                 lineWidth: 1
                             },
                             ticks: {
                                 color: '#999999',
-                                font: { size: 10 }
+                                font: { size: 10 },
+                                stepSize: 1
                             }
                         }
                     }
@@ -807,7 +856,7 @@
                                             ${online ? '<span class="online-dot"></span>' : ''}
                                             Lead #${shortId}
                                         </div>
-                                        <div class="spy-time">${formatTime(session.enteredAt)}</div>
+                                        <div class="spy-time">${formatTimeAgo(session.enteredAt)}</div>
                                     </div>
                                     <div class="spy-status ${isCheckout ? 'checkout' : ''}">
                                         ${statusText}
@@ -822,14 +871,6 @@
             }).join('');
         }
 
-        function recordHourlyData(session) {
-            if (session.enteredAt) {
-                const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
-                const hour = date.getHours();
-                peakHourData[hour] = (peakHourData[hour] || 0) + 1;
-            }
-        }
-
         const q = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
         
         onSnapshot(q, (snapshot) => {
@@ -837,8 +878,6 @@
                 id: doc.id,
                 ...doc.data()
             }));
-            
-            allSessions.forEach(recordHourlyData);
             
             updateStats();
             updateQuizRetention();
