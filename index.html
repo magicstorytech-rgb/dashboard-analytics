@@ -678,6 +678,7 @@
         }
 
         function updateStats() {
+            // Todas as métricas já contam sessões únicas (cada documento = 1 sessão)
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
             const passedInstruction = allSessions.filter(s => s.events?.instruction_completed).length;
@@ -738,26 +739,31 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
+            // Mostrar TODAS as vendas (pagas e não pagas)
             const salesToday = allSales.filter(sale => {
                 if (!sale.createdAt) return false;
                 const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
-                return saleDate >= today && sale.status === 'approved';
+                return saleDate >= today;
             });
 
-            // Verificar novas vendas e tocar som
-            salesToday.forEach(sale => {
+            // Separar vendas pagas
+            const paidSalesToday = salesToday.filter(sale => sale.isPaid === true);
+
+            // Verificar novas vendas e tocar som (apenas pagas)
+            paidSalesToday.forEach(sale => {
                 if (!lastSaleIds.has(sale.transactionId)) {
                     lastSaleIds.add(sale.transactionId);
                     playSaleSound();
-                    console.log('🔔 NOVA VENDA!', sale);
+                    console.log('🔔 NOVA VENDA CONFIRMADA!', sale);
                 }
             });
 
-            const salesCount = salesToday.length;
-            const revenue = salesToday.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+            // Calcular métricas (baseado em vendas PAGAS)
+            const salesCount = paidSalesToday.length;
+            const revenue = paidSalesToday.reduce((sum, sale) => sum + (sale.amount || 0), 0);
             const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
             
-            // Calcular taxa de conversão (vendas / cliques no checkout)
+            // Calcular taxa de conversão (vendas pagas / cliques no checkout)
             const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
             const conversionRate = clickedCheckout > 0 ? (salesCount / clickedCheckout) * 100 : 0;
 
@@ -921,7 +927,19 @@
                 return timeB - timeA;
             });
 
-            const recentSessions = sortedSessions.slice(0, 30);
+            // Remover duplicatas (mesmo sessionId aparece só uma vez)
+            const uniqueSessions = [];
+            const seenIds = new Set();
+            
+            for (const session of sortedSessions) {
+                const sid = session.sessionId || session.id;
+                if (!seenIds.has(sid)) {
+                    seenIds.add(sid);
+                    uniqueSessions.push(session);
+                }
+            }
+
+            const recentSessions = uniqueSessions.slice(0, 30);
 
             if (recentSessions.length === 0) {
                 container.innerHTML = `
@@ -963,7 +981,7 @@
                             }
                             
                             return `
-                                <div class="spy-item ${isCheckout ? 'checkout' : ''}">
+                                <div class="spy-item ${isCheckout ? 'checkout' : ''}" data-session-id="${session.sessionId || session.id}">
                                     <div class="spy-header">
                                         <div class="spy-id">
                                             ${online ? '<span class="online-dot"></span>' : ''}
