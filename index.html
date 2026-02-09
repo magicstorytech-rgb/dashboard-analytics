@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard TRIPE - Ultra Analytics v10.7</title>
+    <title>Dashboard ALPHA METHOD - Ultra Analytics v11.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,19 +18,19 @@
         
         .header {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border: 2px solid #cc0000;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 0 30px rgba(204, 0, 0, 0.3);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
         }
         
         .title {
             font-size: 32px;
             font-weight: 900;
-            color: #ff3333;
+            color: #ef4444;
             margin-bottom: 8px;
-            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
         }
         
         .subtitle {
@@ -46,9 +46,9 @@
         }
         
         .filter-btn {
-            background: rgba(204, 0, 0, 0.1);
-            border: 2px solid #cc0000;
-            color: #ff3333;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            color: #ef4444;
             padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
@@ -58,18 +58,18 @@
         }
         
         .filter-btn:hover {
-            background: rgba(204, 0, 0, 0.3);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
         }
         
         .online-badge {
-            background: rgba(204, 0, 0, 0.15);
-            border: 2px solid #cc0000;
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid #ef4444;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
         
         .online-label {
@@ -84,8 +84,8 @@
         .online-count {
             font-size: 56px;
             font-weight: 900;
-            color: #ff3333;
-            text-shadow: 0 0 30px rgba(255, 51, 51, 0.6);
+            color: #ef4444;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
         }
         
         .main-grid {
@@ -97,14 +97,14 @@
         
         .stats-section {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border: 2px solid #cc0000;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
         
         .section-title {
-            color: #ff3333;
+            color: #ef4444;
             font-size: 14px;
             font-weight: 800;
             text-transform: uppercase;
@@ -113,7 +113,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
         }
         
         .stats-grid {
@@ -132,29 +132,29 @@
         }
         
         .stat-card:hover {
-            border-color: #cc0000;
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
         }
         
         .stat-card.highlight {
-            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 200, 0, 0.05) 100%);
-            border: 2px solid #00ff00;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+            border: 2px solid #22c55e;
             animation: pulseGreen 2s ease-in-out infinite;
         }
         
         .stat-card.highlight:hover {
-            border-color: #00ff00;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
+            border-color: #22c55e;
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
         }
         
         .stat-card.highlight .stat-value {
-            color: #00ff00;
-            text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
         }
         
         @keyframes pulseGreen {
-            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.6); }
+            0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.6); }
         }
         
         .stat-label {
@@ -174,7 +174,7 @@
         }
         
         .stat-percent {
-            color: #ff3333;
+            color: #ef4444;
             font-size: 13px;
             font-weight: 600;
         }
@@ -188,10 +188,10 @@
         
         .chart-container {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border: 2px solid #cc0000;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
         
         .chart-wrapper {
@@ -202,10 +202,10 @@
         
         .quiz-retention {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border: 2px solid #cc0000;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
         
         .quiz-stats {
@@ -217,7 +217,7 @@
         
         .quiz-row {
             background: rgba(0, 0, 0, 0.5);
-            border-left: 4px solid #cc0000;
+            border-left: 4px solid #ef4444;
             padding: 10px 15px;
             border-radius: 6px;
             display: flex;
@@ -228,8 +228,8 @@
         }
         
         .quiz-row:hover {
-            background: rgba(204, 0, 0, 0.1);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.2);
+            background: rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
         }
         
         .quiz-step {
@@ -238,19 +238,19 @@
         }
         
         .quiz-count {
-            color: #ff3333;
+            color: #ef4444;
             font-size: 14px;
             font-weight: 800;
         }
         
         .spy-section-title {
-            color: #ff3333;
+            color: #ef4444;
             font-size: 14px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
         }
         
         .spy-columns {
@@ -262,17 +262,17 @@
         
         .spy-column {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border: 2px solid #cc0000;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 20px;
             max-height: 500px;
             overflow-y: auto;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
         
         .spy-item {
             background: rgba(0, 0, 0, 0.5);
-            border-left: 4px solid #ff3333;
+            border-left: 4px solid #ef4444;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 12px;
@@ -281,14 +281,14 @@
         }
         
         .spy-item:hover {
-            background: rgba(204, 0, 0, 0.1);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
         }
         
         .spy-item.checkout {
-            border-left: 4px solid #00ff00;
-            background: rgba(0, 255, 0, 0.05);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            border-left: 4px solid #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
             animation: checkoutPulse 0.6s ease;
         }
         
@@ -330,7 +330,7 @@
         }
         
         .spy-status.checkout {
-            color: #00ff00;
+            color: #22c55e;
             font-weight: 700;
             animation: pulse 1s infinite;
         }
@@ -344,696 +344,263 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #00ff00;
+            background: #22c55e;
             border-radius: 50%;
-            margin-right: 6px;
-            animation: pulse 2s infinite;
+            margin-right: 5px;
+            animation: pulse 1s infinite;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666666;
-            font-size: 14px;
+        .spy-geo {
+            display: flex;
+            gap: 10px;
+            color: #999;
+            font-size: 11px;
+            font-weight: 600;
         }
         
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-        ::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
-        
-        .loading-spinner {
-            border: 3px solid rgba(204, 0, 0, 0.1);
-            border-top: 3px solid #cc0000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .checkout-badge {
-            display: inline-block;
-            background: #00ff00;
-            color: #000000;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .spy-device {
+            display: flex;
+            gap: 10px;
+            color: #666;
             font-size: 10px;
-            font-weight: 700;
-            margin-top: 8px;
+            margin-top: 5px;
         }
-
-        .platform-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-top: 8px;
-            margin-left: 4px;
-        }
-
-        .platform-badge.browser {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #000000;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-        }
-
-        .platform-badge.tiktok {
-            background: rgba(255, 51, 51, 0.2);
-            border: 1px solid #ff3333;
-            color: #ff3333;
-        }
-
-        @media (max-width: 1200px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .chart-and-retention {
-                grid-template-columns: 1fr;
-            }
-            .spy-columns {
-                grid-template-columns: 1fr;
-            }
-        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 3px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">🔥 ANALYTICS V10.7</div>
-            <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
+            <h1 class="title">ALPHA METHOD</h1>
+            <p class="subtitle">DASHBOARD DE ANÁLISE ULTRA REAL-TIME v11.0</p>
             <div class="filters">
-                <button class="filter-btn">RESETAR VISÃO</button>
+                <button class="filter-btn" onclick="filterData('today')">HOJE</button>
+                <button class="filter-btn" onclick="filterData('yesterday')">ONTEM</button>
+                <button class="filter-btn" onclick="filterData('all')">TOTAL</button>
             </div>
         </div>
 
         <div class="online-badge">
-            <div class="online-label">👥 Online Agora</div>
-            <div class="online-count" id="online-now">0</div>
+            <div class="online-label">Usuários Ativos Agora</div>
+            <div class="online-count" id="active-users">0</div>
         </div>
 
         <div class="main-grid">
             <div class="stats-section">
-                <div class="section-title">📊 Acessos (Visão Atual)</div>
+                <div class="section-title">📊 MÉTRICAS DE CONVERSÃO</div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Total Acessos</div>
-                        <div class="stat-value" id="total-visits">0</div>
+                        <div class="stat-label">Visitas VSL</div>
+                        <div class="stat-value" id="total-vsl">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Passou Instrução</div>
-                        <div class="stat-value" id="passed-instruction">0</div>
-                        <div class="stat-percent" id="passed-instruction-pct">0%</div>
+                        <div class="stat-label">Iniciaram Quiz</div>
+                        <div class="stat-value" id="total-quiz">0</div>
+                        <div class="stat-percent" id="vsl-to-quiz-rate">0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Clicou VSL</div>
-                        <div class="stat-value" id="clicked-vsl">0</div>
-                        <div class="stat-percent" id="clicked-vsl-pct">0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Iniciou Quiz</div>
-                        <div class="stat-value" id="started-quiz">0</div>
-                        <div class="stat-percent" id="started-quiz-pct">0%</div>
+                    <div class="stat-card highlight">
+                        <div class="stat-label">Checkouts</div>
+                        <div class="stat-value" id="total-checkout">0</div>
+                        <div class="stat-percent" id="quiz-to-checkout-rate" style="color: #22c55e">0%</div>
                     </div>
                 </div>
             </div>
 
             <div class="stats-section">
-                <div class="section-title">🎯 Conversões</div>
+                <div class="section-title">🔥 PERFORMANCE GERAL</div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Leads</div>
-                        <div class="stat-value" id="total-leads">0</div>
+                        <div class="stat-label">Taxa VSL</div>
+                        <div class="stat-value" id="vsl-rate">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Taxa Conclusão</div>
-                        <div class="stat-value" id="completion-rate">0%</div>
+                        <div class="stat-label">Taxa Quiz</div>
+                        <div class="stat-value" id="quiz-rate">0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">No Checkout</div>
-                        <div class="stat-value" id="checkout-count">0</div>
-                        <div class="stat-percent" id="checkout-pct">0%</div>
+                    <div class="stat-card highlight">
+                        <div class="stat-label">Taxa Final</div>
+                        <div class="stat-value" id="final-rate">0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Maior Abandono</div>
-                        <div class="stat-value" id="highest-dropout" style="font-size: 18px;">--</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-section" style="margin-bottom: 30px;">
-            <div class="section-title">💰 VENDAS CONFIRMADAS</div>
-            <div class="stats-grid">
-                <div class="stat-card highlight">
-                    <div class="stat-label">Vendas Hoje</div>
-                    <div class="stat-value" id="sales-today">0</div>
-                </div>
-                <div class="stat-card highlight">
-                    <div class="stat-label">Faturamento Hoje</div>
-                    <div class="stat-value" id="revenue-today" style="font-size: 28px;">R$ 0</div>
-                </div>
-                <div class="stat-card highlight">
-                    <div class="stat-label">Taxa Conversão</div>
-                    <div class="stat-value" id="conversion-rate">0%</div>
-                </div>
-                <div class="stat-card highlight">
-                    <div class="stat-label">Ticket Médio</div>
-                    <div class="stat-value" id="average-ticket" style="font-size: 28px;">R$ 0</div>
                 </div>
             </div>
         </div>
 
         <div class="chart-and-retention">
             <div class="chart-container">
-                <div class="section-title">⏰ Horário de Pico - Começando Agora</div>
+                <div class="section-title">📈 FLUXO DE ACESSOS (ÚLTIMAS 24H)</div>
                 <div class="chart-wrapper">
-                    <canvas id="peakHourChart"></canvas>
+                    <canvas id="conversionChart"></canvas>
                 </div>
             </div>
 
             <div class="quiz-retention">
-                <div class="section-title">📈 Retenção Quiz</div>
-                <div class="quiz-stats" id="quiz-stats">
-                    <div class="empty-state">Carregando...</div>
+                <div class="section-title">📝 RETENÇÃO DO QUIZ (15 ETAPAS)</div>
+                <div class="quiz-stats" id="quiz-retention-list">
+                    <!-- Gerado dinamicamente -->
                 </div>
             </div>
         </div>
 
-        <div>
-            <div class="spy-section-title">🔴 Espião de Fluxo (Tempo Real)</div>
-            <div class="spy-columns" id="spy-container">
-                <div class="spy-column">
-                    <div class="empty-state">
-                        <div class="loading-spinner"></div>
-                        <div>Aguardando novos leads...</div>
-                    </div>
-                </div>
+        <div class="spy-section-title">🕵️ ESPIÃO EM TEMPO REAL</div>
+        <div class="spy-columns">
+            <div class="spy-column">
+                <div class="section-title">🎥 ASSISTINDO VSL</div>
+                <div id="spy-vsl"></div>
+            </div>
+            <div class="spy-column">
+                <div class="section-title">📋 NO QUIZ / ANÁLISE</div>
+                <div id="spy-quiz"></div>
+            </div>
+            <div class="spy-column">
+                <div class="section-title">💰 NA OFERTA / CHECKOUT</div>
+                <div id="spy-checkout"></div>
             </div>
         </div>
     </div>
 
-    <!-- Audio para notificação de checkout -->
-    <audio id="checkoutSound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
-    </audio>
-
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, query, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, onSnapshot, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-GPkmK_iNQuu_96NsWBEmnZA1LhiSRR4",
-            authDomain: "alytics-metodo-alpha.firebaseapp.com",
-            projectId: "alytics-metodo-alpha",
-            storageBucket: "alytics-metodo-alpha.firebasestorage.app",
-            messagingSenderId: "389989039442",
-            appId: "1:389989039442:web:e897945ffbfe52da210e8b"
+        // Configuração do Firebase (Deve ser a mesma do funil Alpha Method)
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAs-XXXXXXXXXXXXXX", 
+            authDomain: "alpha-method.firebaseapp.com", 
+            projectId: "alpha-method", 
+            storageBucket: "alpha-method.appspot.com", 
+            messagingSenderId: "XXXXXXXXXXXX", 
+            appId: "1:XXXXXXXXXXXX:web:XXXXXXXXXXXX" 
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let chart;
 
-        let allSessions = [];
-        let allSales = [];
-        let peakHourChart = null;
-        let lastCheckoutIds = new Set();
-        let lastSaleIds = new Set();
-        let startTime = Date.now();
-
-        function isOnline(lastActivity) {
-            if (!lastActivity) return false;
-            const now = Date.now();
-            const lastTime = lastActivity.toMillis ? lastActivity.toMillis() : lastActivity;
-            return (now - lastTime) < 120000;
-        }
-
-        function formatTimeAgo(timestamp) {
-            if (!timestamp) return 'agora';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            
-            if (diffMins < 1) return 'agora';
-            if (diffMins === 1) return 'há 1 minuto';
-            if (diffMins < 60) return `há ${diffMins} minutos`;
-            
-            const diffHours = Math.floor(diffMins / 60);
-            if (diffHours === 1) return 'há 1 hora';
-            if (diffHours < 24) return `há ${diffHours} horas`;
-            
-            const diffDays = Math.floor(diffHours / 24);
-            if (diffDays === 1) return 'há 1 dia';
-            return `há ${diffDays} dias`;
-        }
-
-        function getStatusText(session) {
-            if (session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
-            if (session.events?.processing_completed) return '🎯 Visualizando Oferta';
-            if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
-            if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
-            if (session.events?.vsl_clicked) return '▶️ Clicou no VSL';
-            if (session.events?.instruction_completed) return '👁️ Passou da Instrução';
-            return '📱 Visualizando Página Inicial';
-        }
-
-        function playCheckoutSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioContext.currentTime;
-            
-            const frequencies = [800, 1200, 1600, 2000];
-            
-            frequencies.forEach((freq, index) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
-                
-                osc.start(now);
-                osc.stop(now + 0.8);
-            });
-            
-            setTimeout(() => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.frequency.value = 1000;
-                osc.type = 'sine';
-                
-                gain.gain.setValueAtTime(0.15, now + 1);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.6);
-                
-                osc.start(now + 1);
-                osc.stop(now + 1.6);
-            }, 900);
-        }
-
-        function playSaleSound() {
-            // Som especial de venda - mais vibrante!
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioContext.currentTime;
-            
-            // Sequência de notas felizes (dinheiro caindo!)
-            const notes = [
-                { freq: 523.25, time: 0 },     // C5
-                { freq: 659.25, time: 0.15 },  // E5
-                { freq: 783.99, time: 0.3 },   // G5
-                { freq: 1046.50, time: 0.45 }  // C6
-            ];
-            
-            notes.forEach(note => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.frequency.value = note.freq;
-                osc.type = 'triangle';
-                
-                const startTime = now + note.time;
-                gain.gain.setValueAtTime(0.3, startTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-                
-                osc.start(startTime);
-                osc.stop(startTime + 0.3);
-            });
-        }
-
-        function updateStats() {
-            // Todas as métricas já contam sessões únicas (cada documento = 1 sessão)
-            const total = allSessions.length;
-            const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
-            const passedInstruction = allSessions.filter(s => s.events?.instruction_completed).length;
-            const clickedVSL = allSessions.filter(s => s.events?.vsl_clicked).length;
-            const startedQuiz = allSessions.filter(s => s.events?.quiz_started).length;
-            const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
-
-            // Verificar novos checkouts e tocar som
-            allSessions.forEach(session => {
-                if (session.events?.checkout_clicked && !lastCheckoutIds.has(session.id)) {
-                    lastCheckoutIds.add(session.id);
-                    playCheckoutSound();
-                }
-            });
-
-            document.getElementById('online-now').textContent = online;
-            document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = passedInstruction;
-            document.getElementById('clicked-vsl').textContent = clickedVSL;
-            document.getElementById('started-quiz').textContent = startedQuiz;
-            document.getElementById('total-leads').textContent = startedQuiz;
-            document.getElementById('checkout-count').textContent = clickedCheckout;
-
-            document.getElementById('passed-instruction-pct').textContent = 
-                total > 0 ? Math.round((passedInstruction / total) * 100) + '%' : '0%';
-            document.getElementById('clicked-vsl-pct').textContent = 
-                total > 0 ? Math.round((clickedVSL / total) * 100) + '%' : '0%';
-            document.getElementById('started-quiz-pct').textContent = 
-                total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('checkout-pct').textContent = 
-                total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
-            
-            const completionRate = startedQuiz > 0 ? Math.round((completedQuiz / startedQuiz) * 100) : 0;
-            document.getElementById('completion-rate').textContent = completionRate + '%';
-
-            const dropouts = {
-                'Instrução': total - passedInstruction,
-                'VSL': passedInstruction - clickedVSL,
-                'Quiz Início': clickedVSL - startedQuiz,
-                'Quiz Final': startedQuiz - completedQuiz,
-                'Checkout': completedQuiz - clickedCheckout
-            };
-            
-            const maxDropout = Object.entries(dropouts).reduce((max, [key, val]) => 
-                val > max.val ? {stage: key, val} : max, 
-                {stage: '--', val: 0}
-            );
-            
-            document.getElementById('highest-dropout').textContent = 
-                maxDropout.val > 0 ? `${maxDropout.stage}` : '--';
-
-            updatePeakHourChart();
-        }
-
-        function updateSalesStats() {
-            // Filtrar vendas de hoje
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            // Mostrar TODAS as vendas (pagas e não pagas)
-            const salesToday = allSales.filter(sale => {
-                if (!sale.createdAt) return false;
-                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
-                return saleDate >= today;
-            });
-
-            // Separar vendas pagas
-            const paidSalesToday = salesToday.filter(sale => sale.isPaid === true);
-
-            // Verificar novas vendas e tocar som (apenas pagas)
-            paidSalesToday.forEach(sale => {
-                if (!lastSaleIds.has(sale.transactionId)) {
-                    lastSaleIds.add(sale.transactionId);
-                    playSaleSound();
-                    console.log('🔔 NOVA VENDA CONFIRMADA!', sale);
-                }
-            });
-
-            // Calcular métricas (baseado em vendas PAGAS)
-            const salesCount = paidSalesToday.length;
-            const revenue = paidSalesToday.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-            const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
-            
-            // Calcular taxa de conversão (vendas pagas / cliques no checkout)
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
-            const conversionRate = clickedCheckout > 0 ? (salesCount / clickedCheckout) * 100 : 0;
-
-            document.getElementById('sales-today').textContent = salesCount;
-            document.getElementById('revenue-today').textContent = 
-                'R$ ' + revenue.toFixed(2).replace('.', ',');
-            document.getElementById('conversion-rate').textContent = conversionRate.toFixed(1) + '%';
-            document.getElementById('average-ticket').textContent = 
-                'R$ ' + averageTicket.toFixed(2).replace('.', ',');
-        }
-
-        function updateQuizRetention() {
-            const container = document.getElementById('quiz-stats');
-            
-            // Contar quantas pessoas chegaram em cada pergunta
-            const quizProgress = {};
-            for (let i = 1; i <= 15; i++) {
-                quizProgress[i] = 0;
-            }
-            
-            allSessions.forEach(session => {
-                const progress = session.quizProgress || 0;
-                // Contar todas as perguntas que a pessoa passou
-                for (let i = 1; i <= progress; i++) {
-                    quizProgress[i]++;
-                }
-            });
-            
-            const total = allSessions.filter(s => s.events?.quiz_started).length;
-            
-            if (total === 0) {
-                container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
-                return;
-            }
-            
-            const quizData = [];
-            for (let i = 1; i <= 15; i++) {
-                const count = quizProgress[i];
-                const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-                quizData.push({
-                    question: `Q${i}`,
-                    users: count,
-                    percentage: percentage
-                });
-            }
-
-            container.innerHTML = quizData.map(q => `
-                <div class="quiz-row">
-                    <div class="quiz-step">${q.question}</div>
-                    <div class="quiz-count">${q.users} (${q.percentage}%)</div>
-                </div>
-            `).join('');
-        }
-
-        function updatePeakHourChart() {
-            const now = new Date();
-            const hours = [];
-            const hourCounts = {};
-            
-            // Criar labels das próximas 24 horas
-            for (let i = 0; i < 24; i++) {
-                const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
-                hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
-                hourCounts[i] = 0;
-            }
-
-            // Contar SESSÕES ÚNICAS por hora (não eventos)
-            const sessionsByHour = {};
-            allSessions.forEach(session => {
-                if (session.enteredAt) {
-                    const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
-                    const sessionHour = date.getHours();
-                    
-                    // Contar cada sessão apenas UMA VEZ
-                    if (!sessionsByHour[sessionHour]) {
-                        sessionsByHour[sessionHour] = new Set();
-                    }
-                    sessionsByHour[sessionHour].add(session.sessionId || session.id);
-                }
-            });
-
-            // Mapear para o array de dados
-            const data = hours.map((_, index) => {
-                const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
-                return sessionsByHour[hour] ? sessionsByHour[hour].size : 0;
-            });
-
-            const ctx = document.getElementById('peakHourChart').getContext('2d');
-            
-            if (peakHourChart) {
-                peakHourChart.destroy();
-            }
-
-            peakHourChart = new Chart(ctx, {
+        function initChart() {
+            const ctx = document.getElementById('conversionChart').getContext('2d');
+            chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: hours,
-                    datasets: [{
-                        label: 'Visitantes Únicos',
-                        data: data,
-                        borderColor: '#ff3333',
-                        backgroundColor: 'rgba(255, 51, 51, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#ff3333',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#00ff00'
-                    }]
+                    labels: [],
+                    datasets: [
+                        { label: 'Visitas', data: [], borderColor: '#ef4444', tension: 0.4, fill: true, backgroundColor: 'rgba(239, 68, 68, 0.1)' },
+                        { label: 'Checkouts', data: [], borderColor: '#22c55e', tension: 0.4, fill: true, backgroundColor: 'rgba(34, 197, 94, 0.1)' }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#ffffff',
-                                font: { size: 12, weight: 'bold' }
-                            }
-                        }
-                    },
+                    plugins: { legend: { labels: { color: '#fff' } } },
                     scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(204, 0, 0, 0.1)',
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: '#999999',
-                                font: { size: 10 },
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(204, 0, 0, 0.1)',
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: '#999999',
-                                font: { size: 10 },
-                                stepSize: 1
-                            }
-                        }
+                        y: { grid: { color: '#333' }, ticks: { color: '#999' } },
+                        x: { grid: { color: '#333' }, ticks: { color: '#999' } }
                     }
                 }
             });
         }
 
-        function updateSpyFeed() {
-            const container = document.getElementById('spy-container');
-            
-            const sortedSessions = [...allSessions].sort((a, b) => {
-                const timeA = a.lastActivity?.toMillis ? a.lastActivity.toMillis() : 0;
-                const timeB = b.lastActivity?.toMillis ? b.lastActivity.toMillis() : 0;
-                return timeB - timeA;
-            });
+        function updateDashboard(sessions) {
+            let active = 0;
+            let vsl = 0;
+            let quiz = 0;
+            let checkout = 0;
+            const now = Date.now();
+            const quizSteps = Array(15).fill(0);
 
-            // Remover duplicatas (mesmo sessionId aparece só uma vez)
-            const uniqueSessions = [];
-            const seenIds = new Set();
-            
-            for (const session of sortedSessions) {
-                const sid = session.sessionId || session.id;
-                if (!seenIds.has(sid)) {
-                    seenIds.add(sid);
-                    uniqueSessions.push(session);
+            // Limpar espiões
+            document.getElementById('spy-vsl').innerHTML = '';
+            document.getElementById('spy-quiz').innerHTML = '';
+            document.getElementById('spy-checkout').innerHTML = '';
+
+            sessions.forEach(session => {
+                const data = session.data();
+                const lastActivity = data.lastActivity?.toMillis() || 0;
+                const isOnline = (now - lastActivity) < 60000; // 1 minuto
+
+                if (isOnline) active++;
+
+                // Contagem total
+                vsl++;
+                if (data.currentStep === 'quiz' || data.currentStep === 'analysis' || data.currentStep === 'offer') quiz++;
+                if (data.currentStep === 'offer' || data.events?.checkout_clicked) checkout++;
+
+                // Retenção do Quiz
+                if (data.answers) {
+                    Object.keys(data.answers).forEach(key => {
+                        const idx = parseInt(key);
+                        if (idx < 15) quizSteps[idx]++;
+                    });
                 }
-            }
 
-            const recentSessions = uniqueSessions.slice(0, 30);
-
-            if (recentSessions.length === 0) {
-                container.innerHTML = `
-                    <div class="spy-column">
-                        <div class="empty-state">
-                            <div class="loading-spinner"></div>
-                            <div>Aguardando novos leads...</div>
+                // Alimentar Espião
+                const spyItem = `
+                    <div class="spy-item ${data.currentStep === 'offer' ? 'checkout' : ''}">
+                        <div class="spy-header">
+                            <span class="spy-id">${isOnline ? '<span class="online-dot"></span>' : ''}ID: ${session.id.substr(-6)}</span>
+                            <span class="spy-time">${new Date(lastActivity).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="spy-status ${data.currentStep === 'offer' ? 'checkout' : ''}">
+                            ${data.currentStep === 'vsl' ? 'ASSISTINDO VSL' : 
+                              data.currentStep === 'quiz' ? `NO QUIZ (Etapa ${Object.keys(data.answers || {}).length}/15)` :
+                              data.currentStep === 'analysis' ? 'ANALISANDO DADOS' : 'NA OFERTA / CHECKOUT'}
+                        </div>
+                        <div class="spy-geo">
+                            <span>📍 ${data.geo?.city || 'Brasil'}</span>
+                            <span>🇧🇷 ${data.geo?.region || ''}</span>
+                        </div>
+                        <div class="spy-device">
+                            <span>📱 ${data.device?.os || 'Mobile'}</span>
+                            <span>🌐 ${data.device?.browser || 'Chrome'}</span>
                         </div>
                     </div>
                 `;
-                return;
-            }
 
-            // Dividir em 3 colunas
-            const itemsPerColumn = Math.ceil(recentSessions.length / 3);
-            const columns = [
-                recentSessions.slice(0, itemsPerColumn),
-                recentSessions.slice(itemsPerColumn, itemsPerColumn * 2),
-                recentSessions.slice(itemsPerColumn * 2)
-            ];
+                if (data.currentStep === 'vsl') document.getElementById('spy-vsl').innerHTML += spyItem;
+                else if (data.currentStep === 'quiz' || data.currentStep === 'analysis') document.getElementById('spy-quiz').innerHTML += spyItem;
+                else document.getElementById('spy-checkout').innerHTML += spyItem;
+            });
 
-            container.innerHTML = columns.map(column => {
-                return `
-                    <div class="spy-column">
-                        ${column.map(session => {
-                            const online = isOnline(session.lastActivity);
-                            const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
-                            const isCheckout = session.events?.checkout_clicked;
-                            const hasDiscount = session.hasDiscount === true;
-                            const declinedDiscount = session.discountDeclined === true;
-                            const statusText = getStatusText(session);
-                            
-                            // Determinar a plataforma
-                            let platformBadge = '';
-                            if (hasDiscount) {
-                                platformBadge = '<div class="platform-badge browser">🌐 NAVEGADOR + 40% OFF</div>';
-                            } else if (declinedDiscount) {
-                                platformBadge = '<div class="platform-badge tiktok">📱 TIKTOK (SEM DESCONTO)</div>';
-                            }
-                            
-                            return `
-                                <div class="spy-item ${isCheckout ? 'checkout' : ''}" data-session-id="${session.sessionId || session.id}">
-                                    <div class="spy-header">
-                                        <div class="spy-id">
-                                            ${online ? '<span class="online-dot"></span>' : ''}
-                                            Lead #${shortId}
-                                        </div>
-                                        <div class="spy-time">${formatTimeAgo(session.enteredAt)}</div>
-                                    </div>
-                                    <div class="spy-status ${isCheckout ? 'checkout' : ''}">
-                                        ${statusText}
-                                    </div>
-                                    ${isCheckout ? '<div class="checkout-badge">✓ CHECKOUT</div>' : ''}
-                                    ${platformBadge}
-                                </div>
-                            `;
-                        }).join('')}
+            // Atualizar contadores
+            document.getElementById('active-users').innerText = active;
+            document.getElementById('total-vsl').innerText = vsl;
+            document.getElementById('total-quiz').innerText = quiz;
+            document.getElementById('total-checkout').innerText = checkout;
+
+            // Taxas
+            const vslToQuiz = vsl > 0 ? ((quiz/vsl)*100).toFixed(1) : 0;
+            const quizToCheckout = quiz > 0 ? ((checkout/quiz)*100).toFixed(1) : 0;
+            const finalRate = vsl > 0 ? ((checkout/vsl)*100).toFixed(1) : 0;
+
+            document.getElementById('vsl-to-quiz-rate').innerText = `${vslToQuiz}%`;
+            document.getElementById('quiz-to-checkout-rate').innerText = `${quizToCheckout}%`;
+            document.getElementById('vsl-rate').innerText = `${vslToQuiz}%`;
+            document.getElementById('quiz-rate').innerText = `${quizToCheckout}%`;
+            document.getElementById('final-rate').innerText = `${finalRate}%`;
+
+            // Renderizar retenção do quiz
+            const quizList = document.getElementById('quiz-retention-list');
+            quizList.innerHTML = '';
+            quizSteps.forEach((count, i) => {
+                const rate = vsl > 0 ? ((count/vsl)*100).toFixed(1) : 0;
+                quizList.innerHTML += `
+                    <div class="quiz-row">
+                        <span class="quiz-step">PERGUNTA ${i+1}</span>
+                        <span class="quiz-count">${count} (${rate}%)</span>
                     </div>
                 `;
-            }).join('');
+            });
         }
 
-        const q = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
-        
+        // Listener Real-time
+        const q = query(collection(db, "sessions"), orderBy("lastActivity", "desc"), limit(100));
         onSnapshot(q, (snapshot) => {
-            allSessions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            updateStats();
-            updateQuizRetention();
-            updateSpyFeed();
+            updateDashboard(snapshot.docs);
         });
 
-        // Listener para vendas
-        const salesQuery = query(collection(db, 'sales'), orderBy('createdAt', 'desc'));
-        
-        onSnapshot(salesQuery, (snapshot) => {
-            allSales = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            updateSalesStats();
-        });
-
-        setInterval(() => {
-            updateStats();
-            updateSpyFeed();
-            updateSalesStats();
-        }, 30000);
-
-        updatePeakHourChart();
+        initChart();
     </script>
 </body>
 </html>
