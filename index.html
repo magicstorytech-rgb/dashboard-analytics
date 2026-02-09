@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard TRIPE - Ultra Analytics v10.7</title>
+    <title>Dashboard Alpha Method - Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -135,6 +135,7 @@
             border-color: #cc0000;
             box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
         }
+        
         
         .stat-label {
             color: #999999;
@@ -405,7 +406,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="title">🔥 ANALYTICS V10.7</div>
+            <div class="title">🔴 ALPHA METHOD - Analytics</div>
             <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
             <div class="filters">
                 <button class="filter-btn">RESETAR VISÃO</button>
@@ -426,17 +427,17 @@
                         <div class="stat-value" id="total-visits">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Passou Instrução</div>
+                        <div class="stat-label">Assistiu VSL</div>
                         <div class="stat-value" id="passed-instruction">0</div>
                         <div class="stat-percent" id="passed-instruction-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Clicou VSL</div>
+                        <div class="stat-label">Iniciou Quiz</div>
                         <div class="stat-value" id="clicked-vsl">0</div>
                         <div class="stat-percent" id="clicked-vsl-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Iniciou Quiz</div>
+                        <div class="stat-label">Completou Quiz</div>
                         <div class="stat-value" id="started-quiz">0</div>
                         <div class="stat-percent" id="started-quiz-pct">0%</div>
                     </div>
@@ -550,13 +551,12 @@
         }
 
         function getStatusText(session) {
-            if (session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
-            if (session.events?.processing_completed) return '🎯 Visualizando Oferta';
+            if (session.events?.checkout || session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
+            if (session.events?.offer || session.events?.processing_completed) return '🎯 Visualizando Oferta';
             if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
-            if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
-            if (session.events?.vsl_clicked) return '▶️ Clicou no VSL';
-            if (session.events?.instruction_completed) return '👁️ Passou da Instrução';
-            return '📱 Visualizando Página Inicial';
+            if (session.events?.quiz_start || session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
+            if (session.events?.vsl_done || session.events?.vsl_clicked) return '▶️ Assistiu VSL';
+            return '📱 Visualizando VSL';
         }
 
         function playCheckoutSound() {
@@ -601,13 +601,13 @@
         }
 
         function updateStats() {
+            // Todas as métricas já contam sessões únicas (cada documento = 1 sessão)
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
-            const passedInstruction = allSessions.filter(s => s.events?.instruction_completed).length;
-            const clickedVSL = allSessions.filter(s => s.events?.vsl_clicked).length;
-            const startedQuiz = allSessions.filter(s => s.events?.quiz_started).length;
+            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done || s.events?.vsl_clicked).length;
+            const startedQuiz = allSessions.filter(s => s.events?.quiz_start || s.events?.quiz_started).length;
             const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout_clicked).length;
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout || s.events?.checkout_clicked).length;
 
             // Verificar novos checkouts e tocar som
             allSessions.forEach(session => {
@@ -619,16 +619,16 @@
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = passedInstruction;
-            document.getElementById('clicked-vsl').textContent = clickedVSL;
+            document.getElementById('passed-instruction').textContent = assistiuVSL;
+            document.getElementById('clicked-vsl').textContent = startedQuiz;
             document.getElementById('started-quiz').textContent = startedQuiz;
             document.getElementById('total-leads').textContent = startedQuiz;
             document.getElementById('checkout-count').textContent = clickedCheckout;
 
             document.getElementById('passed-instruction-pct').textContent = 
-                total > 0 ? Math.round((passedInstruction / total) * 100) + '%' : '0%';
+                total > 0 ? Math.round((assistiuVSL / total) * 100) + '%' : '0%';
             document.getElementById('clicked-vsl-pct').textContent = 
-                total > 0 ? Math.round((clickedVSL / total) * 100) + '%' : '0%';
+                total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
             document.getElementById('started-quiz-pct').textContent = 
                 total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
             document.getElementById('checkout-pct').textContent = 
@@ -638,9 +638,8 @@
             document.getElementById('completion-rate').textContent = completionRate + '%';
 
             const dropouts = {
-                'Instrução': total - passedInstruction,
-                'VSL': passedInstruction - clickedVSL,
-                'Quiz Início': clickedVSL - startedQuiz,
+                'VSL': total - assistiuVSL,
+                'Quiz Início': assistiuVSL - startedQuiz,
                 'Quiz Final': startedQuiz - completedQuiz,
                 'Checkout': completedQuiz - clickedCheckout
             };
@@ -673,7 +672,7 @@
                 }
             });
             
-            const total = allSessions.filter(s => s.events?.quiz_started).length;
+            const total = allSessions.filter(s => s.events?.quiz_start || s.events?.quiz_started).length;
             
             if (total === 0) {
                 container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
@@ -808,7 +807,19 @@
                 return timeB - timeA;
             });
 
-            const recentSessions = sortedSessions.slice(0, 30);
+            // Remover duplicatas (mesmo sessionId aparece só uma vez)
+            const uniqueSessions = [];
+            const seenIds = new Set();
+            
+            for (const session of sortedSessions) {
+                const sid = session.sessionId || session.id;
+                if (!seenIds.has(sid)) {
+                    seenIds.add(sid);
+                    uniqueSessions.push(session);
+                }
+            }
+
+            const recentSessions = uniqueSessions.slice(0, 30);
 
             if (recentSessions.length === 0) {
                 container.innerHTML = `
@@ -850,7 +861,7 @@
                             }
                             
                             return `
-                                <div class="spy-item ${isCheckout ? 'checkout' : ''}">
+                                <div class="spy-item ${isCheckout ? 'checkout' : ''}" data-session-id="${session.sessionId || session.id}">
                                     <div class="spy-header">
                                         <div class="spy-id">
                                             ${online ? '<span class="online-dot"></span>' : ''}
