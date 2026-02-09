@@ -611,8 +611,10 @@
 
             // Verificar novos checkouts e tocar som
             allSessions.forEach(session => {
-                if (session.events?.checkout_clicked && !lastCheckoutIds.has(session.id)) {
+                const isCheckout = session.events?.checkout_clicked || session.events?.checkout;
+                if (isCheckout && !lastCheckoutIds.has(session.id)) {
                     lastCheckoutIds.add(session.id);
+                    // Toca som para qualquer checkout, mas o destaque visual será para navegador
                     playCheckoutSound();
                 }
             });
@@ -847,21 +849,26 @@
                         ${column.map(session => {
                             const online = isOnline(session.lastActivity);
                             const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
-                            const isCheckout = session.events?.checkout_clicked;
+                            const isCheckout = session.events?.checkout_clicked || session.events?.checkout;
                             const hasDiscount = session.hasDiscount === true;
                             const declinedDiscount = session.discountDeclined === true;
                             const statusText = getStatusText(session);
                             
+                            // Destaque especial para navegador + checkout
+                            const isBrowserCheckout = isCheckout && hasDiscount;
+                            
                             // Determinar a plataforma
                             let platformBadge = '';
                             if (hasDiscount) {
-                                platformBadge = '<div class="platform-badge browser">🌐 NAVEGADOR + 40% OFF</div>';
+                                platformBadge = '<div class="platform-badge browser" style="background: rgba(0, 255, 0, 0.2); color: #00ff00; border: 1px solid #00ff00;">🌐 NAVEGADOR + 40% OFF</div>';
                             } else if (declinedDiscount) {
                                 platformBadge = '<div class="platform-badge tiktok">📱 TIKTOK (SEM DESCONTO)</div>';
                             }
                             
                             return `
-                                <div class="spy-item ${isCheckout ? 'checkout' : ''}" data-session-id="${session.sessionId || session.id}">
+                                <div class="spy-item ${isCheckout ? 'checkout' : ''} ${isBrowserCheckout ? 'browser-checkout' : ''}" 
+                                     style="${isBrowserCheckout ? 'border-left: 6px solid #00ff00; background: rgba(0, 255, 0, 0.15); box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);' : ''}"
+                                     data-session-id="${session.sessionId || session.id}">
                                     <div class="spy-header">
                                         <div class="spy-id">
                                             ${online ? '<span class="online-dot"></span>' : ''}
