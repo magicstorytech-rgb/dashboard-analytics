@@ -38,6 +38,36 @@
             font-size: 14px;
             font-weight: 500;
         }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(204, 0, 0, 0.1);
+            border: 2px solid #cc0000;
+            color: #ff3333;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(204, 0, 0, 0.3);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+        }
+
+        .filter-btn.active {
+            background: #cc0000;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.6);
+        }
         
         .online-badge {
             background: rgba(204, 0, 0, 0.15);
@@ -396,6 +426,13 @@
         <div class="header">
             <div class="title">🔴 ALPHA METHOD - Analytics</div>
             <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
+            <div class="filters">
+                <button class="filter-btn active" onclick="setDateFilter('today')">HOJE</button>
+                <button class="filter-btn" onclick="setDateFilter('yesterday')">ONTEM</button>
+                <button class="filter-btn" onclick="setDateFilter('7days')">ÚLTIMOS 7 DIAS</button>
+                <button class="filter-btn" onclick="setDateFilter('30days')">ÚLTIMOS 30 DIAS</button>
+                <button class="filter-btn" onclick="setDateFilter('all')">TUDO</button>
+            </div>
         </div>
 
         <div class="online-badge">
@@ -472,6 +509,10 @@
                     <div class="stat-label">Ticket Médio</div>
                     <div class="stat-value" id="average-ticket" style="font-size: 28px;">R$ 0</div>
                 </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Leads por Venda</div>
+                    <div class="stat-value" id="leads-per-sale" style="font-size: 32px;">--</div>
+                </div>
             </div>
         </div>
 
@@ -525,6 +566,50 @@
         let peakHourChart = null;
         let lastCheckoutIds = new Set();
         let lastSaleIds = new Set();
+        let currentDateFilter = 'today';
+
+        window.setDateFilter = function(filter) {
+            currentDateFilter = filter;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Atualizar estatísticas
+            updateSalesStats();
+        };
+
+        function getDateRange(filter) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            switch(filter) {
+                case 'today':
+                    return { start: today, end: new Date() };
+                    
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayEnd = new Date(today);
+                    return { start: yesterday, end: yesterdayEnd };
+                    
+                case '7days':
+                    const week = new Date(today);
+                    week.setDate(week.getDate() - 7);
+                    return { start: week, end: new Date() };
+                    
+                case '30days':
+                    const month = new Date(today);
+                    month.setDate(month.getDate() - 30);
+                    return { start: month, end: new Date() };
+                    
+                case 'all':
+                default:
+                    return { start: new Date(0), end: new Date() };
+            }
+        }
 
         function isOnline(lastActivity) {
             if (!lastActivity) return false;
@@ -659,13 +744,21 @@
         }
 
         function updateSalesStats() {
+            const dateRange = getDateRange(currentDateFilter);
+            
+            const paidSalesFiltered = allSales.filter(sale => {
+                if (!sale.createdAt || sale.isPaid !== true) return false;
+                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
+                return saleDate >= dateRange.start && saleDate <= dateRange.end;
+            });
+
+            // Detectar novas vendas para som (apenas hoje)
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
             const paidSalesToday = allSales.filter(sale => {
-                if (!sale.createdAt) return false;
+                if (!sale.createdAt || sale.isPaid !== true) return false;
                 const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
-                return saleDate >= today && sale.isPaid === true;
+                return saleDate >= today;
             });
 
             paidSalesToday.forEach(sale => {
@@ -676,11 +769,31 @@
                 }
             });
 
-            const salesCount = paidSalesToday.length;
-            const revenue = paidSalesToday.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+            // Calcular métricas do período filtrado
+            const salesCount = paidSalesFiltered.length;
+            const revenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
             const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout || s.events?.checkout_clicked).length;
+            
+            // Leads do período (quem iniciou quiz)
+            const leadsFiltered = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                const hasQuiz = s.events?.quiz_start || s.events?.quiz_started;
+                return hasQuiz && enteredDate >= dateRange.start && enteredDate <= dateRange.end;
+            }).length;
+            
+            // Checkouts do período
+            const clickedCheckout = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                const hasCheckout = s.events?.checkout || s.events?.checkout_clicked;
+                return hasCheckout && enteredDate >= dateRange.start && enteredDate <= dateRange.end;
+            }).length;
+            
             const conversionRate = clickedCheckout > 0 ? (salesCount / clickedCheckout) * 100 : 0;
+            
+            // Leads por venda (média)
+            const leadsPerSale = salesCount > 0 ? Math.round(leadsFiltered / salesCount) : 0;
 
             document.getElementById('sales-today').textContent = salesCount;
             document.getElementById('revenue-today').textContent = 
@@ -688,6 +801,8 @@
             document.getElementById('conversion-rate').textContent = conversionRate.toFixed(1) + '%';
             document.getElementById('average-ticket').textContent = 
                 'R$ ' + averageTicket.toFixed(2).replace('.', ',');
+            document.getElementById('leads-per-sale').textContent = 
+                salesCount > 0 ? leadsPerSale : '--';
         }
 
         function updateQuizRetention() {
