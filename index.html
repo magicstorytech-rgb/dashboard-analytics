@@ -833,6 +833,13 @@
             const revenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
             const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
             
+            // Total de acessos do período (todos que entraram)
+            const totalVisits = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                return enteredDate >= dateRange.start && enteredDate <= dateRange.end;
+            }).length;
+            
             // Checkouts do período
             const clickedCheckout = allSessions.filter(s => {
                 if (!s.enteredAt) return false;
@@ -841,7 +848,8 @@
                 return hasCheckout && enteredDate >= dateRange.start && enteredDate <= dateRange.end;
             }).length;
             
-            const conversionRate = clickedCheckout > 0 ? (salesCount / clickedCheckout) * 100 : 0;
+            // Taxa de conversão = Vendas / Total de Acessos (visão real do funil completo)
+            const conversionRate = totalVisits > 0 ? (salesCount / totalVisits) * 100 : 0;
             
             // Checkouts por venda (média)
             const checkoutsPerSale = salesCount > 0 ? Math.round(clickedCheckout / salesCount) : 0;
