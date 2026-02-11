@@ -39,34 +39,51 @@
             font-weight: 500;
         }
 
-        .filters {
+        .compact-filters {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
         }
 
-        .filter-btn {
-            background: rgba(204, 0, 0, 0.1);
-            border: 2px solid #cc0000;
-            color: #ff3333;
-            padding: 10px 20px;
-            border-radius: 6px;
+        .compact-filter-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            color: #999;
+            padding: 4px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
-        .filter-btn:hover {
+        .compact-filter-btn:hover {
+            background: rgba(204, 0, 0, 0.2);
+            border-color: #cc0000;
+            color: #ff3333;
+        }
+
+        .compact-filter-btn.active {
             background: rgba(204, 0, 0, 0.3);
-            box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+            border-color: #cc0000;
+            color: #ff3333;
         }
 
-        .filter-btn.active {
-            background: #cc0000;
-            color: #ffffff;
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.6);
+        .compact-date-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            color: #999;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 110px;
+        }
+
+        .compact-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.6);
+            cursor: pointer;
         }
         
         .online-badge {
@@ -426,13 +443,6 @@
         <div class="header">
             <div class="title">🔴 ALPHA METHOD - Analytics</div>
             <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
-            <div class="filters">
-                <button class="filter-btn active" onclick="setDateFilter('today')">HOJE</button>
-                <button class="filter-btn" onclick="setDateFilter('yesterday')">ONTEM</button>
-                <button class="filter-btn" onclick="setDateFilter('7days')">ÚLTIMOS 7 DIAS</button>
-                <button class="filter-btn" onclick="setDateFilter('30days')">ÚLTIMOS 30 DIAS</button>
-                <button class="filter-btn" onclick="setDateFilter('all')">TUDO</button>
-            </div>
         </div>
 
         <div class="online-badge">
@@ -491,7 +501,19 @@
         </div>
 
         <div class="stats-section" style="margin-bottom: 30px;">
-            <div class="section-title">💰 VENDAS CONFIRMADAS</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="section-title" style="margin-bottom: 0;">💰 VENDAS CONFIRMADAS</div>
+                <div class="compact-filters">
+                    <button class="compact-filter-btn active" onclick="setDateFilter('today')">Hoje</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('yesterday')">Ontem</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('7days')">7d</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('30days')">30d</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('all')">Tudo</button>
+                    <input type="date" id="date-start" class="compact-date-input" placeholder="Início" />
+                    <input type="date" id="date-end" class="compact-date-input" placeholder="Fim" />
+                    <button class="compact-filter-btn" onclick="setCustomDateRange()" style="padding: 4px 10px;">OK</button>
+                </div>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card highlight">
                     <div class="stat-label">Vendas Hoje</div>
@@ -510,7 +532,7 @@
                     <div class="stat-value" id="average-ticket" style="font-size: 28px;">R$ 0</div>
                 </div>
                 <div class="stat-card highlight">
-                    <div class="stat-label">Leads por Venda</div>
+                    <div class="stat-label">Checkouts por Venda</div>
                     <div class="stat-value" id="leads-per-sale" style="font-size: 32px;">--</div>
                 </div>
             </div>
@@ -567,12 +589,45 @@
         let lastCheckoutIds = new Set();
         let lastSaleIds = new Set();
         let currentDateFilter = 'today';
+        let customDateRange = null;
+
+        window.setCustomDateRange = function() {
+            const startInput = document.getElementById('date-start').value;
+            const endInput = document.getElementById('date-end').value;
+            
+            if (!startInput || !endInput) {
+                alert('Por favor, selecione ambas as datas!');
+                return;
+            }
+            
+            const start = new Date(startInput);
+            start.setHours(0, 0, 0, 0);
+            
+            const end = new Date(endInput);
+            end.setHours(23, 59, 59, 999);
+            
+            if (start > end) {
+                alert('A data inicial não pode ser maior que a data final!');
+                return;
+            }
+            
+            customDateRange = { start, end };
+            currentDateFilter = 'custom';
+            
+            // Atualizar botões
+            document.querySelectorAll('.compact-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            updateSalesStats();
+        };
 
         window.setDateFilter = function(filter) {
             currentDateFilter = filter;
+            customDateRange = null;
             
             // Atualizar botões ativos
-            document.querySelectorAll('.filter-btn').forEach(btn => {
+            document.querySelectorAll('.compact-filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
@@ -582,6 +637,10 @@
         };
 
         function getDateRange(filter) {
+            if (filter === 'custom' && customDateRange) {
+                return customDateRange;
+            }
+            
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
@@ -774,14 +833,6 @@
             const revenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
             const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
             
-            // Leads do período (quem iniciou quiz)
-            const leadsFiltered = allSessions.filter(s => {
-                if (!s.enteredAt) return false;
-                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
-                const hasQuiz = s.events?.quiz_start || s.events?.quiz_started;
-                return hasQuiz && enteredDate >= dateRange.start && enteredDate <= dateRange.end;
-            }).length;
-            
             // Checkouts do período
             const clickedCheckout = allSessions.filter(s => {
                 if (!s.enteredAt) return false;
@@ -792,8 +843,8 @@
             
             const conversionRate = clickedCheckout > 0 ? (salesCount / clickedCheckout) * 100 : 0;
             
-            // Leads por venda (média)
-            const leadsPerSale = salesCount > 0 ? Math.round(leadsFiltered / salesCount) : 0;
+            // Checkouts por venda (média)
+            const checkoutsPerSale = salesCount > 0 ? Math.round(clickedCheckout / salesCount) : 0;
 
             document.getElementById('sales-today').textContent = salesCount;
             document.getElementById('revenue-today').textContent = 
@@ -802,7 +853,7 @@
             document.getElementById('average-ticket').textContent = 
                 'R$ ' + averageTicket.toFixed(2).replace('.', ',');
             document.getElementById('leads-per-sale').textContent = 
-                salesCount > 0 ? leadsPerSale : '--';
+                salesCount > 0 ? checkoutsPerSale : '--';
         }
 
         function updateQuizRetention() {
