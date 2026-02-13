@@ -608,17 +608,17 @@
                         <div class="stat-value" id="total-visits">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Assistiu VSL</div>
+                        <div class="stat-label">Iniciou Quiz</div>
                         <div class="stat-value" id="passed-instruction">0</div>
                         <div class="stat-percent" id="passed-instruction-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Iniciou Quiz</div>
+                        <div class="stat-label">Completou Quiz</div>
                         <div class="stat-value" id="clicked-vsl">0</div>
                         <div class="stat-percent" id="clicked-vsl-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Completou Quiz</div>
+                        <div class="stat-label">Viu Resultado</div>
                         <div class="stat-value" id="started-quiz">0</div>
                         <div class="stat-percent" id="started-quiz-pct">0%</div>
                     </div>
@@ -875,12 +875,12 @@
         }
 
         function getStatusText(session) {
-            if (session.events?.checkout || session.events?.checkout_clicked) return '💳 CLICOU NO CHECKOUT';
-            if (session.events?.offer || session.events?.processing_completed) return '🎯 Visualizando Oferta';
-            if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
-            if (session.events?.quiz_start || session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
-            if (session.events?.vsl_done || session.events?.vsl_clicked) return '▶️ Assistiu VSL';
-            return '📱 Visualizando VSL';
+            if (session.events?.checkout) return '💳 CLICOU NO CHECKOUT';
+            if (session.events?.offer_viewed) return '🎯 Visualizando Oferta (R$ 12,90)';
+            if (session.events?.result_shown) return '🎉 Viu Resultado Personalizado';
+            if (session.events?.quiz_completed) return '✅ Completou Quiz (6/6)';
+            if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/6)`;
+            return '📱 Visualizando Gancho';
         }
 
         function playCheckoutSound() {
@@ -929,13 +929,15 @@
         function updateStats() {
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
-            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done || s.events?.vsl_clicked).length;
-            const startedQuiz = allSessions.filter(s => s.events?.quiz_start || s.events?.quiz_started).length;
-            const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout || s.events?.checkout_clicked).length;
+            
+            // NOVOS EVENTOS DO FUNIL
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_started).length; // quiz_started
+            const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length; // quiz_completed
+            const viuResultado = allSessions.filter(s => s.events?.result_shown).length; // result_shown
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout).length; // checkout
 
             allSessions.forEach(session => {
-                const isCheckout = session.events?.checkout_clicked || session.events?.checkout;
+                const isCheckout = session.events?.checkout;
                 if (isCheckout && !lastCheckoutIds.has(session.id)) {
                     lastCheckoutIds.add(session.id);
                     playCheckoutSound();
@@ -944,29 +946,29 @@
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = assistiuVSL;
-            document.getElementById('clicked-vsl').textContent = startedQuiz;
-            document.getElementById('started-quiz').textContent = startedQuiz;
-            document.getElementById('total-leads').textContent = startedQuiz;
+            document.getElementById('passed-instruction').textContent = iniciouQuiz; // Iniciou quiz
+            document.getElementById('clicked-vsl').textContent = iniciouQuiz;
+            document.getElementById('started-quiz').textContent = completouQuiz; // Completou quiz
+            document.getElementById('total-leads').textContent = completouQuiz; // Leads = completou quiz
             document.getElementById('checkout-count').textContent = clickedCheckout;
 
             document.getElementById('passed-instruction-pct').textContent = 
-                total > 0 ? Math.round((assistiuVSL / total) * 100) + '%' : '0%';
+                total > 0 ? Math.round((iniciouQuiz / total) * 100) + '%' : '0%';
             document.getElementById('clicked-vsl-pct').textContent = 
-                total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
+                total > 0 ? Math.round((iniciouQuiz / total) * 100) + '%' : '0%';
             document.getElementById('started-quiz-pct').textContent = 
-                total > 0 ? Math.round((startedQuiz / total) * 100) + '%' : '0%';
+                total > 0 ? Math.round((completouQuiz / total) * 100) + '%' : '0%';
             document.getElementById('checkout-pct').textContent = 
                 total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
             
-            const completionRate = startedQuiz > 0 ? Math.round((completedQuiz / startedQuiz) * 100) : 0;
+            const completionRate = iniciouQuiz > 0 ? Math.round((completouQuiz / iniciouQuiz) * 100) : 0;
             document.getElementById('completion-rate').textContent = completionRate + '%';
 
             const dropouts = {
-                'VSL': total - assistiuVSL,
-                'Quiz Início': assistiuVSL - startedQuiz,
-                'Quiz Final': startedQuiz - completedQuiz,
-                'Checkout': completedQuiz - clickedCheckout
+                'Quiz Início': total - iniciouQuiz,
+                'Quiz Conclusão': iniciouQuiz - completouQuiz,
+                'Análise': completouQuiz - viuResultado,
+                'Checkout': viuResultado - clickedCheckout
             };
             
             const maxDropout = Object.entries(dropouts).reduce((max, [key, val]) => 
@@ -1139,17 +1141,19 @@
 
         function updateFunnel() {
             const total = allSessions.length;
-            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done || s.events?.vsl_clicked).length;
-            const startedQuiz = allSessions.filter(s => s.events?.quiz_start || s.events?.quiz_started).length;
-            const completedQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const clickedCheckout = allSessions.filter(s => s.events?.checkout || s.events?.checkout_clicked).length;
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_started).length;
+            const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
+            const viuResultado = allSessions.filter(s => s.events?.result_shown).length;
+            const viuOferta = allSessions.filter(s => s.events?.offer_viewed).length;
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout).length;
             const totalSales = allSales.filter(s => s.isPaid === true).length;
 
             const stages = [
                 { name: 'Total de Acessos', count: total, percent: 100 },
-                { name: 'Assistiu VSL', count: assistiuVSL, percent: total > 0 ? (assistiuVSL / total) * 100 : 0 },
-                { name: 'Iniciou Quiz', count: startedQuiz, percent: total > 0 ? (startedQuiz / total) * 100 : 0 },
-                { name: 'Completou Quiz', count: completedQuiz, percent: total > 0 ? (completedQuiz / total) * 100 : 0 },
+                { name: 'Iniciou Quiz', count: iniciouQuiz, percent: total > 0 ? (iniciouQuiz / total) * 100 : 0 },
+                { name: 'Completou Quiz', count: completouQuiz, percent: total > 0 ? (completouQuiz / total) * 100 : 0 },
+                { name: 'Viu Resultado', count: viuResultado, percent: total > 0 ? (viuResultado / total) * 100 : 0 },
+                { name: 'Visualizou Oferta', count: viuOferta, percent: total > 0 ? (viuOferta / total) * 100 : 0 },
                 { name: 'Clicou Checkout', count: clickedCheckout, percent: total > 0 ? (clickedCheckout / total) * 100 : 0 },
                 { name: '💰 VENDAS', count: totalSales, percent: total > 0 ? (totalSales / total) * 100 : 0 }
             ];
@@ -1266,7 +1270,7 @@
         function updateQuizRetention() {
             const container = document.getElementById('quiz-stats');
             const quizProgress = {};
-            for (let i = 1; i <= 15; i++) {
+            for (let i = 1; i <= 6; i++) { // Agora são 6 perguntas
                 quizProgress[i] = 0;
             }
             
@@ -1277,7 +1281,7 @@
                 }
             });
             
-            const total = allSessions.filter(s => s.events?.quiz_start || s.events?.quiz_started).length;
+            const total = allSessions.filter(s => s.events?.quiz_started).length;
             
             if (total === 0) {
                 container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
@@ -1285,10 +1289,23 @@
             }
             
             const quizData = [];
-            for (let i = 1; i <= 15; i++) {
+            const questionNames = [
+                'Tamanho',
+                'Duração', 
+                'Satisfação',
+                'Alimentação',
+                'Sono',
+                'Idade'
+            ];
+            
+            for (let i = 1; i <= 6; i++) {
                 const count = quizProgress[i];
                 const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-                quizData.push({ question: `Q${i}`, users: count, percentage: percentage });
+                quizData.push({ 
+                    question: questionNames[i-1], 
+                    users: count, 
+                    percentage: percentage 
+                });
             }
 
             container.innerHTML = quizData.map(q => `
@@ -1424,7 +1441,7 @@
                         ${column.map(session => {
                             const online = isOnline(session.lastActivity);
                             const shortId = session.sessionId ? session.sessionId.substr(-8).toUpperCase() : 'UNKNOWN';
-                            const isCheckout = session.events?.checkout_clicked || session.events?.checkout;
+                            const isCheckout = session.events?.checkout;
                             const statusText = getStatusText(session);
                             
                             // Verificar se tem venda confirmada
