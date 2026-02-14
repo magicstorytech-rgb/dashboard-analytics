@@ -2,371 +2,2081 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Consulta Profissional - Alpha Method</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Alpha Method - Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #ef4444; --bg: #050505; --card: #111111; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .quiz-card { width: 100%; max-width: 550px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
-        .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
-        .headline { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 15px; line-height: 1.2; text-transform: uppercase; }
-        .sub-headline { font-size: 14px; color: var(--primary); font-weight: 700; margin-bottom: 20px; }
-        .video-container { position: relative; background: #000; border-radius: 16px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border); width: 100%; }
-        .btn-next { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 14px; font-weight: 900; cursor: pointer; width: 100%; font-size: 20px; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
-        .btn-next:hover { transform: scale(1.02); }
-        .btn-next:disabled { background: #555; color: #999; cursor: not-allowed; box-shadow: none; }
-        .screen { display: none; }
-        .screen.active { display: block; }
-        .progress-bar-container { margin-bottom: 30px; }
-        .progress-text { font-size: 12px; font-weight: 900; color: var(--primary); margin-bottom: 8px; text-align: right; text-transform: uppercase; }
-        .progress-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
-        .options-grid { display: grid; gap: 12px; margin-bottom: 25px; }
-        .option-btn { background: var(--card); border: 2px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .option-btn:hover { border-color: var(--primary); background: rgba(239, 68, 68, 0.1); }
-        .carousel { width: 100%; height: 280px; background: #000; border-radius: 15px; margin: 15px 0; overflow: hidden; position: relative; border: 1px solid var(--border); }
-        .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; display: flex; align-items: center; justify-content: center; }
-        .slide.active { opacity: 1; }
-        .slide img { width: 100%; height: 100%; object-fit: contain; }
-        .slide-caption { position: absolute; bottom: 10px; left: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 900; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); text-align: center; z-index: 10; text-transform: uppercase; }
-        .analysis-item { margin-bottom: 20px; text-align: left; }
-        .analysis-label { font-size: 12px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .progress-container { width: 100%; height: 12px; background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .progress-bar-fill { height: 100%; width: 0%; background: var(--primary); transition: width 0.5s ease, background 0.3s ease; }
-        .progress-bar-fill.complete { background: #22c55e; }
-        .status-tag { font-size: 10px; padding: 4px 10px; border-radius: 6px; background: #333; font-weight: 900; text-transform: uppercase; }
-        .status-tag.complete { background: #22c55e; color: #000; }
-        .testimonial-box { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; }
-        .testimonial-title { font-size: 12px; font-weight: 900; color: #22c55e; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .testimonial-text { font-size: 14px; color: #fff; line-height: 1.4; font-style: italic; }
-        .benefit-list { text-align: left; margin: 25px 0; }
-        .benefit-item { display: flex; align-items: center; margin-bottom: 15px; font-size: 15px; font-weight: 800; color: #fff; text-transform: uppercase; line-height: 1.2; }
-        .benefit-item span { color: #22c55e; margin-right: 12px; font-size: 18px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
         
-        .offer-box { background: rgba(255,255,255,0.03); border: 1px dashed #333; border-radius: 16px; padding: 20px; margin: 25px 0; display: flex; align-items: center; text-align: left; }
-        .offer-logo { width: 60px; height: 60px; border-radius: 8px; margin-right: 15px; object-fit: cover; }
-        .offer-details { flex: 1; }
-        .offer-name { font-weight: 900; color: #fff; font-size: 16px; text-transform: uppercase; margin-bottom: 4px; }
-        .offer-guarantee { color: #22c55e; font-weight: 900; font-size: 14px; text-transform: uppercase; }
-        .offer-bonus { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(204, 0, 0, 0.3);
+        }
         
-        .security-footer { font-size: 11px; margin-top: 15px; color: var(--muted); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff3333;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+        }
+        
+        .subtitle {
+            color: #cccccc;
+            font-size: 14px;
+            font-weight: 500;
+        }
 
-        .online-counter { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 25px; font-size: 13px; font-weight: 900; color: #22c55e; border: 2px solid #22c55e; padding: 10px 25px; border-radius: 50px; text-transform: uppercase; }
-        .online-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .alerts-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+        }
+
+        .alert-item {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #00ff00;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4.5s;
+            cursor: pointer;
+        }
+
+        .alert-item.checkout {
+            border-color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .alert-item.sale {
+            border-color: #fbbf24;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+            animation: slideInRight 0.5s ease, pulse 0.5s ease 3, fadeOut 0.5s ease 4.5s;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #00ff00;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .alert-item.sale .alert-title {
+            color: #fbbf24;
+        }
+
+        .alert-message {
+            font-size: 13px;
+            color: #cccccc;
+            line-height: 1.4;
+        }
+
+        .alert-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .alert-close:hover {
+            color: #fff;
+        }
+
+        .comparison-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .comparison-card.winner {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .comparison-card.loser {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .comparison-period {
+            font-size: 12px;
+            font-weight: 800;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .comparison-badge {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .comparison-badge.up {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .comparison-badge.down {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .comparison-stats {
+            display: grid;
+            gap: 10px;
+        }
+
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-label {
+            color: #999;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .comparison-value {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .comparison-diff {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .comparison-diff.positive {
+            color: #00ff00;
+        }
+
+        .comparison-diff.negative {
+            color: #ef4444;
+        }
+
+        .comparison-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-select {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .compact-filters {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .compact-filter-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            color: #999;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .compact-filter-btn:hover {
+            background: rgba(204, 0, 0, 0.2);
+            border-color: #cc0000;
+            color: #ff3333;
+        }
+
+        .compact-filter-btn.active {
+            background: rgba(204, 0, 0, 0.3);
+            border-color: #cc0000;
+            color: #ff3333;
+        }
+
+        .compact-date-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+            color: #999;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 110px;
+        }
+
+        .compact-date-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.6);
+            cursor: pointer;
+        }
+
+        .funnel-stage {
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.15) 0%, rgba(204, 0, 0, 0.05) 100%);
+            border: 2px solid #cc0000;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .funnel-stage:hover {
+            background: rgba(204, 0, 0, 0.25);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.4);
+        }
+
+        .funnel-stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .funnel-stage-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .funnel-stage-count {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ff3333;
+        }
+
+        .funnel-stage-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .funnel-stage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #cc0000 0%, #ff3333 100%);
+            transition: width 0.5s ease;
+        }
+
+        .funnel-stage-percent {
+            font-size: 11px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .funnel-arrow {
+            text-align: center;
+            font-size: 18px;
+            color: #cc0000;
+            margin: -5px 0;
+        }
+
+        .heatmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .heatmap-table th,
+        .heatmap-table td {
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(204, 0, 0, 0.2);
+        }
+
+        .heatmap-table th {
+            background: rgba(204, 0, 0, 0.1);
+            color: #ff3333;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .heatmap-table .day-label {
+            background: rgba(204, 0, 0, 0.1);
+            color: #ffffff;
+            font-weight: 700;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .heatmap-cell {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .heatmap-cell.high {
+            background: rgba(34, 197, 94, 0.6);
+            color: #000;
+            font-weight: 900;
+        }
+
+        .heatmap-cell.medium {
+            background: rgba(251, 191, 36, 0.6);
+            color: #000;
+            font-weight: 900;
+        }
+
+        .heatmap-cell.low {
+            background: rgba(239, 68, 68, 0.6);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .heatmap-cell.empty {
+            background: rgba(0, 0, 0, 0.3);
+            color: #666;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 11px;
+        }
+
+        .heatmap-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .heatmap-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .online-badge {
+            background: rgba(204, 0, 0, 0.15);
+            border: 2px solid #cc0000;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .online-label {
+            color: #cccccc;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .online-count {
+            font-size: 56px;
+            font-weight: 900;
+            color: #ff3333;
+            text-shadow: 0 0 30px rgba(255, 51, 51, 0.6);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .section-title {
+            color: #ff3333;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #333333;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: #cc0000;
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.3);
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1) 0%, rgba(0, 200, 0, 0.05) 100%);
+            border: 2px solid #00ff00;
+            animation: pulseGreen 2s ease-in-out infinite;
+        }
+        
+        .stat-card.highlight:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: #00ff00;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        @keyframes pulseGreen {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.6); }
+        }
+        
+        .stat-label {
+            color: #999999;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+        
+        .stat-percent {
+            color: #ff3333;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .chart-and-retention {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .quiz-retention {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .quiz-stats {
+            display: grid;
+            gap: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+        }
+        
+        .quiz-row {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #cc0000;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .quiz-row:hover {
+            background: rgba(204, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(204, 0, 0, 0.2);
+        }
+        
+        .quiz-step {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .quiz-count {
+            color: #ff3333;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        
+        .spy-section-title {
+            color: #ff3333;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+        
+        .spy-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
+            border: 2px solid #cc0000;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.2);
+        }
+        
+        .spy-item {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #ff3333;
+            padding: 18px 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            animation: slideInLeft 0.4s ease;
+            transition: all 0.3s;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .spy-item:hover {
+            background: rgba(204, 0, 0, 0.15);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .spy-item.checkout {
+            border-left: 4px solid #00ff00;
+            background: linear-gradient(90deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+            animation: checkoutPulse 0.6s ease;
+        }
+        
+        .spy-item.sale {
+            border-left: 4px solid #fbbf24;
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes checkoutPulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); }
+            50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(0, 255, 0, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 25px rgba(0, 255, 0, 0.4); }
+        }
+        
+        .spy-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #cc0000 0%, #ff3333 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            color: #fff;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .spy-item.checkout .spy-avatar {
+            background: linear-gradient(135deg, #00ff00 0%, #22c55e 100%);
+            color: #000;
+        }
+        
+        .spy-item.sale .spy-avatar {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000;
+        }
+        
+        .spy-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .spy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .spy-id {
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        
+        .spy-time {
+            color: #999999;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .spy-status {
+            color: #cccccc;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        .spy-status.checkout {
+            color: #00ff00;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        
+        .spy-status.sale {
+            color: #fbbf24;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        
+        .spy-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-end;
+        }
+        
+        .online-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        
+        .checkout-badge {
+            display: inline-block;
+            background: #00ff00;
+            color: #000000;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+
+        .sale-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000000;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+
+        .progress-indicator {
+            font-size: 10px;
+            color: #999;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .spy-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .spy-filter-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #444;
+            color: #999;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .spy-filter-btn:hover {
+            border-color: #cc0000;
+            color: #ff3333;
+        }
+
+        .spy-filter-btn.active {
+            background: rgba(204, 0, 0, 0.2);
+            border-color: #cc0000;
+            color: #ff3333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666666;
+            font-size: 14px;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(204, 0, 0, 0.1);
+            border-top: 3px solid #cc0000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-and-retention {
+                grid-template-columns: 1fr;
+            }
+            .spy-columns {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="quiz-card">
-        <!-- VSL -->
-        <div id="s-0" class="screen active">
-            <div class="fixed-header">ALPHA METHOD - REVELADO</div>
-            <h1 class="headline">O SEGREDO DOS ATORES PÔRNO PARA ATIVAR O CRESCIMENTO DO PÊNIS EM 45 DIAS.</h1>
-            <p class="sub-headline">Assista ao vídeo abaixo para liberar sua 👇avaliação gratuita👇</p>
-            <div class="video-container">
-                <script src="https://fast.wistia.com/player.js" async></script>
-                <script src="https://fast.wistia.com/embed/0j5gqssmb7.js" async type="module"></script>
-                <style>wistia-player[media-id='0j5gqssmb7']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/0j5gqssmb7/swatch'); display: block; filter: blur(5px); padding-top: 56.25%; }</style>
-                <wistia-player id="vsl_vid" media-id="0j5gqssmb7" aspect="0.5616224648985959"></wistia-player>
-            </div>
-            <button class="btn-next" onclick="next()">REVELAR O SEGREDO</button>
+    <div class="container">
+        <!-- ALERTAS EM TEMPO REAL -->
+        <div class="alerts-container" id="alerts-container"></div>
+
+        <div class="header">
+            <div class="title">🔴 ALPHA METHOD - Analytics</div>
+            <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
         </div>
 
-        <!-- Modal -->
-        <div id="s-1" class="screen">
-            <div class="fixed-header">CONSULTA PROFISSIONAL GRATUITA</div>
-            <h1 class="headline" style="font-size: 28px; margin-bottom: 20px;">CLIQUE AGORA PARA FAZER SUA AVALIAÇÃO GRATUITA</h1>
-            <div class="online-counter"><div class="online-dot"></div><span>161 homens online agora</span></div>
-            <div class="carousel" id="carousel">
-                <div class="slide active"><img src="https://i.ibb.co/jP9c3fQx/Whats-App-Image-2024-12-18-at-15-11-46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpg"><div class="slide-caption">ESTUDO CLÍNICO: EXPANSAO TECIDUAL ATIVA</div></div>
-                <div class="slide"><img src="https://i.ibb.co/Q38jhcmQ/55db78-0079baf30d6c485581fa2291d62c7d25-mv2.avif"><div class="slide-caption">ESTUDO CLÍNICO: EXPANSAO TECIDUAL ATIVA</div></div>
-                <div class="slide"><img src="https://i.ibb.co/DfM8RZVr/mea-Saa-Tba-Aaaaamh-D-i-LJzfk9u2-QO-ZC1.jpg"><div class="slide-caption">ESTUDO CLÍNICO: EXPANSAO TECIDUAL ATIVA</div></div>
-            </div>
-            <p style="color: var(--muted); font-weight: 700; margin: 15px 0;" id="loading">Preparando sua avaliação...</p>
-            <button class="btn-next" onclick="next()" id="startBtn" disabled>INICIAR AVALIAÇÃO AGORA</button>
+        <div class="online-badge">
+            <div class="online-label">👥 Online Agora</div>
+            <div class="online-count" id="online-now">0</div>
         </div>
 
-        <!-- Quiz -->
-        <div id="s-quiz" class="screen">
-            <div class="progress-bar-container">
-                <div class="progress-text" id="pct">0% CONCLUÍDO</div>
-                <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
-            </div>
-            <div id="qbox"></div>
-        </div>
-
-        <!-- Análise -->
-        <div id="s-analysis" class="screen">
-            <div class="fixed-header" style="color: var(--primary);">SISTEMA DE DIAGNÓSTICO AVANÇADO</div>
-            <h2 class="headline" style="font-size: 26px; margin-bottom: 25px;">ANALISANDO DADOS BIOMÉTRICOS...</h2>
+        <!-- COMPARAÇÃO DE PERÍODOS -->
+        <div class="comparison-section">
+            <div class="section-title">📊 Comparação de Períodos</div>
             
-            <div class="testimonial-box">
-                <span class="testimonial-title">Depoimento real de um dos 20 mil pacientes:</span>
-                <p class="testimonial-text">"Fiquei com bastante medo de comprar e nao funcionar, mas funcionou, ja consegui aumento mais de 3 centimetros…" <br><strong>Luan – BA</strong></p>
+            <div class="comparison-selector">
+                <select class="comparison-select" id="period-a" onchange="updateComparison()">
+                    <option value="today">Hoje</option>
+                    <option value="yesterday">Ontem</option>
+                    <option value="7days">Últimos 7 dias</option>
+                    <option value="30days" selected>Últimos 30 dias</option>
+                </select>
+                <span style="color: #999; align-self: center; font-weight: 800;">VS</span>
+                <select class="comparison-select" id="period-b" onchange="updateComparison()">
+                    <option value="today">Hoje</option>
+                    <option value="yesterday">Ontem</option>
+                    <option value="7days">Últimos 7 dias</option>
+                    <option value="30days">Últimos 30 dias</option>
+                    <option value="prev_period" selected>Período Anterior</option>
+                </select>
             </div>
 
-            <div class="video-container">
-                <script src="https://fast.wistia.com/player.js" async></script>
-                <script src="https://fast.wistia.com/embed/0bj892x3m1.js" async type="module"></script>
-                <style>wistia-player[media-id='0bj892x3m1']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/0bj892x3m1/swatch'); display: block; filter: blur(5px); padding-top:100.0%; }</style> 
-                <wistia-player id="vid" media-id="0bj892x3m1" aspect="1.0"></wistia-player>
+            <div class="comparison-grid" id="comparison-grid">
+                <!-- Será preenchido via JS -->
             </div>
-
-            <div class="analysis-item">
-                <div class="analysis-label"><span>FLUXO SANGUÍNEO CAVERNOSO</span><span class="status-tag" id="s1">PROCESSANDO</span></div>
-                <div class="progress-container"><div class="progress-bar-fill" id="b1"></div></div>
-            </div>
-            <div class="analysis-item">
-                <div class="analysis-label"><span>DENSIDADE TECIDUAL</span><span class="status-tag" id="s2">AGUARDANDO</span></div>
-                <div class="progress-container"><div class="progress-bar-fill" id="b2"></div></div>
-            </div>
-            <div class="analysis-item">
-                <div class="analysis-label"><span>COMPATIBILIDADE PROTOCOLO</span><span class="status-tag" id="s3">AGUARDANDO</span></div>
-                <div class="progress-container"><div class="progress-bar-fill" id="b3"></div></div>
-            </div>
-            <button class="btn-next" onclick="goOffer()" id="btnOffer" style="display:none;margin-top:20px">VER RESULTADO FINAL</button>
         </div>
 
-        <!-- Oferta -->
-        <div id="s-offer" class="screen">
-            <div class="fixed-header">ACESSO LIBERADO</div>
-            <h1 class="headline" style="font-size:26px">SEU PLANO ESTÁ PRONTO!</h1>
-            <div class="benefit-list">
-                <div class="benefit-item"><span>✓</span> AUMENTE TAMANHO E GROSSURA</div>
-                <div class="benefit-item"><span>✓</span> EREÇÕES DURADOURAS</div>
-                <div class="benefit-item"><span>✓</span> RESULTADOS EM 45 DIAS</div>
-                <div class="benefit-item"><span>✓</span> SEM APARELHOS</div>
-                <div class="benefit-item"><span>✓</span> FAÇA ELA GOZAR 3X</div>
-                <div class="benefit-item"><span>✓</span> DURE ATÉ 3 HORAS</div>
-            </div>
-            <div class="offer-box">
-                <img src="https://i.ibb.co/MDts3gtz/Chat-GPT-Image-3-de-fev-de-2026-16-55-56.png" class="offer-logo">
-                <div class="offer-details">
-                    <div class="offer-name">ALPHA METHOD</div>
-                    <div class="offer-guarantee">30 DIAS GARANTIA</div>
-                    <div class="offer-bonus">+ BÔNUS INCLUSOS</div>
+        <div class="main-grid">
+            <div class="stats-section">
+                <div class="section-title">📊 Acessos (Visão Atual)</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Acessos</div>
+                        <div class="stat-value" id="total-visits">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Assistiu VSL</div>
+                        <div class="stat-value" id="passed-instruction">0</div>
+                        <div class="stat-percent" id="passed-instruction-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Iniciou Quiz</div>
+                        <div class="stat-value" id="clicked-vsl">0</div>
+                        <div class="stat-percent" id="clicked-vsl-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Completou Quiz</div>
+                        <div class="stat-value" id="started-quiz">0</div>
+                        <div class="stat-percent" id="started-quiz-pct">0%</div>
+                    </div>
                 </div>
             </div>
-            <button class="btn-next" onclick="checkout()">GARANTIR ACESSO AGORA</button>
-            <div class="security-footer">🔒 Compra Segura</div>
+
+            <div class="stats-section">
+                <div class="section-title">🎯 Conversões</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Leads</div>
+                        <div class="stat-value" id="total-leads">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Taxa Conclusão</div>
+                        <div class="stat-value" id="completion-rate">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">No Checkout</div>
+                        <div class="stat-value" id="checkout-count">0</div>
+                        <div class="stat-percent" id="checkout-pct">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Maior Abandono</div>
+                        <div class="stat-value" id="highest-dropout" style="font-size: 18px;">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="section-title" style="margin-bottom: 0;">💰 VENDAS CONFIRMADAS</div>
+                <div class="compact-filters">
+                    <button class="compact-filter-btn active" onclick="setDateFilter('today')">Hoje</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('yesterday')">Ontem</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('7days')">7d</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('30days')">30d</button>
+                    <button class="compact-filter-btn" onclick="setDateFilter('all')">Tudo</button>
+                    <input type="date" id="date-start" class="compact-date-input" placeholder="Início" />
+                    <input type="date" id="date-end" class="compact-date-input" placeholder="Fim" />
+                    <button class="compact-filter-btn" onclick="setCustomDateRange()" style="padding: 4px 10px;">OK</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-label">Vendas Hoje</div>
+                    <div class="stat-value" id="sales-today">0</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Faturamento Hoje</div>
+                    <div class="stat-value" id="revenue-today" style="font-size: 28px;">R$ 0</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Taxa Conversão</div>
+                    <div class="stat-value" id="conversion-rate">0%</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Ticket Médio</div>
+                    <div class="stat-value" id="average-ticket" style="font-size: 28px;">R$ 0</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Checkouts por Venda</div>
+                    <div class="stat-value" id="leads-per-sale" style="font-size: 32px;">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 30px;">
+            <div class="stats-section">
+                <div class="section-title">📈 Vendas ao Longo do Tempo</div>
+                <div class="chart-wrapper" style="height: 280px;">
+                    <canvas id="salesTimeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="section-title">🎯 Funil de Conversão</div>
+                <div id="funnel-container" style="padding: 20px 10px;">
+                    <!-- Funil será preenchido via JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section" style="margin-bottom: 30px;">
+            <div class="section-title">🔥 Melhores Horários para Vender</div>
+            <div id="heatmap-container" style="overflow-x: auto;">
+                <!-- Heatmap será preenchido via JS -->
+            </div>
+        </div>
+
+        <div class="chart-and-retention">
+            <div class="chart-container">
+                <div class="section-title">⏰ Horário de Pico</div>
+                <div class="chart-wrapper">
+                    <canvas id="peakHourChart"></canvas>
+                </div>
+            </div>
+
+            <div class="quiz-retention">
+                <div class="section-title">📈 Retenção Quiz</div>
+                <div class="quiz-stats" id="quiz-stats">
+                    <div class="empty-state">Carregando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="spy-section-title">🔴 Espião de Fluxo (Tempo Real)</div>
+            
+            <div class="spy-filters">
+                <button class="spy-filter-btn active" onclick="filterSpy('all')">Todos</button>
+                <button class="spy-filter-btn" onclick="filterSpy('online')">🟢 Online</button>
+                <button class="spy-filter-btn" onclick="filterSpy('checkout')">💳 Checkout</button>
+                <button class="spy-filter-btn" onclick="filterSpy('sale')">💰 Vendas</button>
+            </div>
+            
+            <div class="spy-container" id="spy-container">
+                <div class="empty-state">
+                    <div class="loading-spinner"></div>
+                    <div>Aguardando novos leads...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, query, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        const app = initializeApp({
+        const firebaseConfig = {
             apiKey: "AIzaSyB-GPkmK_iNQuu_96NsWBEmnZA1LhiSRR4",
             authDomain: "alytics-metodo-alpha.firebaseapp.com",
             projectId: "alytics-metodo-alpha",
             storageBucket: "alytics-metodo-alpha.firebasestorage.app",
             messagingSenderId: "389989039442",
             appId: "1:389989039442:web:e897945ffbfe52da210e8b"
-        });
+        };
 
+        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let sid = localStorage.getItem('alpha_sid');
-        if (!sid) {
-            sid = 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('alpha_sid', sid);
+
+        let allSessions = [];
+        let allSales = [];
+        let peakHourChart = null;
+        let salesTimeChart = null;
+        let lastCheckoutIds = new Set();
+        let lastSaleIds = new Set();
+        let currentDateFilter = 'today';
+        let customDateRange = null;
+        let alertQueue = [];
+        let spyFilter = 'all';
+
+        // SISTEMA DE ALERTAS
+        function showAlert(type, title, message) {
+            const container = document.getElementById('alerts-container');
+            const alertId = 'alert_' + Date.now();
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.id = alertId;
+            alertDiv.className = `alert-item ${type}`;
+            alertDiv.innerHTML = `
+                <span class="alert-close" onclick="closeAlert('${alertId}')">×</span>
+                <div class="alert-title">${title}</div>
+                <div class="alert-message">${message}</div>
+            `;
+            
+            container.appendChild(alertDiv);
+            
+            // Auto-remove após 5 segundos
+            setTimeout(() => {
+                closeAlert(alertId);
+            }, 5000);
         }
 
-        const QUESTIONS = [
-            { id: 'idade', t: 'Qual sua faixa etária? (Fator de risco vascular)', o: ['18-25', '26-35', '36-45', '46-55', '55+'] },
-            { id: 'rigidez', t: 'Com que frequência você atinge rigidez máxima do pênis?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
-            { id: 'manutencao', t: 'Consegue manter a ereção até ejacular?', o: ['Tenho muita dificuldade', 'Às vezes falha', 'Sim, sem problemas'] },
-            { id: 'matinal', t: 'Você acorda com ereção matinal?', o: ['Nunca', 'Raramente', 'Quase todos os dias'] },
-            { id: 'circulacao', t: 'Sente as extremidades (mãos/pés) frias com frequência?', o: ['Sim, constantemente', 'Às vezes', 'Não'] },
-            { id: 'historico', t: 'Você tem histórico de Diabetes ou Pressão Alta?', o: ['Sim, ambos', 'Sim, um deles', 'Não'] },
-            { id: 'tamanho', t: 'Você percebeu alguma redução no tamanho do pênis ao longo dos anos?', o: ['Sim, visível', 'Talvez um pouco', 'Não'] },
-            { id: 'estresse', t: 'Qual seu nível de estresse diário?', o: ['Muito alto', 'Alto', 'Moderado', 'Baixo'] },
-            { id: 'sono', t: 'Quantas horas de sono de qualidade você tem?', o: ['Menos de 5h', '5-6h', '7-8h', 'Mais de 8h'] },
-            { id: 'libido', t: 'Como você avalia seu desejo sexual (libido)?', o: ['Muito baixo', 'Baixo', 'Normal', 'Alto'] },
-            { id: 'vicios', t: 'Você fuma ou consome álcool em excesso?', o: ['Sim, ambos', 'Sim, um deles', 'Não'] },
-            { id: 'medicamentos', t: 'Faz uso contínuo de algum medicamento?', o: ['Sim', 'Não'] },
-            { id: 'exercicio', t: 'Qual sua frequência de exercícios físicos?', o: ['Nunca', '1-2x/semana', '3-4x/semana', 'Diariamente'] },
-            { id: 'recuperacao', t: 'Quanto tempo leva para ter uma segunda ereção?', o: ['Mais de 1 hora', '30 minutos', '10-20 minutos', 'Quase imediato'] },
-            { id: 'prioridade', t: 'Resolver este problema é sua prioridade máxima?', o: ['Sim, urgente', 'Sim, mas posso esperar', 'Apenas curiosidade'] }
-        ];
-
-        let step = 0;
-        let ans = {};
-
-        async function track(e, d = {}) { 
-            try { 
-                await updateDoc(doc(db, 'sessions', sid), { 
-                    [`events.${e}`]: serverTimestamp(), 
-                    lastActivity: serverTimestamp(), 
-                    ...d 
-                }); 
-            } catch (err) {} 
-        }
-        
-        window.next = function() {
-            if (step === 0) { 
-                track('vsl_done'); 
-                step = 1; 
-                render(); 
-                startCarousel(); 
-                setTimeout(() => { 
-                    document.getElementById('loading').innerText = 'Avaliação carregada!'; 
-                    document.getElementById('loading').style.color = '#22c55e';
-                    document.getElementById('startBtn').disabled = false; 
-                }, 3000); 
-            }
-            else if (step === 1) { 
-                track('quiz_start'); 
-                step = 'quiz'; 
-                render(); 
+        window.closeAlert = function(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
             }
         };
 
-        function startCarousel() {
-            let i = 0;
-            const slides = document.querySelectorAll('.slide');
-            setInterval(() => { 
-                slides[i].classList.remove('active'); 
-                i = (i + 1) % slides.length; 
-                slides[i].classList.add('active'); 
-            }, 1000);
+        // COMPARAÇÃO DE PERÍODOS
+        window.updateComparison = function() {
+            const periodA = document.getElementById('period-a').value;
+            const periodB = document.getElementById('period-b').value;
+            
+            const rangeA = getComparisonRange(periodA);
+            const rangeB = getComparisonRange(periodB, rangeA);
+            
+            const statsA = calculatePeriodStats(rangeA);
+            const statsB = calculatePeriodStats(rangeB);
+            
+            renderComparison(statsA, statsB, periodA, periodB);
+        };
+
+        function getComparisonRange(period, referenceRange = null) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            if (period === 'prev_period' && referenceRange) {
+                // Período anterior ao período A
+                const duration = referenceRange.end - referenceRange.start;
+                return {
+                    start: new Date(referenceRange.start - duration),
+                    end: new Date(referenceRange.start)
+                };
+            }
+            
+            switch(period) {
+                case 'today':
+                    return { start: today, end: now };
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    return { start: yesterday, end: today };
+                case '7days':
+                    const week = new Date(today);
+                    week.setDate(week.getDate() - 7);
+                    return { start: week, end: now };
+                case '30days':
+                    const month = new Date(today);
+                    month.setDate(month.getDate() - 30);
+                    return { start: month, end: now };
+                default:
+                    return { start: today, end: now };
+            }
         }
 
-        window.selectOpt = function(idx, opt) {
-            ans[idx] = opt;
-            const progress = idx + 1;
-            track('q_ans', { 
-                question: QUESTIONS[idx].t, 
-                answer: opt,
-                quizProgress: progress 
+        function calculatePeriodStats(range) {
+            const sessions = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const date = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                return date >= range.start && date <= range.end;
             });
-            updateDoc(doc(db, 'sessions', sid), { quizProgress: progress });
             
-            if (idx < QUESTIONS.length - 1) { 
-                renderQuiz(idx + 1); 
-            } else { 
-                track('quiz_completed');
-                step = 'analysis'; 
-                render(); 
-                startAnalysis(); 
-            }
-        };
-
-        window.checkout = function() { 
-            track('checkout'); 
-            window.location.href = `https://pay.wiapy.com/elbyXqblP2?utm_source=${sid}&external_id=${sid}`; 
-        };
-        
-        window.goOffer = function() { 
-            step = 'offer'; 
-            render(); 
-            track('offer'); 
-        };
-
-        function render() {
-            // Pausa todos os vídeos ao mudar de tela
-            window._wq = window._wq || [];
-            _wq.push({ id: "_all", onReady: function(video) {
-                video.pause();
-            }});
-
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const sales = allSales.filter(s => {
+                if (!s.createdAt || s.isPaid !== true) return false;
+                const date = s.createdAt.toDate ? s.createdAt.toDate() : new Date(s.createdAt);
+                return date >= range.start && date <= range.end;
+            });
             
-            if (typeof step === 'number') {
-                document.getElementById(`s-${step}`).classList.add('active');
-            } else { 
-                document.getElementById(`s-${step}`).classList.add('active'); 
-                if (step === 'quiz') renderQuiz(0); 
-            }
-            window.scrollTo(0, 0);
+            const assistiuVSL = sessions.filter(s => s.events?.vsl_done).length;
+            const iniciouQuiz = sessions.filter(s => s.events?.quiz_start).length;
+            const completouQuiz = sessions.filter(s => s.events?.quiz_completed).length;
+            const checkout = sessions.filter(s => s.events?.checkout).length;
+            const revenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+            
+            return {
+                acessos: sessions.length,
+                assistiuVSL,
+                iniciouQuiz,
+                completouQuiz,
+                checkout,
+                vendas: sales.length,
+                faturamento: revenue,
+                conversao: sessions.length > 0 ? (sales.length / sessions.length) * 100 : 0,
+                ticketMedio: sales.length > 0 ? revenue / sales.length : 0
+            };
         }
 
-        function renderQuiz(idx) {
-            const pct = Math.round((idx / QUESTIONS.length) * 100);
-            document.getElementById('pct').innerText = `${pct}% CONCLUÍDO`;
-            document.getElementById('prog').style.width = `${pct}%`;
-            const q = QUESTIONS[idx];
-            document.getElementById('qbox').innerHTML = `
-                <h2 class="headline">${q.t}</h2>
-                <div class="options-grid">
-                    ${q.o.map(o => `<button class="option-btn" onclick="selectOpt(${idx}, '${o}')">${o}</button>`).join('')}
+        function renderComparison(statsA, statsB, periodA, periodB) {
+            const container = document.getElementById('comparison-grid');
+            
+            const periodNames = {
+                'today': 'Hoje',
+                'yesterday': 'Ontem',
+                '7days': 'Últimos 7 dias',
+                '30days': 'Últimos 30 dias',
+                'prev_period': 'Período Anterior'
+            };
+            
+            const isWinnerA = statsA.conversao > statsB.conversao;
+            
+            container.innerHTML = `
+                <div class="comparison-card ${isWinnerA ? 'winner' : 'loser'}">
+                    <div class="comparison-header">
+                        <div class="comparison-period">${periodNames[periodA]}</div>
+                        ${isWinnerA ? '<div class="comparison-badge up">🏆 MELHOR</div>' : '<div class="comparison-badge down">📉 MENOR</div>'}
+                    </div>
+                    <div class="comparison-stats">
+                        ${renderComparisonRow('Acessos', statsA.acessos, statsB.acessos)}
+                        ${renderComparisonRow('Assistiu VSL', statsA.assistiuVSL, statsB.assistiuVSL)}
+                        ${renderComparisonRow('Iniciou Quiz', statsA.iniciouQuiz, statsB.iniciouQuiz)}
+                        ${renderComparisonRow('Completou Quiz', statsA.completouQuiz, statsB.completouQuiz)}
+                        ${renderComparisonRow('Checkout', statsA.checkout, statsB.checkout)}
+                        ${renderComparisonRow('Vendas', statsA.vendas, statsB.vendas)}
+                        ${renderComparisonRow('Faturamento', 'R$ ' + statsA.faturamento.toFixed(2), statsB.faturamento, true)}
+                        ${renderComparisonRow('Taxa Conversão', statsA.conversao.toFixed(1) + '%', statsB.conversao, true)}
+                        ${renderComparisonRow('Ticket Médio', 'R$ ' + statsA.ticketMedio.toFixed(2), statsB.ticketMedio, true)}
+                    </div>
+                </div>
+                
+                <div class="comparison-card ${!isWinnerA ? 'winner' : 'loser'}">
+                    <div class="comparison-header">
+                        <div class="comparison-period">${periodNames[periodB]}</div>
+                        ${!isWinnerA ? '<div class="comparison-badge up">🏆 MELHOR</div>' : '<div class="comparison-badge down">📉 MENOR</div>'}
+                    </div>
+                    <div class="comparison-stats">
+                        ${renderComparisonRow('Acessos', statsB.acessos, statsA.acessos, false, true)}
+                        ${renderComparisonRow('Assistiu VSL', statsB.assistiuVSL, statsA.assistiuVSL, false, true)}
+                        ${renderComparisonRow('Iniciou Quiz', statsB.iniciouQuiz, statsA.iniciouQuiz, false, true)}
+                        ${renderComparisonRow('Completou Quiz', statsB.completouQuiz, statsA.completouQuiz, false, true)}
+                        ${renderComparisonRow('Checkout', statsB.checkout, statsA.checkout, false, true)}
+                        ${renderComparisonRow('Vendas', statsB.vendas, statsA.vendas, false, true)}
+                        ${renderComparisonRow('Faturamento', 'R$ ' + statsB.faturamento.toFixed(2), statsA.faturamento, true, true)}
+                        ${renderComparisonRow('Taxa Conversão', statsB.conversao.toFixed(1) + '%', statsA.conversao, true, true)}
+                        ${renderComparisonRow('Ticket Médio', 'R$ ' + statsB.ticketMedio.toFixed(2), statsA.ticketMedio, true, true)}
+                    </div>
                 </div>
             `;
         }
 
-        function startAnalysis() {
-            let p1=0, p2=0, p3=0;
-            window._wq = window._wq || [];
-            _wq.push({ id: "0bj892x3m1", onReady: function(v) { 
-                v.play(); 
-                v.bind("end", goOffer); 
-            }});
+        function renderComparisonRow(label, valueA, valueB, isFormatted = false, reverse = false) {
+            const numA = isFormatted ? parseFloat(valueA.toString().replace(/[^\d.-]/g, '')) : valueA;
+            const numB = typeof valueB === 'number' ? valueB : parseFloat(valueB.toString().replace(/[^\d.-]/g, ''));
             
-            const t = setInterval(() => {
-                if (p1 < 100) {
-                    p1 += 10; 
-                    document.getElementById('b1').style.width = p1 + '%';
-                    if (p1 >= 100) { 
-                        document.getElementById('s1').innerText = 'VALIDADO'; 
-                        document.getElementById('s1').classList.add('complete'); 
-                        document.getElementById('b1').classList.add('complete'); 
-                        document.getElementById('s2').innerText = 'PROCESSANDO'; 
-                    }
-                } else if (p2 < 100) {
-                    p2 += 10; 
-                    document.getElementById('b2').style.width = p2 + '%';
-                    if (p2 >= 100) { 
-                        document.getElementById('s2').innerText = 'VALIDADO'; 
-                        document.getElementById('s2').classList.add('complete'); 
-                        document.getElementById('b2').classList.add('complete'); 
-                        document.getElementById('s3').innerText = 'PROCESSANDO'; 
-                    }
-                } else if (p3 < 100) {
-                    p3 += 10; 
-                    document.getElementById('b3').style.width = p3 + '%';
-                    if (p3 >= 100) { 
-                        document.getElementById('s3').innerText = 'VALIDADO'; 
-                        document.getElementById('s3').classList.add('complete'); 
-                        document.getElementById('b3').classList.add('complete'); 
-                        document.getElementById('btnOffer').style.display = 'block'; 
+            let diff = numA - numB;
+            let diffPercent = numB !== 0 ? ((diff / numB) * 100) : 0;
+            
+            if (reverse) {
+                diff = -diff;
+                diffPercent = -diffPercent;
+            }
+            
+            const isPositive = diff > 0;
+            const arrow = isPositive ? '↑' : '↓';
+            const diffClass = isPositive ? 'positive' : 'negative';
+            
+            return `
+                <div class="comparison-row">
+                    <div>
+                        <div class="comparison-label">${label}</div>
+                        <div class="comparison-value">${valueA}</div>
+                    </div>
+                    ${numB !== 0 ? `
+                        <div class="comparison-diff ${diffClass}">
+                            ${arrow} ${Math.abs(diffPercent).toFixed(1)}%
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        window.setCustomDateRange = function() {
+            const startInput = document.getElementById('date-start').value;
+            const endInput = document.getElementById('date-end').value;
+            
+            if (!startInput || !endInput) {
+                alert('Por favor, selecione ambas as datas!');
+                return;
+            }
+            
+            const start = new Date(startInput);
+            start.setHours(0, 0, 0, 0);
+            
+            const end = new Date(endInput);
+            end.setHours(23, 59, 59, 999);
+            
+            if (start > end) {
+                alert('A data inicial não pode ser maior que a data final!');
+                return;
+            }
+            
+            customDateRange = { start, end };
+            currentDateFilter = 'custom';
+            
+            // Atualizar botões
+            document.querySelectorAll('.compact-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            updateSalesStats();
+            updateSalesTimeChart();
+            updateFunnelVisualization();
+        };
+
+        window.setDateFilter = function(filter) {
+            currentDateFilter = filter;
+            customDateRange = null;
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.compact-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Atualizar estatísticas
+            updateSalesStats();
+            updateSalesTimeChart();
+            updateFunnelVisualization();
+        };
+
+        function getDateRange(filter) {
+            if (filter === 'custom' && customDateRange) {
+                return customDateRange;
+            }
+            
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            switch(filter) {
+                case 'today':
+                    return { start: today, end: new Date() };
+                    
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayEnd = new Date(today);
+                    return { start: yesterday, end: yesterdayEnd };
+                    
+                case '7days':
+                    const week = new Date(today);
+                    week.setDate(week.getDate() - 7);
+                    return { start: week, end: new Date() };
+                    
+                case '30days':
+                    const month = new Date(today);
+                    month.setDate(month.getDate() - 30);
+                    return { start: month, end: new Date() };
+                    
+                case 'all':
+                default:
+                    return { start: new Date(0), end: new Date() };
+            }
+        }
+
+        function isOnline(lastActivity) {
+            if (!lastActivity) return false;
+            const now = Date.now();
+            const lastTime = lastActivity.toMillis ? lastActivity.toMillis() : lastActivity;
+            return (now - lastTime) < 120000;
+        }
+
+        function formatTimeAgo(timestamp) {
+            if (!timestamp) return 'agora';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'agora';
+            if (diffMins === 1) return 'há 1 minuto';
+            if (diffMins < 60) return `há ${diffMins} minutos`;
+            
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours === 1) return 'há 1 hora';
+            if (diffHours < 24) return `há ${diffHours} horas`;
+            
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays === 1) return 'há 1 dia';
+            return `há ${diffDays} dias`;
+        }
+
+        function getStatusText(session) {
+            if (session.events?.checkout) return '💳 CLICOU NO CHECKOUT';
+            if (session.events?.offer) return '🎯 Visualizando Oferta Final';
+            if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
+            if (session.events?.quiz_start) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
+            if (session.events?.vsl_done) return '▶️ Assistiu VSL';
+            return '📱 Visualizando VSL';
+        }
+
+        function playCheckoutSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            const frequencies = [800, 1200, 1600, 2000];
+            frequencies.forEach((freq) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc.start(now);
+                osc.stop(now + 0.8);
+            });
+        }
+
+        function playSaleSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            const notes = [
+                { freq: 523.25, time: 0 },
+                { freq: 659.25, time: 0.15 },
+                { freq: 783.99, time: 0.3 },
+                { freq: 1046.50, time: 0.45 }
+            ];
+            notes.forEach(note => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = note.freq;
+                osc.type = 'triangle';
+                const startTime = now + note.time;
+                gain.gain.setValueAtTime(0.3, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                osc.start(startTime);
+                osc.stop(startTime + 0.3);
+            });
+        }
+
+
+        function updateStats() {
+            const total = allSessions.length;
+            const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
+            
+            // EVENTOS DO FUNIL DE 15 PERGUNTAS
+            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done).length; // vsl_done
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_start).length; // quiz_start
+            const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length; // quiz_completed
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout).length; // checkout
+
+            allSessions.forEach(session => {
+                const isCheckout = session.events?.checkout;
+                if (isCheckout && !lastCheckoutIds.has(session.id)) {
+                    lastCheckoutIds.add(session.id);
+                    playCheckoutSound();
+                    
+                    // ALERTA: Novo checkout
+                    const shortId = (session.sessionId || session.id).substr(-6).toUpperCase();
+                    showAlert('checkout', '🛒 NOVO CHECKOUT!', `Lead #${shortId} está no checkout agora!`);
+                }
+            });
+
+            document.getElementById('online-now').textContent = online;
+            document.getElementById('total-visits').textContent = total;
+            document.getElementById('passed-instruction').textContent = assistiuVSL; // Assistiu VSL
+            document.getElementById('clicked-vsl').textContent = iniciouQuiz; // Iniciou quiz
+            document.getElementById('started-quiz').textContent = completouQuiz; // Completou quiz
+            document.getElementById('total-leads').textContent = completouQuiz; // Leads = completou quiz
+            document.getElementById('checkout-count').textContent = clickedCheckout;
+
+            document.getElementById('passed-instruction-pct').textContent = 
+                total > 0 ? Math.round((assistiuVSL / total) * 100) + '%' : '0%';
+            document.getElementById('clicked-vsl-pct').textContent = 
+                total > 0 ? Math.round((iniciouQuiz / total) * 100) + '%' : '0%';
+            document.getElementById('started-quiz-pct').textContent = 
+                total > 0 ? Math.round((completouQuiz / total) * 100) + '%' : '0%';
+            document.getElementById('checkout-pct').textContent = 
+                total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
+            
+            const completionRate = iniciouQuiz > 0 ? Math.round((completouQuiz / iniciouQuiz) * 100) : 0;
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+
+            const dropouts = {
+                'VSL': total - assistiuVSL,
+                'Quiz Início': assistiuVSL - iniciouQuiz,
+                'Quiz Final': iniciouQuiz - completouQuiz,
+                'Checkout': completouQuiz - clickedCheckout
+            };
+            
+            const maxDropout = Object.entries(dropouts).reduce((max, [key, val]) => 
+                val > max.val ? {stage: key, val} : max, 
+                {stage: '--', val: 0}
+            );
+            
+            document.getElementById('highest-dropout').textContent = 
+                maxDropout.val > 0 ? `${maxDropout.stage}` : '--';
+
+            updatePeakHourChart();
+        }
+
+        function updateSalesStats() {
+            const dateRange = getDateRange(currentDateFilter);
+            
+            const paidSalesFiltered = allSales.filter(sale => {
+                if (!sale.createdAt || sale.isPaid !== true) return false;
+                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
+                return saleDate >= dateRange.start && saleDate <= dateRange.end;
+            });
+
+            // Detectar novas vendas para som (apenas hoje)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const paidSalesToday = allSales.filter(sale => {
+                if (!sale.createdAt || sale.isPaid !== true) return false;
+                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
+                return saleDate >= today;
+            });
+
+            paidSalesToday.forEach(sale => {
+                if (!lastSaleIds.has(sale.transactionId)) {
+                    lastSaleIds.add(sale.transactionId);
+                    playSaleSound();
+                    console.log('🔔 NOVA VENDA!', sale);
+                    
+                    // ALERTA: Nova venda
+                    const amount = sale.amount || 0;
+                    showAlert('sale', '💰 NOVA VENDA!', `Venda confirmada: R$ ${amount.toFixed(2)}! 🎉`);
+                }
+            });
+
+            // Calcular métricas do período filtrado
+            const salesCount = paidSalesFiltered.length;
+            const revenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+            const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
+            
+            // Total de acessos do período (todos que entraram)
+            const totalVisits = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                return enteredDate >= dateRange.start && enteredDate <= dateRange.end;
+            }).length;
+            
+            // Checkouts do período
+            const clickedCheckout = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const enteredDate = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                const hasCheckout = s.events?.checkout || s.events?.checkout_clicked;
+                return hasCheckout && enteredDate >= dateRange.start && enteredDate <= dateRange.end;
+            }).length;
+            
+            // Taxa de conversão = Vendas / Total de Acessos (visão real do funil completo)
+            const conversionRate = totalVisits > 0 ? (salesCount / totalVisits) * 100 : 0;
+            
+            // Checkouts por venda (média)
+            const checkoutsPerSale = salesCount > 0 ? Math.round(clickedCheckout / salesCount) : 0;
+
+            document.getElementById('sales-today').textContent = salesCount;
+            document.getElementById('revenue-today').textContent = 
+                'R$ ' + revenue.toFixed(2).replace('.', ',');
+            document.getElementById('conversion-rate').textContent = conversionRate.toFixed(1) + '%';
+            document.getElementById('average-ticket').textContent = 
+                'R$ ' + averageTicket.toFixed(2).replace('.', ',');
+            document.getElementById('leads-per-sale').textContent = 
+                salesCount > 0 ? checkoutsPerSale : '--';
+            
+            // Atualizar gráfico de vendas e heatmap
+            updateSalesChart();
+            updateHeatmap();
+        }
+
+        function updateSalesChart() {
+            const dateRange = getDateRange(currentDateFilter);
+            const salesByDay = {};
+            
+            // Agrupar vendas por dia
+            allSales.forEach(sale => {
+                if (!sale.createdAt || sale.isPaid !== true) return;
+                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
+                
+                if (saleDate >= dateRange.start && saleDate <= dateRange.end) {
+                    const dayKey = saleDate.toLocaleDateString('pt-BR');
+                    salesByDay[dayKey] = (salesByDay[dayKey] || 0) + 1;
+                }
+            });
+
+            // Criar array de dias
+            const days = [];
+            const counts = [];
+            const currentDate = new Date(dateRange.start);
+            const endDate = new Date(dateRange.end);
+            
+            while (currentDate <= endDate) {
+                const dayKey = currentDate.toLocaleDateString('pt-BR');
+                days.push(dayKey);
+                counts.push(salesByDay[dayKey] || 0);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            const ctx = document.getElementById('salesTimeChart');
+            if (!ctx) return;
+            
+            if (salesTimeChart) {
+                salesTimeChart.destroy();
+            }
+
+            salesTimeChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Vendas',
+                        data: counts,
+                        borderColor: '#00ff00',
+                        backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#00ff00',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#00ff00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 12, weight: 'bold' }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(0, 255, 0, 0.1)', lineWidth: 1 },
+                            ticks: { 
+                                color: '#999999', 
+                                font: { size: 10 }, 
+                                maxRotation: 45, 
+                                minRotation: 45,
+                                maxTicksLimit: 15
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 255, 0, 0.1)', lineWidth: 1 },
+                            ticks: { 
+                                color: '#999999', 
+                                font: { size: 10 }, 
+                                stepSize: 1 
+                            }
+                        }
                     }
                 }
-                if (p1 >= 100 && p2 >= 100 && p3 >= 100) clearInterval(t);
-            }, 100);
+            });
         }
 
-        setInterval(async () => { 
-            try { 
-                await updateDoc(doc(db, 'sessions', sid), { 
-                    lastActivity: serverTimestamp(), 
-                    currentStep: step 
-                }); 
-            } catch (err) {} 
+        function updateFunnel() {
+            const total = allSessions.length;
+            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done).length;
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_start).length;
+            const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
+            const viuOferta = allSessions.filter(s => s.events?.offer).length;
+            const clickedCheckout = allSessions.filter(s => s.events?.checkout).length;
+            const totalSales = allSales.filter(s => s.isPaid === true).length;
+
+            const stages = [
+                { name: 'Total de Acessos', count: total, percent: 100 },
+                { name: 'Assistiu VSL', count: assistiuVSL, percent: total > 0 ? (assistiuVSL / total) * 100 : 0 },
+                { name: 'Iniciou Quiz (15Q)', count: iniciouQuiz, percent: total > 0 ? (iniciouQuiz / total) * 100 : 0 },
+                { name: 'Completou Quiz', count: completouQuiz, percent: total > 0 ? (completouQuiz / total) * 100 : 0 },
+                { name: 'Visualizou Oferta', count: viuOferta, percent: total > 0 ? (viuOferta / total) * 100 : 0 },
+                { name: 'Clicou Checkout', count: clickedCheckout, percent: total > 0 ? (clickedCheckout / total) * 100 : 0 },
+                { name: '💰 VENDAS', count: totalSales, percent: total > 0 ? (totalSales / total) * 100 : 0 }
+            ];
+
+            const container = document.getElementById('funnel-container');
+            if (!container) return;
+
+            container.innerHTML = stages.map((stage, index) => `
+                <div class="funnel-stage">
+                    <div class="funnel-stage-header">
+                        <div class="funnel-stage-name">${stage.name}</div>
+                        <div class="funnel-stage-count">${stage.count}</div>
+                    </div>
+                    <div class="funnel-stage-bar">
+                        <div class="funnel-stage-fill" style="width: ${stage.percent}%"></div>
+                    </div>
+                    <div class="funnel-stage-percent">${stage.percent.toFixed(1)}% do total</div>
+                </div>
+                ${index < stages.length - 1 ? '<div class="funnel-arrow">↓</div>' : ''}
+            `).join('');
+        }
+
+        function updateHeatmap() {
+            const salesByDayHour = {};
+            
+            // Inicializar estrutura
+            const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            const hours = ['00h', '04h', '08h', '12h', '16h', '20h'];
+            
+            days.forEach(day => {
+                salesByDayHour[day] = {};
+                hours.forEach(hour => {
+                    salesByDayHour[day][hour] = 0;
+                });
+            });
+
+            // Contar vendas por dia e hora
+            allSales.forEach(sale => {
+                if (!sale.createdAt || sale.isPaid !== true) return;
+                const saleDate = sale.createdAt.toDate ? sale.createdAt.toDate() : new Date(sale.createdAt);
+                
+                const dayName = days[saleDate.getDay()];
+                const hour = saleDate.getHours();
+                
+                // Agrupar em faixas de 4 horas
+                let hourRange;
+                if (hour >= 0 && hour < 4) hourRange = '00h';
+                else if (hour >= 4 && hour < 8) hourRange = '04h';
+                else if (hour >= 8 && hour < 12) hourRange = '08h';
+                else if (hour >= 12 && hour < 16) hourRange = '12h';
+                else if (hour >= 16 && hour < 20) hourRange = '16h';
+                else hourRange = '20h';
+                
+                salesByDayHour[dayName][hourRange]++;
+            });
+
+            // Encontrar max para escala
+            let maxSales = 0;
+            Object.values(salesByDayHour).forEach(dayData => {
+                Object.values(dayData).forEach(count => {
+                    if (count > maxSales) maxSales = count;
+                });
+            });
+
+            // Gerar tabela
+            const container = document.getElementById('heatmap-container');
+            if (!container) return;
+
+            let html = '<table class="heatmap-table"><thead><tr><th>Dia</th>';
+            hours.forEach(hour => {
+                html += `<th>${hour}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            days.forEach(day => {
+                html += `<tr><td class="day-label">${day}</td>`;
+                hours.forEach(hour => {
+                    const count = salesByDayHour[day][hour];
+                    let cellClass = 'empty';
+                    
+                    if (maxSales > 0 && count > 0) {
+                        const percent = (count / maxSales) * 100;
+                        if (percent >= 70) cellClass = 'high';
+                        else if (percent >= 30) cellClass = 'medium';
+                        else cellClass = 'low';
+                    }
+                    
+                    html += `<td class="heatmap-cell ${cellClass}" title="${day} ${hour}: ${count} vendas">${count}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += `
+                <div class="heatmap-legend">
+                    <div class="heatmap-legend-item">
+                        <div class="heatmap-legend-color" style="background: rgba(34, 197, 94, 0.6);"></div>
+                        <span>🟢 Alto (70%+)</span>
+                    </div>
+                    <div class="heatmap-legend-item">
+                        <div class="heatmap-legend-color" style="background: rgba(251, 191, 36, 0.6);"></div>
+                        <span>🟡 Médio (30-70%)</span>
+                    </div>
+                    <div class="heatmap-legend-item">
+                        <div class="heatmap-legend-color" style="background: rgba(239, 68, 68, 0.6);"></div>
+                        <span>🔴 Baixo (&lt;30%)</span>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function updateQuizRetention() {
+            const container = document.getElementById('quiz-stats');
+            const quizProgress = {};
+            for (let i = 1; i <= 15; i++) { // 15 perguntas
+                quizProgress[i] = 0;
+            }
+            
+            allSessions.forEach(session => {
+                const progress = session.quizProgress || 0;
+                for (let i = 1; i <= progress; i++) {
+                    quizProgress[i]++;
+                }
+            });
+            
+            const total = allSessions.filter(s => s.events?.quiz_start).length;
+            
+            if (total === 0) {
+                container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
+                return;
+            }
+            
+            const quizData = [];
+            const questionNames = [
+                'Idade',
+                'Rigidez',
+                'Manutenção',
+                'Matinal',
+                'Circulação',
+                'Histórico',
+                'Tamanho',
+                'Estresse',
+                'Sono',
+                'Libido',
+                'Vícios',
+                'Medicamentos',
+                'Exercício',
+                'Recuperação',
+                'Prioridade'
+            ];
+            
+            for (let i = 1; i <= 15; i++) {
+                const count = quizProgress[i];
+                const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+                quizData.push({ 
+                    question: `Q${i}: ${questionNames[i-1]}`, 
+                    users: count, 
+                    percentage: percentage 
+                });
+            }
+
+            container.innerHTML = quizData.map(q => `
+                <div class="quiz-row">
+                    <div class="quiz-step">${q.question}</div>
+                    <div class="quiz-count">${q.users} (${q.percentage}%)</div>
+                </div>
+            `).join('');
+        }
+
+        function updatePeakHourChart() {
+            const now = new Date();
+            const hours = [];
+            
+            for (let i = 0; i < 24; i++) {
+                const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
+                hours.push(hour.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+            }
+
+            const sessionsByHour = {};
+            allSessions.forEach(session => {
+                if (session.enteredAt) {
+                    const date = session.enteredAt.toDate ? session.enteredAt.toDate() : new Date(session.enteredAt);
+                    const sessionHour = date.getHours();
+                    if (!sessionsByHour[sessionHour]) {
+                        sessionsByHour[sessionHour] = new Set();
+                    }
+                    sessionsByHour[sessionHour].add(session.sessionId || session.id);
+                }
+            });
+
+            const data = hours.map((_, index) => {
+                const hour = new Date(now.getTime() + index * 60 * 60 * 1000).getHours();
+                return sessionsByHour[hour] ? sessionsByHour[hour].size : 0;
+            });
+
+            const ctx = document.getElementById('peakHourChart').getContext('2d');
+            
+            if (peakHourChart) {
+                peakHourChart.destroy();
+            }
+
+            peakHourChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Visitantes Únicos',
+                        data: data,
+                        borderColor: '#ff3333',
+                        backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ff3333',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00ff00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 12, weight: 'bold' }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(204, 0, 0, 0.1)', lineWidth: 1 },
+                            ticks: { color: '#999999', font: { size: 10 }, maxRotation: 45, minRotation: 45 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(204, 0, 0, 0.1)', lineWidth: 1 },
+                            ticks: { color: '#999999', font: { size: 10 }, stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.filterSpy = function(filter) {
+            spyFilter = filter;
+            
+            // Atualizar botões
+            document.querySelectorAll('.spy-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateSpyFeed();
+        };
+
+        function updateSpyFeed() {
+            const container = document.getElementById('spy-container');
+            
+            const sortedSessions = [...allSessions].sort((a, b) => {
+                const timeA = a.lastActivity?.toMillis ? a.lastActivity.toMillis() : 0;
+                const timeB = b.lastActivity?.toMillis ? b.lastActivity.toMillis() : 0;
+                return timeB - timeA;
+            });
+
+            const uniqueSessions = [];
+            const seenIds = new Set();
+            
+            for (const session of sortedSessions) {
+                const sid = session.sessionId || session.id;
+                if (!seenIds.has(sid)) {
+                    seenIds.add(sid);
+                    uniqueSessions.push(session);
+                }
+            }
+
+            // Aplicar filtro
+            let filteredSessions = uniqueSessions;
+            
+            if (spyFilter === 'online') {
+                filteredSessions = uniqueSessions.filter(s => isOnline(s.lastActivity));
+            } else if (spyFilter === 'checkout') {
+                filteredSessions = uniqueSessions.filter(s => s.events?.checkout);
+            } else if (spyFilter === 'sale') {
+                filteredSessions = uniqueSessions.filter(s => s.conversion?.hasPurchase === true);
+            }
+
+            const recentSessions = filteredSessions.slice(0, 50);
+
+            if (recentSessions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🔍</div>
+                        <div style="color: #999;">Nenhum lead encontrado neste filtro</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentSessions.map(session => {
+                const online = isOnline(session.lastActivity);
+                const shortId = session.sessionId ? session.sessionId.substr(-6).toUpperCase() : 'UNKNOWN';
+                const isCheckout = session.events?.checkout;
+                const statusText = getStatusText(session);
+                
+                // Verificar se tem venda confirmada
+                const hasSale = session.conversion?.hasPurchase === true;
+                const saleAmount = session.conversion?.amount || 0;
+                
+                // Avatar inicial
+                const initial = shortId.charAt(0);
+                
+                // Classe do item
+                let itemClass = 'spy-item';
+                if (hasSale) itemClass += ' sale';
+                else if (isCheckout) itemClass += ' checkout';
+                
+                // Status class
+                let statusClass = 'spy-status';
+                if (hasSale) statusClass += ' sale';
+                else if (isCheckout) statusClass += ' checkout';
+                
+                // Progresso do quiz
+                const quizProgress = session.quizProgress || 0;
+                const progressBar = quizProgress > 0 && quizProgress < 15 ? 
+                    `<div class="progress-indicator">Quiz: ${quizProgress}/15 perguntas</div>` : '';
+                
+                return `
+                    <div class="${itemClass}" data-session-id="${session.sessionId || session.id}">
+                        <div class="spy-avatar">
+                            ${initial}
+                        </div>
+                        
+                        <div class="spy-content">
+                            <div class="spy-header">
+                                <div class="spy-id">Lead #${shortId}</div>
+                                <div class="spy-time">${formatTimeAgo(session.enteredAt)}</div>
+                            </div>
+                            <div class="${statusClass}">
+                                ${statusText}
+                            </div>
+                            ${progressBar}
+                        </div>
+                        
+                        <div class="spy-badges">
+                            ${online ? '<div class="online-dot"></div>' : ''}
+                            ${isCheckout && !hasSale ? '<div class="checkout-badge">CHECKOUT</div>' : ''}
+                            ${hasSale ? `<div class="sale-badge">R$ ${saleAmount.toFixed(2)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        const sessionsQuery = query(collection(db, 'sessions'), orderBy('enteredAt', 'desc'));
+        
+        onSnapshot(sessionsQuery, (snapshot) => {
+            allSessions = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            updateStats();
+            updateQuizRetention();
+            updateFunnel();
+            updateSpyFeed();
+        });
+
+        const salesQuery = query(collection(db, 'sales'), orderBy('createdAt', 'desc'));
+        
+        onSnapshot(salesQuery, (snapshot) => {
+            allSales = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            
+            updateSalesStats();
+            updateFunnel();
+            updateSpyFeed();
+        });
+
+        setInterval(() => {
+            updateStats();
+            updateSpyFeed();
+            updateSalesStats();
         }, 30000);
 
-        async function init() {
-            render();
-            try {
-                await setDoc(doc(db, 'sessions', sid), {
-                    sessionId: sid, 
-                    enteredAt: serverTimestamp(), 
-                    lastActivity: serverTimestamp(), 
-                    currentStep: 'vsl', 
-                    status: 'active',
-                    geo: { city: 'N/A', region: 'N/A', country: 'N/A' },
-                    device: { type: 'N/A', os: 'N/A', browser: 'N/A' },
-                    conversion: { clickedCheckout: false, enteredCheckout: false },
-                    events: {}, 
-                    answers: {}, 
-                    quizProgress: 0
-                });
-            } catch (err) {}
-        }
-
-        init();
+        updatePeakHourChart();
+        updateFunnel();
+        updateHeatmap();
+        updateComparison(); // Inicializar comparação
     </script>
 </body>
 </html>
