@@ -982,20 +982,28 @@
             </div>
             <div class="stats-grid">
                 <div class="stat-card highlight">
-                    <div class="stat-label">Vendas Hoje</div>
+                    <div class="stat-label">Vendas</div>
                     <div class="stat-value" id="sales-today">0</div>
                 </div>
                 <div class="stat-card highlight">
-                    <div class="stat-label">Faturamento Hoje</div>
-                    <div class="stat-value" id="revenue-today" style="font-size: 28px;">R$ 0</div>
+                    <div class="stat-label">Faturamento Bruto</div>
+                    <div class="stat-value" id="revenue-today" style="font-size: 24px;">R$ 0</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Taxas Wiapy</div>
+                    <div class="stat-value" id="total-fees" style="font-size: 24px; color: #ef4444;">- R$ 0</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Faturamento Líquido</div>
+                    <div class="stat-value" id="net-revenue" style="font-size: 24px; color: #00ff00;">R$ 0</div>
                 </div>
                 <div class="stat-card highlight">
                     <div class="stat-label">Taxa Conversão</div>
                     <div class="stat-value" id="conversion-rate">0%</div>
                 </div>
                 <div class="stat-card highlight">
-                    <div class="stat-label">Ticket Médio</div>
-                    <div class="stat-value" id="average-ticket" style="font-size: 28px;">R$ 0</div>
+                    <div class="stat-label">Ticket Médio Líquido</div>
+                    <div class="stat-value" id="average-ticket" style="font-size: 24px;">R$ 0</div>
                 </div>
                 <div class="stat-card highlight">
                     <div class="stat-label">Checkouts por Venda</div>
@@ -1088,6 +1096,30 @@
         let customDateRange = null;
         let alertQueue = [];
         let spyFilter = 'all';
+
+        // CÁLCULO DE TAXAS WIAPY
+        function calculateWiapyFee(amount, paymentMethod = 'pix') {
+            if (paymentMethod === 'pix') {
+                if (amount <= 10.00) return 1.00;
+                if (amount <= 15.00) return 1.25;
+                if (amount <= 20.00) return 1.50;
+                if (amount <= 25.00) return 1.75;
+                if (amount <= 30.00) return 2.00;
+                if (amount <= 35.00) return 2.15;
+                if (amount <= 40.00) return 2.30;
+                if (amount <= 45.00) return 2.40;
+                if (amount <= 50.00) return 2.50;
+                return 1.49 + (amount * 0.0499); // Acima de R$ 50
+            } else {
+                // Cartão ou Boleto
+                return 1.49 + (amount * 0.0499);
+            }
+        }
+
+        function calculateNetRevenue(grossAmount, paymentMethod = 'pix') {
+            const fee = calculateWiapyFee(grossAmount, paymentMethod);
+            return grossAmount - fee;
+        }
 
         // SISTEMA DE ALERTAS
         function showAlert(type, title, message) {
@@ -1185,7 +1217,16 @@
             const iniciouQuiz = sessions.filter(s => s.events?.quiz_start).length;
             const completouQuiz = sessions.filter(s => s.events?.quiz_completed).length;
             const checkout = sessions.filter(s => s.events?.checkout).length;
-            const revenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+            const grossRevenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+            
+            // Calcular taxas e receita líquida
+            const totalFees = sales.reduce((sum, sale) => {
+                const amount = sale.amount || 0;
+                const paymentMethod = sale.paymentMethod || 'pix';
+                return sum + calculateWiapyFee(amount, paymentMethod);
+            }, 0);
+            
+            const netRevenue = grossRevenue - totalFees;
             
             return {
                 acessos: sessions.length,
@@ -1194,9 +1235,11 @@
                 completouQuiz,
                 checkout,
                 vendas: sales.length,
-                faturamento: revenue,
+                faturamentoBruto: grossRevenue,
+                taxas: totalFees,
+                faturamento: netRevenue,
                 conversao: sessions.length > 0 ? (sales.length / sessions.length) * 100 : 0,
-                ticketMedio: sales.length > 0 ? revenue / sales.length : 0
+                ticketMedio: sales.length > 0 ? netRevenue / sales.length : 0
             };
         }
 
@@ -1226,9 +1269,11 @@
                         ${renderComparisonRow('Completou Quiz', statsA.completouQuiz, statsB.completouQuiz)}
                         ${renderComparisonRow('Checkout', statsA.checkout, statsB.checkout)}
                         ${renderComparisonRow('Vendas', statsA.vendas, statsB.vendas)}
-                        ${renderComparisonRow('Faturamento', 'R$ ' + statsA.faturamento.toFixed(2), statsB.faturamento, true)}
+                        ${renderComparisonRow('Faturamento Bruto', 'R$ ' + statsA.faturamentoBruto.toFixed(2), statsB.faturamentoBruto, true)}
+                        ${renderComparisonRow('Taxas Wiapy', 'R$ ' + statsA.taxas.toFixed(2), statsB.taxas, true)}
+                        ${renderComparisonRow('Faturamento Líquido', 'R$ ' + statsA.faturamento.toFixed(2), statsB.faturamento, true)}
                         ${renderComparisonRow('Taxa Conversão', statsA.conversao.toFixed(1) + '%', statsB.conversao, true)}
-                        ${renderComparisonRow('Ticket Médio', 'R$ ' + statsA.ticketMedio.toFixed(2), statsB.ticketMedio, true)}
+                        ${renderComparisonRow('Ticket Médio Líquido', 'R$ ' + statsA.ticketMedio.toFixed(2), statsB.ticketMedio, true)}
                     </div>
                 </div>
                 
@@ -1244,9 +1289,11 @@
                         ${renderComparisonRow('Completou Quiz', statsB.completouQuiz, statsA.completouQuiz, false, true)}
                         ${renderComparisonRow('Checkout', statsB.checkout, statsA.checkout, false, true)}
                         ${renderComparisonRow('Vendas', statsB.vendas, statsA.vendas, false, true)}
-                        ${renderComparisonRow('Faturamento', 'R$ ' + statsB.faturamento.toFixed(2), statsA.faturamento, true, true)}
+                        ${renderComparisonRow('Faturamento Bruto', 'R$ ' + statsB.faturamentoBruto.toFixed(2), statsA.faturamentoBruto, true, true)}
+                        ${renderComparisonRow('Taxas Wiapy', 'R$ ' + statsB.taxas.toFixed(2), statsA.taxas, true, true)}
+                        ${renderComparisonRow('Faturamento Líquido', 'R$ ' + statsB.faturamento.toFixed(2), statsA.faturamento, true, true)}
                         ${renderComparisonRow('Taxa Conversão', statsB.conversao.toFixed(1) + '%', statsA.conversao, true, true)}
-                        ${renderComparisonRow('Ticket Médio', 'R$ ' + statsB.ticketMedio.toFixed(2), statsA.ticketMedio, true, true)}
+                        ${renderComparisonRow('Ticket Médio Líquido', 'R$ ' + statsB.ticketMedio.toFixed(2), statsA.ticketMedio, true, true)}
                     </div>
                 </div>
             `;
@@ -1529,16 +1576,31 @@
                     playSaleSound();
                     console.log('🔔 NOVA VENDA!', sale);
                     
-                    // ALERTA: Nova venda
+                    // ALERTA: Nova venda com valor líquido
                     const amount = sale.amount || 0;
-                    showAlert('sale', '💰 NOVA VENDA!', `Venda confirmada: R$ ${amount.toFixed(2)}! 🎉`);
+                    const paymentMethod = sale.paymentMethod || 'pix';
+                    const fee = calculateWiapyFee(amount, paymentMethod);
+                    const netAmount = amount - fee;
+                    showAlert('sale', '💰 NOVA VENDA!', 
+                        `Bruto: R$ ${amount.toFixed(2)} | Líquido: R$ ${netAmount.toFixed(2)} 🎉`);
                 }
             });
 
             // Calcular métricas do período filtrado
             const salesCount = paidSalesFiltered.length;
-            const revenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-            const averageTicket = salesCount > 0 ? revenue / salesCount : 0;
+            const grossRevenue = paidSalesFiltered.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+            
+            // Calcular taxas totais
+            const totalFees = paidSalesFiltered.reduce((sum, sale) => {
+                const amount = sale.amount || 0;
+                const paymentMethod = sale.paymentMethod || 'pix';
+                return sum + calculateWiapyFee(amount, paymentMethod);
+            }, 0);
+            
+            // Receita líquida
+            const netRevenue = grossRevenue - totalFees;
+            
+            const averageTicket = salesCount > 0 ? netRevenue / salesCount : 0;
             
             // Total de acessos do período (todos que entraram)
             const totalVisits = allSessions.filter(s => {
@@ -1563,7 +1625,11 @@
 
             document.getElementById('sales-today').textContent = salesCount;
             document.getElementById('revenue-today').textContent = 
-                'R$ ' + revenue.toFixed(2).replace('.', ',');
+                'R$ ' + grossRevenue.toFixed(2).replace('.', ',');
+            document.getElementById('total-fees').textContent = 
+                '- R$ ' + totalFees.toFixed(2).replace('.', ',');
+            document.getElementById('net-revenue').textContent = 
+                'R$ ' + netRevenue.toFixed(2).replace('.', ',');
             document.getElementById('conversion-rate').textContent = conversionRate.toFixed(1) + '%';
             document.getElementById('average-ticket').textContent = 
                 'R$ ' + averageTicket.toFixed(2).replace('.', ',');
@@ -1970,7 +2036,14 @@
             } else if (spyFilter === 'checkout') {
                 filteredSessions = uniqueSessions.filter(s => s.events?.checkout);
             } else if (spyFilter === 'sale') {
-                filteredSessions = uniqueSessions.filter(s => s.conversion?.hasPurchase === true);
+                // Filtrar por vendas - verificar se sessionId tem venda confirmada
+                filteredSessions = uniqueSessions.filter(s => {
+                    const sid = s.sessionId || s.id;
+                    return allSales.some(sale => 
+                        sale.isPaid === true && 
+                        (sale.sessionId === sid || sale.externalId === sid)
+                    );
+                });
             }
 
             const recentSessions = filteredSessions.slice(0, 50);
@@ -1987,13 +2060,20 @@
 
             container.innerHTML = recentSessions.map(session => {
                 const online = isOnline(session.lastActivity);
-                const shortId = session.sessionId ? session.sessionId.substr(-6).toUpperCase() : 'UNKNOWN';
+                const sid = session.sessionId || session.id;
+                const shortId = sid.substr(-6).toUpperCase();
                 const isCheckout = session.events?.checkout;
                 const statusText = getStatusText(session);
                 
-                // Verificar se tem venda confirmada
-                const hasSale = session.conversion?.hasPurchase === true;
-                const saleAmount = session.conversion?.amount || 0;
+                // Verificar se tem venda confirmada - buscar nas vendas
+                const sale = allSales.find(s => 
+                    s.isPaid === true && 
+                    (s.sessionId === sid || s.externalId === sid)
+                );
+                const hasSale = !!sale;
+                const saleAmount = sale?.amount || 0;
+                const paymentMethod = sale?.paymentMethod || 'pix';
+                const netAmount = hasSale ? calculateNetRevenue(saleAmount, paymentMethod) : 0;
                 
                 // Avatar inicial
                 const initial = shortId.charAt(0);
@@ -2008,13 +2088,16 @@
                 if (hasSale) statusClass += ' sale';
                 else if (isCheckout) statusClass += ' checkout';
                 
+                // Status text override se vendeu
+                const displayStatus = hasSale ? '💰 COMPROU!' : statusText;
+                
                 // Progresso do quiz
                 const quizProgress = session.quizProgress || 0;
-                const progressBar = quizProgress > 0 && quizProgress < 15 ? 
+                const progressBar = quizProgress > 0 && quizProgress < 15 && !hasSale ? 
                     `<div class="progress-indicator">Quiz: ${quizProgress}/15 perguntas</div>` : '';
                 
                 return `
-                    <div class="${itemClass}" data-session-id="${session.sessionId || session.id}">
+                    <div class="${itemClass}" data-session-id="${sid}">
                         <div class="spy-avatar">
                             ${initial}
                         </div>
@@ -2025,15 +2108,15 @@
                                 <div class="spy-time">${formatTimeAgo(session.enteredAt)}</div>
                             </div>
                             <div class="${statusClass}">
-                                ${statusText}
+                                ${displayStatus}
                             </div>
                             ${progressBar}
                         </div>
                         
                         <div class="spy-badges">
-                            ${online ? '<div class="online-dot"></div>' : ''}
+                            ${online && !hasSale ? '<div class="online-dot"></div>' : ''}
                             ${isCheckout && !hasSale ? '<div class="checkout-badge">CHECKOUT</div>' : ''}
-                            ${hasSale ? `<div class="sale-badge">R$ ${saleAmount.toFixed(2)}</div>` : ''}
+                            ${hasSale ? `<div class="sale-badge">R$ ${netAmount.toFixed(2)}</div>` : ''}
                         </div>
                     </div>
                 `;
