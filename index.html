@@ -925,17 +925,17 @@
                         <div class="stat-value" id="total-visits">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Assistiu VSL</div>
+                        <div class="stat-label">Iniciou Quiz</div>
                         <div class="stat-value" id="passed-instruction">0</div>
                         <div class="stat-percent" id="passed-instruction-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Iniciou Quiz</div>
+                        <div class="stat-label">Completou Quiz</div>
                         <div class="stat-value" id="clicked-vsl">0</div>
                         <div class="stat-percent" id="clicked-vsl-pct">0%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Completou Quiz</div>
+                        <div class="stat-label">Viu Resultado</div>
                         <div class="stat-value" id="started-quiz">0</div>
                         <div class="stat-percent" id="started-quiz-pct">0%</div>
                     </div>
@@ -1213,9 +1213,9 @@
                 return date >= range.start && date <= range.end;
             });
             
-            const assistiuVSL = sessions.filter(s => s.events?.vsl_done).length;
-            const iniciouQuiz = sessions.filter(s => s.events?.quiz_start).length;
+            const iniciouQuiz = sessions.filter(s => s.events?.quiz_started).length;
             const completouQuiz = sessions.filter(s => s.events?.quiz_completed).length;
+            const viuResultado = sessions.filter(s => s.events?.result_shown).length;
             const checkout = sessions.filter(s => s.events?.checkout).length;
             const grossRevenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
             
@@ -1230,9 +1230,9 @@
             
             return {
                 acessos: sessions.length,
-                assistiuVSL,
                 iniciouQuiz,
                 completouQuiz,
+                viuResultado,
                 checkout,
                 vendas: sales.length,
                 faturamentoBruto: grossRevenue,
@@ -1264,9 +1264,9 @@
                     </div>
                     <div class="comparison-stats">
                         ${renderComparisonRow('Acessos', statsA.acessos, statsB.acessos)}
-                        ${renderComparisonRow('Assistiu VSL', statsA.assistiuVSL, statsB.assistiuVSL)}
                         ${renderComparisonRow('Iniciou Quiz', statsA.iniciouQuiz, statsB.iniciouQuiz)}
                         ${renderComparisonRow('Completou Quiz', statsA.completouQuiz, statsB.completouQuiz)}
+                        ${renderComparisonRow('Viu Resultado', statsA.viuResultado, statsB.viuResultado)}
                         ${renderComparisonRow('Checkout', statsA.checkout, statsB.checkout)}
                         ${renderComparisonRow('Vendas', statsA.vendas, statsB.vendas)}
                         ${renderComparisonRow('Faturamento Bruto', 'R$ ' + statsA.faturamentoBruto.toFixed(2), statsB.faturamentoBruto, true)}
@@ -1284,9 +1284,9 @@
                     </div>
                     <div class="comparison-stats">
                         ${renderComparisonRow('Acessos', statsB.acessos, statsA.acessos, false, true)}
-                        ${renderComparisonRow('Assistiu VSL', statsB.assistiuVSL, statsA.assistiuVSL, false, true)}
                         ${renderComparisonRow('Iniciou Quiz', statsB.iniciouQuiz, statsA.iniciouQuiz, false, true)}
                         ${renderComparisonRow('Completou Quiz', statsB.completouQuiz, statsA.completouQuiz, false, true)}
+                        ${renderComparisonRow('Viu Resultado', statsB.viuResultado, statsA.viuResultado, false, true)}
                         ${renderComparisonRow('Checkout', statsB.checkout, statsA.checkout, false, true)}
                         ${renderComparisonRow('Vendas', statsB.vendas, statsA.vendas, false, true)}
                         ${renderComparisonRow('Faturamento Bruto', 'R$ ' + statsB.faturamentoBruto.toFixed(2), statsA.faturamentoBruto, true, true)}
@@ -1442,11 +1442,11 @@
 
         function getStatusText(session) {
             if (session.events?.checkout) return '💳 CLICOU NO CHECKOUT';
-            if (session.events?.offer) return '🎯 Visualizando Oferta Final';
-            if (session.events?.quiz_completed) return '✅ Completou Quiz (15/15)';
-            if (session.events?.quiz_start) return `📝 Respondendo Quiz (${session.quizProgress || 1}/15)`;
-            if (session.events?.vsl_done) return '▶️ Assistiu VSL';
-            return '📱 Visualizando VSL';
+            if (session.events?.offer_viewed) return '🎯 Visualizando Oferta (R$ 12,90)';
+            if (session.events?.result_shown) return '🎉 Viu Resultado Personalizado';
+            if (session.events?.quiz_completed) return '✅ Completou Quiz (8/8)';
+            if (session.events?.quiz_started) return `📝 Respondendo Quiz (${session.quizProgress || 1}/8)`;
+            return '📱 Visualizando Gancho';
         }
 
         function playCheckoutSound() {
@@ -1496,10 +1496,10 @@
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
             
-            // EVENTOS DO FUNIL DE 15 PERGUNTAS
-            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done).length; // vsl_done
-            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_start).length; // quiz_start
+            // EVENTOS DO FUNIL OTIMIZADO
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_started).length; // quiz_started (novo)
             const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length; // quiz_completed
+            const viuResultado = allSessions.filter(s => s.events?.result_shown).length; // result_shown (novo)
             const clickedCheckout = allSessions.filter(s => s.events?.checkout).length; // checkout
 
             allSessions.forEach(session => {
@@ -1516,18 +1516,18 @@
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = assistiuVSL; // Assistiu VSL
-            document.getElementById('clicked-vsl').textContent = iniciouQuiz; // Iniciou quiz
-            document.getElementById('started-quiz').textContent = completouQuiz; // Completou quiz
+            document.getElementById('passed-instruction').textContent = iniciouQuiz; // Iniciou quiz (sem VSL)
+            document.getElementById('clicked-vsl').textContent = completouQuiz; // Completou quiz
+            document.getElementById('started-quiz').textContent = viuResultado; // Viu resultado
             document.getElementById('total-leads').textContent = completouQuiz; // Leads = completou quiz
             document.getElementById('checkout-count').textContent = clickedCheckout;
 
             document.getElementById('passed-instruction-pct').textContent = 
-                total > 0 ? Math.round((assistiuVSL / total) * 100) + '%' : '0%';
-            document.getElementById('clicked-vsl-pct').textContent = 
                 total > 0 ? Math.round((iniciouQuiz / total) * 100) + '%' : '0%';
-            document.getElementById('started-quiz-pct').textContent = 
+            document.getElementById('clicked-vsl-pct').textContent = 
                 total > 0 ? Math.round((completouQuiz / total) * 100) + '%' : '0%';
+            document.getElementById('started-quiz-pct').textContent = 
+                total > 0 ? Math.round((viuResultado / total) * 100) + '%' : '0%';
             document.getElementById('checkout-pct').textContent = 
                 total > 0 ? Math.round((clickedCheckout / total) * 100) + '%' : '0%';
             
@@ -1535,10 +1535,10 @@
             document.getElementById('completion-rate').textContent = completionRate + '%';
 
             const dropouts = {
-                'VSL': total - assistiuVSL,
-                'Quiz Início': assistiuVSL - iniciouQuiz,
-                'Quiz Final': iniciouQuiz - completouQuiz,
-                'Checkout': completouQuiz - clickedCheckout
+                'Gancho': total - iniciouQuiz,
+                'Quiz': iniciouQuiz - completouQuiz,
+                'Análise': completouQuiz - viuResultado,
+                'Checkout': viuResultado - clickedCheckout
             };
             
             const maxDropout = Object.entries(dropouts).reduce((max, [key, val]) => 
@@ -1734,18 +1734,18 @@
 
         function updateFunnel() {
             const total = allSessions.length;
-            const assistiuVSL = allSessions.filter(s => s.events?.vsl_done).length;
-            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_start).length;
+            const iniciouQuiz = allSessions.filter(s => s.events?.quiz_started).length;
             const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
-            const viuOferta = allSessions.filter(s => s.events?.offer).length;
+            const viuResultado = allSessions.filter(s => s.events?.result_shown).length;
+            const viuOferta = allSessions.filter(s => s.events?.offer_viewed).length;
             const clickedCheckout = allSessions.filter(s => s.events?.checkout).length;
             const totalSales = allSales.filter(s => s.isPaid === true).length;
 
             const stages = [
                 { name: 'Total de Acessos', count: total, percent: 100 },
-                { name: 'Assistiu VSL', count: assistiuVSL, percent: total > 0 ? (assistiuVSL / total) * 100 : 0 },
-                { name: 'Iniciou Quiz (15Q)', count: iniciouQuiz, percent: total > 0 ? (iniciouQuiz / total) * 100 : 0 },
+                { name: 'Iniciou Quiz (8Q)', count: iniciouQuiz, percent: total > 0 ? (iniciouQuiz / total) * 100 : 0 },
                 { name: 'Completou Quiz', count: completouQuiz, percent: total > 0 ? (completouQuiz / total) * 100 : 0 },
+                { name: 'Viu Resultado', count: viuResultado, percent: total > 0 ? (viuResultado / total) * 100 : 0 },
                 { name: 'Visualizou Oferta', count: viuOferta, percent: total > 0 ? (viuOferta / total) * 100 : 0 },
                 { name: 'Clicou Checkout', count: clickedCheckout, percent: total > 0 ? (clickedCheckout / total) * 100 : 0 },
                 { name: '💰 VENDAS', count: totalSales, percent: total > 0 ? (totalSales / total) * 100 : 0 }
@@ -1863,7 +1863,7 @@
         function updateQuizRetention() {
             const container = document.getElementById('quiz-stats');
             const quizProgress = {};
-            for (let i = 1; i <= 15; i++) { // 15 perguntas
+            for (let i = 1; i <= 8; i++) { // 8 perguntas agora
                 quizProgress[i] = 0;
             }
             
@@ -1874,7 +1874,7 @@
                 }
             });
             
-            const total = allSessions.filter(s => s.events?.quiz_start).length;
+            const total = allSessions.filter(s => s.events?.quiz_started).length;
             
             if (total === 0) {
                 container.innerHTML = '<div class="empty-state">Aguardando dados do quiz...</div>';
@@ -1883,24 +1883,17 @@
             
             const quizData = [];
             const questionNames = [
-                'Idade',
-                'Rigidez',
-                'Manutenção',
-                'Matinal',
-                'Circulação',
-                'Histórico',
                 'Tamanho',
-                'Estresse',
+                'Duração',
+                'Satisfação',
+                'Idade',
+                'Alimentação',
                 'Sono',
-                'Libido',
-                'Vícios',
-                'Medicamentos',
-                'Exercício',
-                'Recuperação',
+                'Tentou Antes',
                 'Prioridade'
             ];
             
-            for (let i = 1; i <= 15; i++) {
+            for (let i = 1; i <= 8; i++) {
                 const count = quizProgress[i];
                 const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
                 quizData.push({ 
@@ -2093,8 +2086,8 @@
                 
                 // Progresso do quiz
                 const quizProgress = session.quizProgress || 0;
-                const progressBar = quizProgress > 0 && quizProgress < 15 && !hasSale ? 
-                    `<div class="progress-indicator">Quiz: ${quizProgress}/15 perguntas</div>` : '';
+                const progressBar = quizProgress > 0 && quizProgress < 8 && !hasSale ? 
+                    `<div class="progress-indicator">Quiz: ${quizProgress}/8 perguntas</div>` : '';
                 
                 return `
                     <div class="${itemClass}" data-session-id="${sid}">
