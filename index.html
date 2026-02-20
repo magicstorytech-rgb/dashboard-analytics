@@ -39,56 +39,6 @@
             font-weight: 500;
         }
 
-        /* TABS SYSTEM */
-        .tabs-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 0;
-        }
-
-        .tab {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid #333;
-            border-bottom: none;
-            color: #999;
-            padding: 15px 30px;
-            border-radius: 12px 12px 0 0;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            position: relative;
-            bottom: -2px;
-        }
-
-        .tab:hover {
-            background: rgba(204, 0, 0, 0.1);
-            color: #ff3333;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%);
-            border-color: #cc0000;
-            color: #ff3333;
-            box-shadow: 0 -5px 20px rgba(204, 0, 0, 0.3);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .country-flag {
-            font-size: 20px;
-            margin-right: 8px;
-        }
-
         .alerts-container {
             position: fixed;
             top: 20px;
@@ -933,23 +883,10 @@
         <div class="header">
             <div class="title">🔴 ALPHA METHOD - Analytics</div>
             <div class="subtitle">Monitoramento em Tempo Real - Funil de Vendas</div>
-            
-            <!-- TABS -->
-            <div class="tabs-container">
-                <div class="tab active" onclick="switchMarket('brasil')">
-                    <span class="country-flag">🇧🇷</span> BRASIL
-                </div>
-                <div class="tab" onclick="switchMarket('latam')">
-                    <span class="country-flag">🌎</span> LATAM
-                </div>
-            </div>
         </div>
 
-        <!-- CONTEÚDO BRASIL -->
-        <div id="market-brasil" class="tab-content active">
-        
         <div class="online-badge">
-            <div class="online-label">👥 Online Agora (Brasil)</div>
+            <div class="online-label">👥 Online Agora</div>
             <div class="online-count" id="online-now">0</div>
         </div>
 
