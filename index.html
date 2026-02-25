@@ -538,14 +538,31 @@
             return dy === 1 ? 'há 1 dia' : `há ${dy} dias`;
         }
 
-        // ── STATUS DO LEAD (atualizado para 15Q) ─────────────────────────
+        // ── STATUS DO LEAD ────────────────────────────────────────────────
+        // Usa currentStep (salvo a cada tela) como fonte primária
+        // e events.* como fallback para sessões antigas
         function getStatusText(session) {
+            const step = session.currentStep;
+
+            // currentStep é atualizado em tempo real a cada tela
+            if (step === 'checkout')  return '💳 CLICOU NO CHECKOUT';
+            if (step === 'oferta')    return '🎯 Visualizando Oferta';
+            if (step === 'analise')   return '🔬 Na Análise/Resultado';
+            if (step === 'quiz') {
+                const q = session.quizProgress || 1;
+                return `📝 No Quiz — Pergunta ${q}/${TOTAL_QUESTIONS}`;
+            }
+            if (step === 'avaliacao') return '📋 Na Tela de Avaliação';
+            if (step === 'vsl')       return '▶️ Assistindo o VSL';
+
+            // Fallback para eventos (sessões sem currentStep)
             if (session.events?.checkout)       return '💳 CLICOU NO CHECKOUT';
             if (session.events?.offer_viewed)   return '🎯 Visualizando Oferta';
             if (session.events?.result_shown)   return '🔬 Viu Análise/Resultado';
             if (session.events?.quiz_completed) return `✅ Completou Quiz (${TOTAL_QUESTIONS}/${TOTAL_QUESTIONS})`;
             if (session.events?.quiz_started)   return `📝 Respondendo Quiz (${session.quizProgress || 1}/${TOTAL_QUESTIONS})`;
-            if (session.events?.vsl_clicked)    return '▶️ Assistindo VSL';
+            if (session.events?.vsl_clicked)    return '▶️ Assistiu VSL';
+            if (session.events?.page_view)      return '📱 Carregou a Página';
             return '📱 Visualizando Gancho';
         }
 
