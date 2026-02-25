@@ -885,7 +885,8 @@
                 const online = isOnline(session.lastActivity);
                 const sid = session.sessionId || session.id;
                 const shortId = sid.substr(-6).toUpperCase();
-                const isCheckout = session.events?.checkout;
+                // events.checkout vem como Timestamp — qualquer truthy ou currentStep conta
+                const isCheckout = !!(session.events?.checkout || session.currentStep === 'checkout');
                 const sale = allSales.find(x => x.isPaid === true && (x.sessionId === sid || x.externalId === sid));
                 const hasSale = !!sale;
                 const netAmount = hasSale ? calculateNetRevenue(sale.amount||0, sale.paymentMethod||'pix') : 0;
