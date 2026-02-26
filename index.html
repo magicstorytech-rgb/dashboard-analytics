@@ -388,8 +388,12 @@ const TOTAL_Q = 15;
 // O funil salva events.* como serverTimestamp() (NUNCA boolean)
 // hasEvent verifica se o campo existe e é diferente de null/false/undefined
 function hasEvent(s, name) {
-  const v = s.events?.[name];
-  // Timestamp do Firebase tem .seconds, boolean true, ou qualquer truthy
+  // Firestore com setDoc+merge e notação de ponto ('events.vsl_clicked')
+  // SEMPRE salva como objeto aninhado { events: { vsl_clicked: Timestamp } }
+  // Mas checamos os dois casos por segurança
+  const nested = s.events?.[name];          // { events: { vsl_clicked: T } }
+  const flat   = s['events.' + name];       // { 'events.vsl_clicked': T } (fallback)
+  const v = nested !== undefined ? nested : flat;
   return v !== undefined && v !== null && v !== false;
 }
 // isCheckout: via evento OU via currentStep (ambos salvos pelo funil)
