@@ -161,6 +161,49 @@
         ::-webkit-scrollbar-thumb { background: #cc0000; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
         @media (max-width: 1200px) { .main-grid, .chart-and-retention { grid-template-columns: 1fr; } }
+        /* ===== PAINEL DE CANAIS TIKTOK ===== */
+        .channels-section {background: linear-gradient(135deg, #1a1a1a 0%, #001a2d 100%); border: 2px solid #0066cc; border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);}
+        .channel-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px;}
+        .channel-card {background: rgba(0, 0, 0, 0.5); border: 2px solid #333; border-radius: 10px; padding: 18px; transition: all 0.3s; position: relative;}
+        .channel-card:hover {border-color: #0066cc; box-shadow: 0 0 20px rgba(0, 102, 204, 0.4); transform: translateY(-2px);}
+        .channel-card.posted {border-color: #00ff00; background: linear-gradient(135deg, rgba(0, 255, 0, 0.05) 0%, rgba(0, 200, 0, 0.02) 100%);}
+        .channel-card.viral {border-color: #fbbf24; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.03) 100%); animation: viralPulse 2s ease-in-out infinite;}
+        .channel-card.warning {border-color: #ef4444; background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.02) 100%);}
+        @keyframes viralPulse {0%, 100% {box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);} 50% {box-shadow: 0 0 35px rgba(251, 191, 36, 0.7);}}
+        .channel-header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;}
+        .channel-name {font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px;}
+        .channel-status {font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;}
+        .channel-status.not-posted {background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;}
+        .channel-status.posted {background: rgba(0, 255, 0, 0.2); color: #00ff00; border: 1px solid #00ff00;}
+        .channel-status.viral {background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; border: 1px solid #fbbf24;}
+        .channel-info {font-size: 12px; color: #999; margin-bottom: 8px; line-height: 1.4;}
+        .channel-stats {display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;}
+        .channel-stat {text-align: center; background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 6px;}
+        .channel-stat-value {font-size: 18px; font-weight: 900; color: #00ff00;}
+        .channel-stat-label {font-size: 9px; color: #666; text-transform: uppercase; margin-top: 3px;}
+        .channel-alert {margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: 700; line-height: 1.4;}
+        .channel-alert.danger {background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444;}
+        .channel-alert.warning {background: rgba(251, 191, 36, 0.15); border: 1px solid #fbbf24; color: #fbbf24;}
+        .channel-alert.success {background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #22c55e;}
+        .channel-alert.info {background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; color: #3b82f6;}
+        .add-post-btn {background: rgba(0, 102, 204, 0.2); border: 2px dashed #0066cc; color: #0066cc; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; transition: all 0.2s;}
+        .add-post-btn:hover {background: rgba(0, 102, 204, 0.3); border-style: solid;}
+        .modal {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; align-items: center; justify-content: center;}
+        .modal.active {display: flex;}
+        .modal-content {background: linear-gradient(135deg, #1a1a1a 0%, #2d0000 100%); border: 2px solid #cc0000; border-radius: 16px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 0 50px rgba(204, 0, 0, 0.5);}
+        .modal-title {font-size: 22px; font-weight: 900; color: #ff3333; margin-bottom: 20px;}
+        .form-group {margin-bottom: 15px;}
+        .form-label {font-size: 12px; font-weight: 700; color: #999; margin-bottom: 5px; display: block; text-transform: uppercase;}
+        .form-input, .form-select {width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; font-size: 14px;}
+        .form-checkbox-group {display: flex; gap: 15px; margin-top: 10px;}
+        .form-checkbox-label {display: flex; align-items: center; gap: 8px; cursor: pointer;}
+        .form-checkbox {width: 20px; height: 20px; cursor: pointer;}
+        .modal-actions {display: flex; gap: 10px; margin-top: 25px;}
+        .modal-btn {flex: 1; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; font-size: 15px; text-transform: uppercase; transition: all 0.2s;}
+        .modal-btn-primary {background: #cc0000; color: #fff;}
+        .modal-btn-primary:hover {background: #ff3333; box-shadow: 0 0 20px rgba(204, 0, 0, 0.5);}
+        .modal-btn-secondary {background: rgba(255, 255, 255, 0.1); color: #999;}
+        .modal-btn-secondary:hover {background: rgba(255, 255, 255, 0.15); color: #fff;}
     </style>
 </head>
 <body>
@@ -175,6 +218,57 @@
         <div class="online-badge">
             <div class="online-label">👥 Online Agora</div>
             <div class="online-count" id="online-now">0</div>
+        </div>
+
+        <!-- PAINEL DE CONTROLE DE CANAIS TIKTOK -->
+        <div class="channels-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-title" style="margin-bottom: 0;">📱 Controle de Canais TikTok</div>
+                <button class="add-post-btn" style="width: auto; margin-top: 0;" onclick="openPostModal()">+ Registrar Postagem</button>
+            </div>
+            <div class="channel-grid" id="channels-grid"></div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal" id="post-modal">
+            <div class="modal-content">
+                <div class="modal-title">📝 Registrar Nova Postagem</div>
+                <div class="form-group">
+                    <label class="form-label">Canal TikTok</label>
+                    <select class="form-select" id="post-channel">
+                        <option value="doutor-cajado">📱 Doutor Cajado</option>
+                        <option value="doutor-reginaldo">📱 Doutor Reginaldo</option>
+                        <option value="doutor-saude">📱 Doutor Saúde</option>
+                        <option value="doutor-bigode">📱 Doutor Bigode</option>
+                        <option value="cajado-supremo">📱 Cajado Supremo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Título do Vídeo</label>
+                    <input type="text" class="form-input" id="post-title" placeholder="Ex: Como aumentar 5cm naturalmente">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Horário da Postagem</label>
+                    <input type="datetime-local" class="form-input" id="post-time">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Visualizações</label>
+                    <input type="number" class="form-input" id="post-views" placeholder="Ex: 10000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <div class="form-checkbox-group">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" class="form-checkbox" id="post-viral">
+                            <span>🔥 Viralizou (100k+ views)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-secondary" onclick="closePostModal()">Cancelar</button>
+                    <button class="modal-btn modal-btn-primary" onclick="savePost()">Salvar Postagem</button>
+                </div>
+            </div>
         </div>
 
         <div class="comparison-section">
@@ -944,6 +1038,289 @@
         updateFunnel();
         updateHeatmap();
         updateComparison();
+
+        // ========== CONTROLE DE CANAIS TIKTOK ==========
+        const POSTS_KEY = 'alpha_tiktok_posts';
+        
+        // 📱 5 CANAIS TIKTOK PERSONALIZADOS
+        const CHANNELS = [
+            {id: 'doutor-cajado', name: 'Doutor Cajado', icon: '📱', color: '#ff0050'},
+            {id: 'doutor-reginaldo', name: 'Doutor Reginaldo', icon: '📱', color: '#00f2ea'},
+            {id: 'doutor-saude', name: 'Doutor Saúde', icon: '📱', color: '#25f4ee'},
+            {id: 'doutor-bigode', name: 'Doutor Bigode', icon: '📱', color: '#fe2c55'},
+            {id: 'cajado-supremo', name: 'Cajado Supremo', icon: '📱', color: '#00f2ea'}
+        ];
+        
+        function loadPosts() {
+            const s = localStorage.getItem(POSTS_KEY);
+            return s ? JSON.parse(s) : [];
+        }
+        
+        function savePosts(p) {
+            localStorage.setItem(POSTS_KEY, JSON.stringify(p));
+        }
+        
+        // ⚠️ SISTEMA DE ALERTAS INTELIGENTES
+        function getChannelAlert(channel, channelPosts) {
+            if (channelPosts.length === 0) {
+                return {
+                    type: 'danger',
+                    message: '⚠️ ATENÇÃO: Nenhuma postagem registrada! Comece a postar agora.'
+                };
+            }
+            
+            const lastPost = channelPosts[channelPosts.length - 1];
+            const lastPostDate = new Date(lastPost.time);
+            const now = new Date();
+            const hoursSinceLastPost = (now - lastPostDate) / (1000 * 60 * 60);
+            const daysSinceLastPost = Math.floor(hoursSinceLastPost / 24);
+            
+            // Alerta: Não postou há muito tempo
+            if (daysSinceLastPost >= 3) {
+                return {
+                    type: 'danger',
+                    message: `🚨 SEM POSTS HÁ ${daysSinceLastPost} DIAS! Canal está esfriando, poste urgente.`
+                };
+            }
+            
+            if (daysSinceLastPost >= 1) {
+                return {
+                    type: 'warning',
+                    message: `⏰ Última postagem há ${daysSinceLastPost} dia${daysSinceLastPost > 1 ? 's' : ''}. Considere postar hoje!`
+                };
+            }
+            
+            // Calcular média de views
+            const totalViews = channelPosts.reduce((sum, p) => sum + (p.views || 0), 0);
+            const avgViews = totalViews / channelPosts.length;
+            const lastViews = lastPost.views || 0;
+            
+            // Alerta: Canal viral/engajado
+            if (lastPost.viral || lastViews > 100000) {
+                return {
+                    type: 'success',
+                    message: `🔥 CANAL QUENTE! Último vídeo viralizou (${(lastViews/1000).toFixed(0)}K views). Continue postando!`
+                };
+            }
+            
+            // Alerta: Performance acima da média
+            if (lastViews > avgViews * 1.5) {
+                return {
+                    type: 'success',
+                    message: `📈 BOM ENGAJAMENTO! ${(lastViews/1000).toFixed(0)}K views, ${((lastViews/avgViews - 1) * 100).toFixed(0)}% acima da média.`
+                };
+            }
+            
+            // Alerta: Performance abaixo da média
+            if (avgViews > 5000 && lastViews < avgViews * 0.5) {
+                return {
+                    type: 'warning',
+                    message: `📉 BAIXO ENGAJAMENTO: ${(lastViews/1000).toFixed(1)}K views (média: ${(avgViews/1000).toFixed(1)}K). Teste novo formato.`
+                };
+            }
+            
+            // Alerta: Consistência boa
+            if (hoursSinceLastPost < 24 && channelPosts.length >= 3) {
+                const viralCount = channelPosts.filter(p => p.viral).length;
+                const viralRate = (viralCount / channelPosts.length) * 100;
+                
+                if (viralRate >= 30) {
+                    return {
+                        type: 'success',
+                        message: `⭐ CANAL EXCELENTE! ${viralRate.toFixed(0)}% dos vídeos viralizaram. Continue assim!`
+                    };
+                }
+                
+                return {
+                    type: 'info',
+                    message: `✅ Frequência boa! Última postagem há ${Math.floor(hoursSinceLastPost)}h. Mantenha consistência.`
+                };
+            }
+            
+            // Padrão: Tudo ok
+            return {
+                type: 'info',
+                message: `✅ Canal ativo. Última postagem: ${lastPost.title.substring(0, 30)}...`
+            };
+        }
+        
+        function renderChannels() {
+            const container = document.getElementById('channels-grid');
+            const posts = loadPosts();
+            
+            container.innerHTML = CHANNELS.map(channel => {
+                const channelPosts = posts.filter(p => p.channel === channel.id);
+                const lastPost = channelPosts.length > 0 ? channelPosts[channelPosts.length - 1] : null;
+                const totalViews = channelPosts.reduce((sum, p) => sum + (p.views || 0), 0);
+                const viralCount = channelPosts.filter(p => p.viral).length;
+                
+                // Status do canal
+                let statusClass = 'not-posted';
+                let statusText = 'Sem posts';
+                let cardClass = '';
+                
+                if (lastPost) {
+                    const daysSince = Math.floor((new Date() - new Date(lastPost.time)) / (1000 * 60 * 60 * 24));
+                    
+                    if (lastPost.viral) {
+                        statusClass = 'viral';
+                        statusText = '🔥 Viral';
+                        cardClass = 'viral';
+                    } else if (daysSince >= 3) {
+                        statusClass = 'not-posted';
+                        statusText = '⚠️ Inativo';
+                        cardClass = 'warning';
+                    } else {
+                        statusClass = 'posted';
+                        statusText = '✅ Ativo';
+                        cardClass = 'posted';
+                    }
+                } else {
+                    cardClass = 'warning';
+                }
+                
+                // Gerar alerta inteligente
+                const alert = getChannelAlert(channel, channelPosts);
+                
+                return `
+                    <div class="channel-card ${cardClass}">
+                        <div class="channel-header">
+                            <div class="channel-name">
+                                <span>${channel.icon}</span>
+                                ${channel.name}
+                            </div>
+                            <div class="channel-status ${statusClass}">${statusText}</div>
+                        </div>
+                        
+                        ${lastPost ? `
+                            <div class="channel-info">
+                                <strong>${lastPost.title}</strong><br>
+                                📅 ${new Date(lastPost.time).toLocaleString('pt-BR', { 
+                                    day: '2-digit', 
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                })}
+                            </div>
+                        ` : `
+                            <div class="channel-info" style="color: #666;">
+                                Nenhuma postagem registrada ainda
+                            </div>
+                        `}
+                        
+                        <!-- ALERTA INTELIGENTE -->
+                        <div class="channel-alert ${alert.type}">
+                            ${alert.message}
+                        </div>
+                        
+                        <div class="channel-stats">
+                            <div class="channel-stat">
+                                <div class="channel-stat-value">${channelPosts.length}</div>
+                                <div class="channel-stat-label">Posts</div>
+                            </div>
+                            <div class="channel-stat">
+                                <div class="channel-stat-value">${(totalViews / 1000).toFixed(1)}K</div>
+                                <div class="channel-stat-label">Views</div>
+                            </div>
+                            <div class="channel-stat">
+                                <div class="channel-stat-value">${viralCount}</div>
+                                <div class="channel-stat-label">Virais</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        window.openPostModal = function() {
+            document.getElementById('post-modal').classList.add('active');
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            document.getElementById('post-time').value = localDateTime;
+        };
+        
+        window.closePostModal = function() {
+            document.getElementById('post-modal').classList.remove('active');
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-views').value = '';
+            document.getElementById('post-viral').checked = false;
+        };
+        
+        window.savePost = function() {
+            const channel = document.getElementById('post-channel').value;
+            const title = document.getElementById('post-title').value;
+            const time = document.getElementById('post-time').value;
+            const views = parseInt(document.getElementById('post-views').value) || 0;
+            const viral = document.getElementById('post-viral').checked;
+            
+            if (!title || !time) {
+                alert('❌ Preencha o título e horário da postagem!');
+                return;
+            }
+            
+            const posts = loadPosts();
+            const channelName = CHANNELS.find(c => c.id === channel)?.name || channel;
+            
+            posts.push({
+                id: Date.now(),
+                channel: channel,
+                title: title,
+                time: time,
+                views: views,
+                viral: viral,
+                createdAt: new Date().toISOString()
+            });
+            
+            savePosts(posts);
+            renderChannels();
+            closePostModal();
+            
+            // Alerta de sucesso
+            const statusText = viral ? '🔥 VIRALIZOU!' : '✅ REGISTRADO';
+            showAlert('checkout', statusText, `"${title}" foi adicionado ao ${channelName}!`);
+        };
+        
+        // Renderizar canais ao carregar
+        renderChannels();
+        
+        // Atualizar alertas a cada 5 minutos
+        setInterval(renderChannels, 300000);
+
+        // ========== FIX COMPARADOR (SUBSTITUA calculatePeriodStats) ==========
+        function calculatePeriodStats(range) {
+            const sessions = allSessions.filter(s => {
+                if (!s.enteredAt) return false;
+                const d = s.enteredAt.toDate ? s.enteredAt.toDate() : new Date(s.enteredAt);
+                return d >= range.start && d <= range.end;
+            });
+            const sales = allSales.filter(s => {
+                if (!s.createdAt || s.isPaid !== true) return false;
+                const d = s.createdAt.toDate ? s.createdAt.toDate() : new Date(s.createdAt);
+                return d >= range.start && d <= range.end;
+            });
+            const getEventCount = (eventName) => {
+                return sessions.filter(s => {
+                    const event = s.events?.[eventName];
+                    if (!event) return false;
+                    if (event.toDate) {
+                        const eventTime = event.toDate();
+                        return eventTime >= range.start && eventTime <= range.end;
+                    }
+                    return true;
+                }).length;
+            };
+            const iniciouQuiz = getEventCount('quiz_started');
+            const completouQuiz = getEventCount('quiz_completed');
+            const viuResultado = getEventCount('result_shown');
+            const checkout = getEventCount('checkout');
+            const gross = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+            const fees = sales.reduce((sum, s) => sum + calculateWiapyFee(s.amount || 0, s.paymentMethod || 'pix'), 0);
+            const net = gross - fees;
+            return {acessos: sessions.length, iniciouQuiz, completouQuiz, viuResultado, checkout, vendas: sales.length, faturamentoBruto: gross, taxas: fees, faturamento: net, conversao: sessions.length > 0 ? (sales.length / sessions.length) * 100 : 0, ticketMedio: sales.length > 0 ? net / sales.length : 0};
+        }
     </script>
 </body>
 </html>
