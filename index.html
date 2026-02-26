@@ -91,7 +91,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .comparison-period{font-size:12px;font-weight:800;color:#999;text-transform:uppercase}
 .comparison-badge{font-size:10px;font-weight:900;padding:3px 10px;border-radius:20px;text-transform:uppercase}
 .comparison-badge.up{background:#00ff00;color:#000}.comparison-badge.down{background:#ef4444;color:#fff}
-.cmp-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.cmp-stats{display:grid;gap:2px}
+.cmp-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .cmp-label{color:#999;font-size:12px;font-weight:600}
 .cmp-value{color:#fff;font-size:13px;font-weight:800}
 .cmp-diff{font-size:11px;font-weight:700}.cmp-diff.pos{color:#00ff00}.cmp-diff.neg{color:#ef4444}
@@ -621,7 +622,7 @@ function renderCmp(A,B,pA,pB){
         <div class="comparison-period">${names[p]}</div>
         ${win?'<div class="comparison-badge up">🏆 MELHOR</div>':'<div class="comparison-badge down">📉 MENOR</div>'}
       </div>
-      <div class="cmp-stats">
+      <div class="cmp-stats" style="margin-top:5px">
         ${cr('Acessos',s.acessos,vs.acessos)}
         ${cr('Clicou VSL',s.vsl,vs.vsl)}
         ${cr('Iniciou Quiz',s.quiz,vs.quiz)}
