@@ -65,6 +65,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ch-stat-l{font-size:9px;color:#666;text-transform:uppercase;margin-top:2px}
 .add-post-btn{background:rgba(0,102,204,.2);border:2px dashed #0066cc;color:#0066cc;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:all .2s}
 .add-post-btn:hover{background:rgba(0,102,204,.3);border-style:solid}
+.post-list-item{background:rgba(0,0,0,.4);border:1px solid #333;border-radius:8px;padding:12px 14px;margin-bottom:8px;transition:all .2s}
+.post-list-item:hover{border-color:#555}
+.post-list-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.post-list-title{font-size:13px;font-weight:700;color:#fff;flex:1}
+.post-list-actions{display:flex;gap:6px;flex-shrink:0}
+.post-action-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;border:none;transition:all .2s}
+.post-action-edit{background:rgba(59,130,246,.2);color:#3b82f6;border:1px solid #3b82f6}
+.post-action-edit:hover{background:rgba(59,130,246,.4)}
+.post-action-del{background:rgba(239,68,68,.2);color:#ef4444;border:1px solid #ef4444}
+.post-action-del:hover{background:rgba(239,68,68,.4)}
+.post-list-meta{font-size:11px;color:#666;margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
+.post-list-meta span{color:#999}
 
 /* MODAL */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:10000;align-items:center;justify-content:center}
@@ -246,6 +258,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-actions">
       <button class="modal-btn modal-btn-secondary" onclick="closePostModal()">Cancelar</button>
       <button class="modal-btn modal-btn-primary" onclick="savePost()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LISTA DE POSTS -->
+<div class="modal" id="posts-list-modal">
+  <div class="modal-content" style="max-width:560px;max-height:80vh;display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="modal-title" style="margin-bottom:0" id="posts-list-title">Posts do Canal</div>
+      <span onclick="closePostsModal()" style="cursor:pointer;color:#999;font-size:22px;font-weight:bold;line-height:1">&times;</span>
+    </div>
+    <div id="posts-list-content" style="overflow-y:auto;flex:1"></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR POST -->
+<div class="modal" id="edit-post-modal">
+  <div class="modal-content">
+    <div class="modal-title">✏️ Editar Postagem</div>
+    <input type="hidden" id="edit-post-id">
+    <div class="form-group"><label class="form-label">Canal</label>
+      <select class="form-select" id="edit-post-channel">
+        <option value="doutor-cajado">📱 Doutor Cajado</option>
+        <option value="doutor-reginaldo">📱 Doutor Reginaldo</option>
+        <option value="doutor-saude">📱 Doutor Saúde</option>
+        <option value="doutor-bigode">📱 Doutor Bigode</option>
+        <option value="cajado-supremo">📱 Cajado Supremo</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="edit-post-title"></div>
+    <div class="form-group"><label class="form-label">Horário</label><input type="datetime-local" class="form-input" id="edit-post-time"></div>
+    <div class="form-group"><label class="form-label">Visualizações</label><input type="number" class="form-input" id="edit-post-views"></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <label class="form-checkbox-label"><input type="checkbox" class="form-checkbox" id="edit-post-viral"> 🔥 Viralizou (100k+ views)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeEditModal()">Cancelar</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveEditPost()">Salvar Alterações</button>
     </div>
   </div>
 </div>
@@ -862,6 +912,7 @@ function renderChannels(){
         <div class="ch-stat"><div class="ch-stat-v">${(totalV/1000).toFixed(1)}K</div><div class="ch-stat-l">Views</div></div>
         <div class="ch-stat"><div class="ch-stat-v">${viral}</div><div class="ch-stat-l">Virais</div></div>
       </div>
+      ${cp.length>0?`<button onclick="openPostsModal('${ch.id}')" style="width:100%;margin-top:10px;background:rgba(255,255,255,.07);border:1px solid #444;color:#999;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s" onmouseover="this.style.borderColor='#0066cc';this.style.color='#0066cc'" onmouseout="this.style.borderColor='#444';this.style.color='#999'">📋 Ver / Editar Posts (${cp.length})</button>`:''}
     </div>`;
   }).join('');
 }
@@ -886,6 +937,92 @@ window.savePost=()=>{
   posts.push({id:Date.now(),channel,title,time,views,viral,createdAt:new Date().toISOString()});
   savePosts(posts); renderChannels(); closePostModal();
   showAlert('checkout',viral?'🔥 VIRALIZOU!':'✅ POSTAGEM SALVA',`"${title}" registrado com sucesso!`);
+};
+
+// ── GERENCIAR POSTS (editar/excluir) ─────────────────────────────
+let currentPostsChannel = null;
+
+window.openPostsModal = (channelId) => {
+  currentPostsChannel = channelId;
+  const ch = CHANNELS.find(c=>c.id===channelId);
+  document.getElementById('posts-list-title').textContent = `📋 Posts — ${ch?.name||channelId}`;
+  renderPostsList(channelId);
+  document.getElementById('posts-list-modal').classList.add('active');
+};
+window.closePostsModal = () => {
+  document.getElementById('posts-list-modal').classList.remove('active');
+  currentPostsChannel = null;
+};
+
+function renderPostsList(channelId) {
+  const posts = loadPosts();
+  const cp = posts.filter(p=>p.channel===channelId).sort((a,b)=>new Date(b.time)-new Date(a.time));
+  const el = document.getElementById('posts-list-content');
+  if (!cp.length) { el.innerHTML='<div style="text-align:center;padding:30px;color:#666">Nenhum post registrado neste canal.</div>'; return; }
+  el.innerHTML = cp.map(post => {
+    const date = new Date(post.time).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const views = post.views > 0 ? `👁 ${post.views>=1000?(post.views/1000).toFixed(1)+'K':post.views}` : '👁 —';
+    const viral = post.viral ? '<span style="color:#fbbf24;font-weight:900">🔥 Viral</span>' : '';
+    return `<div class="post-list-item">
+      <div class="post-list-header">
+        <div class="post-list-title">${post.title}</div>
+        <div class="post-list-actions">
+          <button class="post-action-btn post-action-edit" onclick="openEditModal(${post.id})">✏️ Editar</button>
+          <button class="post-action-btn post-action-del" onclick="deletePost(${post.id})">🗑 Excluir</button>
+        </div>
+      </div>
+      <div class="post-list-meta">
+        <span>📅 ${date}</span>
+        <span>${views}</span>
+        ${viral}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.deletePost = (postId) => {
+  if (!confirm('Excluir esta postagem?')) return;
+  const posts = loadPosts().filter(p => p.id !== postId);
+  savePosts(posts);
+  renderChannels();
+  if (currentPostsChannel) renderPostsList(currentPostsChannel);
+  showAlert('checkout', '🗑 EXCLUÍDO', 'Postagem removida com sucesso.');
+};
+
+window.openEditModal = (postId) => {
+  const post = loadPosts().find(p=>p.id===postId);
+  if (!post) return;
+  document.getElementById('edit-post-id').value = postId;
+  document.getElementById('edit-post-channel').value = post.channel;
+  document.getElementById('edit-post-title').value = post.title;
+  document.getElementById('edit-post-viral').checked = post.viral||false;
+  document.getElementById('edit-post-views').value = post.views||'';
+  // Converter para formato datetime-local
+  const d = new Date(post.time);
+  document.getElementById('edit-post-time').value = new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  document.getElementById('edit-post-modal').classList.add('active');
+};
+window.closeEditModal = () => {
+  document.getElementById('edit-post-modal').classList.remove('active');
+};
+window.saveEditPost = () => {
+  const id = parseInt(document.getElementById('edit-post-id').value);
+  const title = document.getElementById('edit-post-title').value;
+  const time = document.getElementById('edit-post-time').value;
+  if (!title||!time) { alert('❌ Preencha título e horário!'); return; }
+  const posts = loadPosts().map(p => p.id!==id ? p : {
+    ...p,
+    channel: document.getElementById('edit-post-channel').value,
+    title,
+    time,
+    views: parseInt(document.getElementById('edit-post-views').value)||0,
+    viral: document.getElementById('edit-post-viral').checked,
+  });
+  savePosts(posts);
+  renderChannels();
+  if (currentPostsChannel) renderPostsList(currentPostsChannel);
+  closeEditModal();
+  showAlert('checkout', '✅ ATUALIZADO', `"${title}" editado com sucesso!`);
 };
 
 renderChannels();
