@@ -704,6 +704,7 @@
         function updateStats() {
             const total = allSessions.length;
             const online = allSessions.filter(s => isOnline(s.lastActivity)).length;
+            const clicouVsl    = allSessions.filter(s => s.events?.vsl_clicked).length;
             const iniciouQuiz  = allSessions.filter(s => s.events?.quiz_started).length;
             const completouQuiz = allSessions.filter(s => s.events?.quiz_completed).length;
             const viuResultado  = allSessions.filter(s => s.events?.result_shown).length;
@@ -724,20 +725,20 @@
 
             document.getElementById('online-now').textContent = online;
             document.getElementById('total-visits').textContent = total;
-            document.getElementById('passed-instruction').textContent = iniciouQuiz;
-            document.getElementById('clicked-vsl').textContent = completouQuiz;
-            document.getElementById('started-quiz').textContent = viuResultado;
+            document.getElementById('passed-instruction').textContent = clicouVsl;
+            document.getElementById('clicked-vsl').textContent = iniciouQuiz;
+            document.getElementById('started-quiz').textContent = completouQuiz;
             document.getElementById('total-leads').textContent = completouQuiz;
             document.getElementById('checkout-count').textContent = clickedCheckout;
 
             const pct = v => total > 0 ? Math.round((v/total)*100)+'%' : '0%';
-            document.getElementById('passed-instruction-pct').textContent = pct(iniciouQuiz);
-            document.getElementById('clicked-vsl-pct').textContent = pct(completouQuiz);
-            document.getElementById('started-quiz-pct').textContent = pct(viuResultado);
+            document.getElementById('passed-instruction-pct').textContent = pct(clicouVsl);
+            document.getElementById('clicked-vsl-pct').textContent = pct(iniciouQuiz);
+            document.getElementById('started-quiz-pct').textContent = pct(completouQuiz);
             document.getElementById('checkout-pct').textContent = pct(clickedCheckout);
-            document.getElementById('completion-rate').textContent = iniciouQuiz > 0 ? Math.round((completouQuiz/iniciouQuiz)*100)+'%' : '0%';
+            document.getElementById('completion-rate').textContent = clicouVsl > 0 ? Math.round((completouQuiz/clicouVsl)*100)+'%' : '0%';
 
-            const dropouts = { 'Gancho': total-iniciouQuiz, 'Quiz': iniciouQuiz-completouQuiz, 'Análise': completouQuiz-viuResultado, 'Checkout': viuResultado-clickedCheckout };
+            const dropouts = { 'Gancho': total-clicouVsl, 'Quiz': clicouVsl-completouQuiz, 'Análise': completouQuiz-viuResultado, 'Checkout': viuResultado-clickedCheckout };
             const max = Object.entries(dropouts).reduce((a,[k,v]) => v > a.val ? {stage:k,val:v} : a, {stage:'--',val:0});
             document.getElementById('highest-dropout').textContent = max.val > 0 ? max.stage : '--';
 
@@ -831,6 +832,7 @@
         // ── FUNIL (atualizado para 15Q) ───────────────────────────────────
         function updateFunnel() {
             const total = allSessions.length;
+            const clicouVsl      = allSessions.filter(s => s.events?.vsl_clicked).length;
             const iniciouQuiz    = allSessions.filter(s => s.events?.quiz_started).length;
             const completouQuiz  = allSessions.filter(s => s.events?.quiz_completed).length;
             const viuResultado   = allSessions.filter(s => s.events?.result_shown).length;
@@ -840,6 +842,7 @@
 
             const stages = [
                 { name: 'Total de Acessos',       count: total,           percent: 100 },
+                { name: 'Clicou Botão VSL',        count: clicouVsl,       percent: total > 0 ? (clicouVsl/total)*100 : 0 },
                 { name: 'Iniciou Quiz (15Q)',      count: iniciouQuiz,     percent: total > 0 ? (iniciouQuiz/total)*100 : 0 },
                 { name: 'Completou Quiz',          count: completouQuiz,   percent: total > 0 ? (completouQuiz/total)*100 : 0 },
                 { name: 'Viu Análise/Resultado',   count: viuResultado,    percent: total > 0 ? (viuResultado/total)*100 : 0 },
