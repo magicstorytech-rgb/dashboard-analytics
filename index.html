@@ -615,7 +615,8 @@ function cmpStats(range){
 }
 function renderCmp(A,B,pA,pB){
   const names={today:'Hoje',yesterday:'Ontem','7days':'7 dias','30days':'30 dias',prev_period:'Período Anterior'};
-  const winA=A.conv>=B.conv;
+  // Se ambos têm dados, comparar por conversão; senão por acessos
+  const winA = (A.acessos===0&&B.acessos===0) ? true : (A.conv!==B.conv ? A.conv>B.conv : A.acessos>=B.acessos);
   document.getElementById('comparison-grid').innerHTML=[[A,B,pA,winA],[B,A,pB,!winA]].map(([s,vs,p,win])=>`
     <div class="comparison-card ${win?'winner':'loser'}">
       <div class="comparison-header">
@@ -629,17 +630,20 @@ function renderCmp(A,B,pA,pB){
         ${cr('Completou Quiz',s.done,vs.done)}
         ${cr('Checkout',s.chk,vs.chk)}
         ${cr('Vendas',s.vendas,vs.vendas)}
-        ${cr('Fat. Líquido','R$'+s.net.toFixed(2),vs.net,true)}
+        ${cr('Fat. Líquido','R$ '+s.net.toFixed(2),vs.net,true)}
         ${cr('Conversão',s.conv.toFixed(1)+'%',vs.conv,true)}
-        ${cr('Ticket','R$'+s.ticket.toFixed(2),vs.ticket,true)}
+        ${cr('Ticket Médio','R$ '+s.ticket.toFixed(2),vs.ticket,true)}
       </div>
     </div>`).join('');
 }
 function cr(label,vA,vB,fmt=false){
   const nA=fmt?parseFloat(vA.toString().replace(/[^\d.-]/g,'')):Number(vA);
-  const nB=Number(vB),diff=nA-nB,pct=nB!==0?(diff/Math.abs(nB))*100:0;
-  const cls=diff>=0?'pos':'neg',arrow=diff>=0?'↑':'↓';
-  return `<div class="cmp-row"><div><div class="cmp-label">${label}</div><div class="cmp-value">${vA}</div></div>${nB!==0?`<div class="cmp-diff ${cls}">${arrow}${Math.abs(pct).toFixed(1)}%</div>`:''}</div>`;
+  const nB=Number(vB),diff=nA-nB;
+  const pct=nB!==0?(diff/Math.abs(nB))*100:null;
+  const cls=diff>0?'pos':diff<0?'neg':'';
+  const arrow=diff>0?'↑':diff<0?'↓':'→';
+  const diffHtml=pct!==null?`<div class="cmp-diff ${cls}">${arrow} ${Math.abs(pct).toFixed(1)}%</div>`:(diff!==0?`<div class="cmp-diff ${cls}">${arrow}</div>`:'');
+  return `<div class="cmp-row"><div><div class="cmp-label">${label}</div><div class="cmp-value">${vA}</div></div>${diffHtml}</div>`;
 }
 
 // ── GRÁFICO VENDAS ────────────────────────────────────────────────
@@ -792,25 +796,26 @@ const salesQuery = ()=> {
   try {
     return onSnapshot(query(collection(db,'sales'),orderBy('createdAt','desc')), snap=>{
       sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateSales(); updateFunnel(); renderSpy();
+      updateSales(); updateFunnel(); renderSpy(); updateComparison();
     }, err=>{
       onSnapshot(collection(db,'sales'), snap=>{
         sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-        updateSales(); updateFunnel(); renderSpy();
+        updateSales(); updateFunnel(); renderSpy(); updateComparison();
       });
     });
   } catch(e) {
     return onSnapshot(collection(db,'sales'), snap=>{
       sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateSales(); updateFunnel(); renderSpy();
+      updateSales(); updateFunnel(); renderSpy(); updateComparison();
     });
   }
 };
 
 sessionsQuery();
 salesQuery();
-setInterval(()=>{updateStats();renderSpy();updateSales();}, 30000);
-updatePeakChart(); updateFunnel(); updateHeatmap(); updateComparison();
+setInterval(()=>{updateStats();renderSpy();updateSales();updateComparison();}, 30000);
+updatePeakChart(); updateFunnel(); updateHeatmap();
+// updateComparison() NÃO chamada aqui — será chamada pelos listeners quando os dados chegarem
 
 // ── CANAIS TIKTOK ─────────────────────────────────────────────────
 const CHANNELS=[
