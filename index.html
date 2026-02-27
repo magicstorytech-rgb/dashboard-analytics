@@ -65,6 +65,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ch-stat-l{font-size:9px;color:#666;text-transform:uppercase;margin-top:2px}
 .add-post-btn{background:rgba(0,102,204,.2);border:2px dashed #0066cc;color:#0066cc;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:all .2s}
 .add-post-btn:hover{background:rgba(0,102,204,.3);border-style:solid}
+.insights-section{background:linear-gradient(135deg,#0d1a0d,#001a00);border:2px solid #00cc44;border-radius:12px;padding:25px;margin-bottom:25px;box-shadow:0 0 25px rgba(0,204,68,.15)}
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin-top:18px}
+.insight-card{background:rgba(0,0,0,.4);border:1px solid #1a3320;border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.insight-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#00cc44}
+.insight-card.warn::before{background:#fbbf24}
+.insight-card.danger::before{background:#ef4444}
+.insight-card.great::before{background:#00ff88}
+.insight-icon{font-size:24px;margin-bottom:8px}
+.insight-title{font-size:11px;font-weight:800;color:#00cc44;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.insight-card.warn .insight-title{color:#fbbf24}
+.insight-card.danger .insight-title{color:#ef4444}
+.insight-card.great .insight-title{color:#00ff88}
+.insight-value{font-size:26px;font-weight:900;color:#fff;margin-bottom:4px;line-height:1.1}
+.insight-desc{font-size:12px;color:#999;line-height:1.5;margin-top:6px}
+.insight-progress{width:100%;height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:10px;overflow:hidden}
+.insight-progress-fill{height:100%;border-radius:3px;transition:width .6s ease}
 .post-list-item{background:rgba(0,0,0,.4);border:1px solid #333;border-radius:8px;padding:12px 14px;margin-bottom:8px;transition:all .2s}
 .post-list-item:hover{border-color:#555}
 .post-list-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -258,6 +274,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-actions">
       <button class="modal-btn modal-btn-secondary" onclick="closePostModal()">Cancelar</button>
       <button class="modal-btn modal-btn-primary" onclick="savePost()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL DE INTELIGÊNCIA DE VENDAS -->
+<div class="insights-section" id="insights-section">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="section-title" style="margin-bottom:0;color:#00cc44;border-color:#00cc44">🧠 Inteligência de Vendas</div>
+    <span style="font-size:11px;color:#555;font-weight:600">Baseado nos seus dados reais</span>
+  </div>
+  <div class="insights-grid" id="insights-grid">
+    <div style="text-align:center;padding:30px;color:#555;font-size:13px;grid-column:1/-1">
+      Aguardando dados do Firebase...
     </div>
   </div>
 </div>
@@ -830,18 +859,18 @@ const sessionsQuery = ()=> {
   try {
     return onSnapshot(query(collection(db,'sessions'),orderBy('enteredAt','desc')), snap=>{
       sessions=snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison();
+      updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
     }, err=>{
       console.warn('Sessions query err, trying without orderBy:', err);
       onSnapshot(collection(db,'sessions'), snap=>{
         sessions=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(toDate(b.enteredAt)?.getTime()||0)-(toDate(a.enteredAt)?.getTime()||0));
-        updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison();
+        updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
       });
     });
   } catch(e) {
     return onSnapshot(collection(db,'sessions'), snap=>{
       sessions=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(toDate(b.enteredAt)?.getTime()||0)-(toDate(a.enteredAt)?.getTime()||0));
-      updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison();
+      updateStats(); updateQuizRetention(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
     });
   }
 };
@@ -850,17 +879,17 @@ const salesQuery = ()=> {
   try {
     return onSnapshot(query(collection(db,'sales'),orderBy('createdAt','desc')), snap=>{
       sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateSales(); updateFunnel(); renderSpy(); updateComparison();
+      updateSales(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
     }, err=>{
       onSnapshot(collection(db,'sales'), snap=>{
         sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-        updateSales(); updateFunnel(); renderSpy(); updateComparison();
+        updateSales(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
       });
     });
   } catch(e) {
     return onSnapshot(collection(db,'sales'), snap=>{
       sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateSales(); updateFunnel(); renderSpy(); updateComparison();
+      updateSales(); updateFunnel(); renderSpy(); updateComparison(); updateInsights();
     });
   }
 };
@@ -870,6 +899,144 @@ salesQuery();
 setInterval(()=>{updateStats();renderSpy();updateSales();updateComparison();}, 30000);
 updatePeakChart(); updateFunnel(); updateHeatmap();
 // updateComparison() NÃO chamada aqui — será chamada pelos listeners quando os dados chegarem
+
+// ── INTELIGÊNCIA DE VENDAS ───────────────────────────────────────
+function updateInsights() {
+  const el = document.getElementById('insights-grid');
+  if (!el) return;
+
+  // Dados base
+  const totalSessions  = sessions.length;
+  const totalSales     = sales.filter(s => s.isPaid === true).length;
+  const totalCheckouts = sessions.filter(s => isCheckout(s)).length;
+  const totalQuizDone  = sessions.filter(s => hasEvent(s,'quiz_completed')).length;
+  const totalVsl       = sessions.filter(s => hasEvent(s,'vsl_clicked')).length;
+  const totalViews     = loadPosts().reduce((s,p) => s+(p.views||0), 0);
+
+  // Views dos últimos 7 dias
+  const w7 = new Date(); w7.setDate(w7.getDate()-7);
+  const recentViews = loadPosts()
+    .filter(p => new Date(p.time) >= w7)
+    .reduce((s,p) => s+(p.views||0), 0);
+
+  const cards = [];
+
+  // ── CARD 1: Views por venda ───────────────────────────────────
+  if (totalViews > 0 && totalSales > 0) {
+    const viewsPerSale = Math.round(totalViews / totalSales);
+    cards.push({
+      type: 'great',
+      icon: '👁',
+      title: 'Views por Venda',
+      value: viewsPerSale.toLocaleString('pt-BR'),
+      desc: `A cada <strong>${viewsPerSale.toLocaleString('pt-BR')} visualizações</strong> nos seus TikToks, em média sai <strong>1 venda</strong>. Total de views registrados: ${(totalViews/1000).toFixed(1)}K.`
+    });
+  } else if (totalViews > 0 && totalSales === 0) {
+    cards.push({
+      type: 'warn',
+      icon: '👁',
+      title: 'Views por Venda',
+      value: `${(totalViews/1000).toFixed(1)}K views`,
+      desc: `Você tem <strong>${(totalViews/1000).toFixed(1)}K views</strong> registrados mas ainda sem vendas computadas. Continue postando para calcular a média!`
+    });
+  }
+
+  // ── CARD 2: Acessos por venda ─────────────────────────────────
+  if (totalSessions > 0 && totalSales > 0) {
+    const sessPerSale = Math.round(totalSessions / totalSales);
+    const nextSaleAt  = totalSessions + (sessPerSale - (totalSessions % sessPerSale || sessPerSale));
+    const faltam      = nextSaleAt - totalSessions;
+    cards.push({
+      type: faltam <= 5 ? 'great' : 'default',
+      icon: '🧑‍💻',
+      title: 'Acessos por Venda',
+      value: `${sessPerSale} acessos`,
+      desc: `Em média você precisa de <strong>${sessPerSale} pessoas no funil</strong> para fechar 1 venda. Você tem ${totalSessions} acessos e ${totalSales} vendas.${faltam > 0 && faltam <= sessPerSale ? ` Faltam ~<strong>${faltam} acessos</strong> para a próxima venda!` : ''}`,
+      progress: faltam > 0 ? Math.round(((sessPerSale - faltam) / sessPerSale) * 100) : 100,
+      progressColor: faltam <= 5 ? '#00ff88' : '#00cc44'
+    });
+  } else if (totalSessions > 0 && totalSales === 0) {
+    cards.push({
+      type: 'warn',
+      icon: '🧑‍💻',
+      title: 'Acessos no Funil',
+      value: `${totalSessions} acessos`,
+      desc: `Você tem <strong>${totalSessions} pessoas</strong> no funil. Ainda sem vendas para calcular a média — quando sair a primeira, esse indicador vai se atualizar automaticamente.`
+    });
+  }
+
+  // ── CARD 3: Checkouts por venda ───────────────────────────────
+  if (totalCheckouts > 0 && totalSales > 0) {
+    const chkPerSale = (totalCheckouts / totalSales).toFixed(1);
+    const nextSaleChk = Math.ceil(totalSales + 1) * totalCheckouts / totalSales;
+    const faltamChk = Math.round(nextSaleChk - totalCheckouts);
+    cards.push({
+      type: parseFloat(chkPerSale) <= 3 ? 'great' : parseFloat(chkPerSale) <= 7 ? 'warn' : 'danger',
+      icon: '💳',
+      title: 'Checkouts por Venda',
+      value: `${chkPerSale}x`,
+      desc: `Para cada venda, <strong>${chkPerSale} pessoas clicam em comprar</strong>. ${parseFloat(chkPerSale) <= 3 ? '🔥 Excelente taxa de fechamento!' : parseFloat(chkPerSale) <= 7 ? '⚡ Taxa razoável — tente melhorar o copy da oferta.' : '⚠️ Muitos abandonos no checkout — revise o preço ou a página de pagamento.'}${faltamChk > 0 ? ` Faltam ~<strong>${faltamChk} checkouts</strong> para a próxima venda.` : ''}`
+    });
+  } else if (totalCheckouts > 0 && totalSales === 0) {
+    cards.push({
+      type: 'warn',
+      icon: '💳',
+      title: 'Checkouts Sem Venda',
+      value: `${totalCheckouts} checkouts`,
+      desc: `<strong>${totalCheckouts} pessoas</strong> chegaram ao checkout mas nenhuma venda foi registrada ainda. Verifique se o Wiapy está integrado corretamente.`
+    });
+  }
+
+  // ── CARD 4: Taxa de conversão do quiz ─────────────────────────
+  if (totalVsl > 0 && totalQuizDone > 0) {
+    const quizConv = Math.round((totalQuizDone / totalVsl) * 100);
+    cards.push({
+      type: quizConv >= 60 ? 'great' : quizConv >= 35 ? 'warn' : 'danger',
+      icon: '📝',
+      title: 'Retenção no Quiz',
+      value: `${quizConv}%`,
+      desc: `${quizConv}% de quem clica no VSL <strong>completa as 15 perguntas</strong>. ${quizConv >= 60 ? '🔥 Ótima retenção! Seu quiz está engajando muito bem.' : quizConv >= 35 ? '⚡ Retenção ok. Analise em qual pergunta mais pessoas abandonam.' : '⚠️ Retenção baixa — veja no painel de retenção onde o quiz perde mais usuários.'}`,
+      progress: quizConv,
+      progressColor: quizConv >= 60 ? '#00ff88' : quizConv >= 35 ? '#fbbf24' : '#ef4444'
+    });
+  }
+
+  // ── CARD 5: Views recentes (7 dias) ───────────────────────────
+  if (recentViews > 0) {
+    const projMonth = recentViews * 4;
+    const projSales = totalSales > 0 && totalViews > 0
+      ? Math.round(projMonth / (totalViews / totalSales))
+      : null;
+    cards.push({
+      type: 'great',
+      icon: '📈',
+      title: 'Projeção (últimos 7d)',
+      value: `${(recentViews/1000).toFixed(1)}K views/semana`,
+      desc: `Seus vídeos recentes geraram <strong>${recentViews.toLocaleString('pt-BR')} views em 7 dias</strong>.${projSales ? ` Na sua taxa atual, isso projeta ~<strong>${projSales} vendas por mês</strong>.` : ' Registre mais vendas para calcular a projeção mensal.'}`
+    });
+  }
+
+  // Sem dados suficientes
+  if (cards.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:30px;color:#555;font-size:13px;grid-column:1/-1">
+      Aguardando mais dados... <br><span style="font-size:11px">Os indicadores aparecem conforme leads e vendas chegam.</span>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = cards.map(card => `
+    <div class="insight-card ${card.type||''}">
+      <div class="insight-icon">${card.icon}</div>
+      <div class="insight-title">${card.title}</div>
+      <div class="insight-value">${card.value}</div>
+      <div class="insight-desc">${card.desc}</div>
+      ${card.progress !== undefined ? `
+        <div class="insight-progress">
+          <div class="insight-progress-fill" style="width:${Math.min(card.progress,100)}%;background:${card.progressColor||'#00cc44'}"></div>
+        </div>` : ''}
+    </div>
+  `).join('');
+}
 
 // ── CANAIS TIKTOK ─────────────────────────────────────────────────
 const CHANNELS=[
@@ -935,7 +1102,7 @@ window.savePost=()=>{
   if(!title||!time){alert('❌ Preencha título e horário!');return;}
   const posts=loadPosts();
   posts.push({id:Date.now(),channel,title,time,views,viral,createdAt:new Date().toISOString()});
-  savePosts(posts); renderChannels(); closePostModal();
+  savePosts(posts); renderChannels(); updateInsights(); closePostModal();
   showAlert('checkout',viral?'🔥 VIRALIZOU!':'✅ POSTAGEM SALVA',`"${title}" registrado com sucesso!`);
 };
 
@@ -984,7 +1151,7 @@ window.deletePost = (postId) => {
   if (!confirm('Excluir esta postagem?')) return;
   const posts = loadPosts().filter(p => p.id !== postId);
   savePosts(posts);
-  renderChannels();
+  renderChannels(); updateInsights();
   if (currentPostsChannel) renderPostsList(currentPostsChannel);
   showAlert('checkout', '🗑 EXCLUÍDO', 'Postagem removida com sucesso.');
 };
@@ -1019,7 +1186,7 @@ window.saveEditPost = () => {
     viral: document.getElementById('edit-post-viral').checked,
   });
   savePosts(posts);
-  renderChannels();
+  renderChannels(); updateInsights();
   if (currentPostsChannel) renderPostsList(currentPostsChannel);
   closeEditModal();
   showAlert('checkout', '✅ ATUALIZADO', `"${title}" editado com sucesso!`);
