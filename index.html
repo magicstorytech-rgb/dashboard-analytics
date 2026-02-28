@@ -230,7 +230,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="header">
   <div class="title">🔴 ALPHA METHOD — Analytics</div>
-  <div class="subtitle">Monitoramento em Tempo Real · Funil 15 Perguntas</div>
+  <div class="subtitle">Monitoramento em Tempo Real · Funil 8 Perguntas</div>
 </div>
 
 <div class="status-banner" id="status-banner">
@@ -353,9 +353,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="section-title">📊 Funil de Acessos</div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Total Acessos</div><div class="stat-value" id="s-total">0</div></div>
-      <div class="stat-card"><div class="stat-label">Clicou VSL</div><div class="stat-value" id="s-vsl">0</div><div class="stat-pct" id="s-vsl-pct">0%</div></div>
-      <div class="stat-card"><div class="stat-label">Iniciou Quiz</div><div class="stat-value" id="s-quiz">0</div><div class="stat-pct" id="s-quiz-pct">0%</div></div>
-      <div class="stat-card"><div class="stat-label">Completou Quiz</div><div class="stat-value" id="s-done">0</div><div class="stat-pct" id="s-done-pct">0%</div></div>
+      <div class="stat-card" data-stat="s-vsl"><div class="stat-label">Iniciou Quiz</div><div class="stat-value" id="s-vsl">0</div><div class="stat-pct" id="s-vsl-pct">0%</div></div>
+      <div class="stat-card" data-stat="s-quiz"><div class="stat-label">Completou Quiz</div><div class="stat-value" id="s-quiz">0</div><div class="stat-pct" id="s-quiz-pct">0%</div></div>
+      <div class="stat-card" data-stat="s-done"><div class="stat-label">Viu Análise</div><div class="stat-value" id="s-done">0</div><div class="stat-pct" id="s-done-pct">0%</div></div>
     </div>
   </div>
   <div class="stats-section">
@@ -363,7 +363,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Leads</div><div class="stat-value" id="s-leads">0</div></div>
       <div class="stat-card"><div class="stat-label">Conclusão Quiz</div><div class="stat-value" id="s-crate">0%</div></div>
-      <div class="stat-card"><div class="stat-label">No Checkout</div><div class="stat-value" id="s-chk">0</div><div class="stat-pct" id="s-chk-pct">0%</div></div>
+      <div class="stat-card" data-stat="s-chk"><div class="stat-label">No Checkout</div><div class="stat-value" id="s-chk">0</div><div class="stat-pct" id="s-chk-pct">0%</div></div>
       <div class="stat-card"><div class="stat-label">Maior Abandono</div><div class="stat-value" id="s-drop" style="font-size:16px">--</div></div>
     </div>
   </div>
@@ -460,8 +460,31 @@ let peakChart=null, salesChart=null;
 let knownCheckouts=new Set(), knownSales=new Set();
 let dateFilter='today', customRange=null, spyFilter='all';
 
-const Q_NAMES=['Faixa Etária','Rigidez Máxima','Manter Ereção','Ereção Matinal','Circulação','Histórico Saúde','Redução Tamanho','Nível Estresse','Horas de Sono','Libido/Desejo','Vícios','Medicamentos','Exercícios','Segunda Ereção','Prioridade'];
-const TOTAL_Q = 15;
+// ── CONFIGURAÇÃO DO FUNIL (Hercules — 8 perguntas, sem VSL) ──────
+const TOTAL_Q = 8;
+const Q_NAMES = [
+  'Tamanho do Cajado',
+  'Frequência Masturbação',
+  'Ereção Matinal',
+  'Método Natural',
+  'Dieta Diária',
+  'Horas de Sono',
+  'Atividade Física',
+  'Idade'
+];
+
+function filteredSessions() { return sessions; }
+function activeCfg()        { return null; }
+window.setFunnel = function() {};
+function updateStatLabels() {
+  const labels = {'s-vsl':'Iniciou Quiz','s-quiz':'Completou Quiz','s-done':'Viu Análise','s-chk':'No Checkout'};
+  Object.entries(labels).forEach(([id,lbl])=>{
+    const el = document.querySelector(`[data-stat="${id}"] .stat-label`);
+    if(el) el.textContent = lbl;
+  });
+}
+function getTotalQ()  { return TOTAL_Q; }
+function getQNames()  { return Q_NAMES; }
 
 // ── COMPATIBILIDADE COM O FUNIL ───────────────────────────────────
 // O funil salva events.* como serverTimestamp() (NUNCA boolean)
@@ -503,19 +526,24 @@ function timeAgo(ts) {
 // ── STATUS (usa currentStep como fonte primária) ──────────────────
 function statusText(s) {
   const step = s.currentStep;
-  // currentStep salvo em cada transição pelo funil
+  const isHercules = s.source === 'hercules_funil';
+  const totalQ = isHercules ? 8 : 15;
+  // currentStep — comum a ambos
   if (step==='checkout')  return '💳 CLICOU NO CHECKOUT';
   if (step==='oferta')    return '🎯 Visualizando Oferta';
   if (step==='analise')   return '🔬 Na Análise/Resultado';
-  if (step==='quiz')      return `📝 No Quiz — Pergunta ${s.quizProgress||1}/${TOTAL_Q}`;
+  if (step==='quiz')      return `📝 No Quiz — Pergunta ${s.quizProgress||1}/${totalQ}`;
+  // Alpha exclusivo
   if (step==='avaliacao') return '📋 Na Tela de Avaliação';
   if (step==='vsl')       return '▶️ Assistindo o VSL';
-  // Fallback: eventos (sessões sem currentStep)
+  // Hercules exclusivo
+  if (step==='hook')      return '🏠 Na Tela Inicial';
+  // Fallback eventos
   if (hasEvent(s,'checkout'))       return '💳 CLICOU NO CHECKOUT';
   if (hasEvent(s,'offer_viewed'))   return '🎯 Visualizando Oferta';
   if (hasEvent(s,'result_shown'))   return '🔬 Viu Análise/Resultado';
-  if (hasEvent(s,'quiz_completed')) return `✅ Completou Quiz (${TOTAL_Q}/${TOTAL_Q})`;
-  if (hasEvent(s,'quiz_started'))   return `📝 Respondendo Quiz (${s.quizProgress||1}/${TOTAL_Q})`;
+  if (hasEvent(s,'quiz_completed')) return `✅ Completou Quiz (${totalQ}/${totalQ})`;
+  if (hasEvent(s,'quiz_started'))   return `📝 Respondendo Quiz (${s.quizProgress||1}/${totalQ})`;
   if (hasEvent(s,'vsl_clicked'))    return '▶️ Assistiu o VSL';
   if (hasEvent(s,'page_view'))      return '📱 Carregou a Página';
   return '📱 Visualizando Gancho';
@@ -551,16 +579,21 @@ function playSale() {
 
 // ── STATS PRINCIPAIS ──────────────────────────────────────────────
 function updateStats() {
-  const total   = sessions.length;
-  const online  = sessions.filter(s=>isOnline(s.lastActivity)).length;
-  const nVsl    = sessions.filter(s=>hasEvent(s,'vsl_clicked')).length;
-  const nQuiz   = sessions.filter(s=>hasEvent(s,'quiz_started')).length;
-  const nDone   = sessions.filter(s=>hasEvent(s,'quiz_completed')).length;
-  const nRes    = sessions.filter(s=>hasEvent(s,'result_shown')).length;
-  const nChk    = sessions.filter(s=>isCheckout(s)).length;
+  updateStatLabels();
+  const ses = filteredSessions();
+  const cfg = activeCfg();
+  const total   = ses.length;
+  const online  = ses.filter(s=>isOnline(s.lastActivity)).length;
+  // Stat cards dinâmicos
+  // Hercules: sem VSL — card 1 = quiz_started
+  const nVsl  = ses.filter(s=>hasEvent(s,'quiz_started')).length;
+  const nQuiz = ses.filter(s=>hasEvent(s,'quiz_completed')).length;
+  const nDone = ses.filter(s=>hasEvent(s,'result_shown')).length;
+  const nChk  = ses.filter(s=>isCheckout(s)).length;
+  const nRes  = nDone;
 
   // Detectar novos checkouts → som + alerta
-  sessions.forEach(s=>{
+  ses.forEach(s=>{
     const uid=s.sessionId||s.id;
     if(isCheckout(s)&&!knownCheckouts.has(uid)){
       knownCheckouts.add(uid);
@@ -581,15 +614,25 @@ function updateStats() {
   document.getElementById('s-quiz-pct').textContent  = p(nQuiz);
   document.getElementById('s-done-pct').textContent  = p(nDone);
   document.getElementById('s-chk-pct').textContent   = p(nChk);
-  document.getElementById('s-crate').textContent     = nVsl>0?Math.round(nDone/nVsl*100)+'%':'0%';
 
-  const drops={'Gancho→VSL':total-nVsl,'VSL→Quiz':nVsl-nQuiz,'Quiz':nQuiz-nDone,'Análise':nDone-nRes,'Checkout':nRes-nChk};
-  const mx=Object.entries(drops).reduce((a,[k,v])=>v>a.v?{k,v}:a,{k:'--',v:0});
-  document.getElementById('s-drop').textContent = mx.v>0?mx.k:'--';
+  // completionBase dinâmico
+  const compBase = nVsl; // nVsl agora = quiz_started
+  document.getElementById('s-crate').textContent = compBase>0?Math.round(nQuiz/compBase*100)+'%':'0%';
+
+  // Maiores abandonos — baseado nas steps do funil ativo
+  const steps = cfg ? cfg.steps : FUNNELS.alpha.steps;
+  const counts = steps.map(st => ses.filter(st.fn).length);
+  let maxDrop = {k:'--',v:0};
+  for (let i=0; i<steps.length-1; i++) {
+    const drop = counts[i] - counts[i+1];
+    if (drop > maxDrop.v) maxDrop = {k:`${steps[i].label}→${steps[i+1].label}`, v:drop};
+  }
+  document.getElementById('s-drop').textContent = maxDrop.v>0 ? maxDrop.k.split('→')[0] : '--';
 
   // Status banner
+  const funnelLabel = activeFunnel==='all'?'Todos':FUNNELS[activeFunnel]?.name||'';
   document.getElementById('status-text').innerHTML =
-    `✅ Firebase OK &nbsp;·&nbsp; Sessions: <strong>${total}</strong> &nbsp;·&nbsp; Online: <strong>${online}</strong> &nbsp;·&nbsp; Checkouts: <strong>${nChk}</strong> &nbsp;·&nbsp; Vendas: <strong>${sales.filter(s=>s.isPaid).length}</strong>`;
+    `✅ Firebase OK &nbsp;·&nbsp; ${funnelLabel ? `<strong>${funnelLabel}</strong> &nbsp;·&nbsp;` : ''} Sessions: <strong>${total}</strong> &nbsp;·&nbsp; Online: <strong>${online}</strong> &nbsp;·&nbsp; Checkouts: <strong>${nChk}</strong> &nbsp;·&nbsp; Vendas: <strong>${sales.filter(s=>s.isPaid).length}</strong>`;
 
   updatePeakChart();
 }
@@ -680,16 +723,16 @@ function cmpRange(p,ref=null){
 }
 // ✅ FIX PRINCIPAL: função única, usa hasEvent() que trata Timestamp corretamente
 function cmpStats(range){
-  const ses=sessions.filter(s=>{const d=toDate(s.enteredAt);return d&&d>=range.start&&d<=range.end;});
+  const ses=filteredSessions().filter(s=>{const d=toDate(s.enteredAt);return d&&d>=range.start&&d<=range.end;});
   const sal=sales.filter(s=>{if(!s.createdAt||s.isPaid!==true)return false;const d=toDate(s.createdAt);return d&&d>=range.start&&d<=range.end;});
   const gross=sal.reduce((s,x)=>s+(x.amount||0),0);
   const fees=sal.reduce((s,x)=>s+wiapyFee(x.amount||0,x.paymentMethod||'pix'),0);
   const net=gross-fees;
   return{
     acessos:ses.length,
-    vsl:ses.filter(s=>hasEvent(s,'vsl_clicked')).length,
-    quiz:ses.filter(s=>hasEvent(s,'quiz_started')).length,
-    done:ses.filter(s=>hasEvent(s,'quiz_completed')).length,
+    vsl:ses.filter(s=>hasEvent(s,'quiz_started')).length,
+    quiz:ses.filter(s=>hasEvent(s,'quiz_completed')).length,
+    done:ses.filter(s=>hasEvent(s,'result_shown')).length,
     chk:ses.filter(s=>isCheckout(s)).length,
     vendas:sal.length, gross, fees, net,
     conv:ses.length>0?sal.length/ses.length*100:0,
@@ -708,9 +751,9 @@ function renderCmp(A,B,pA,pB){
       </div>
       <div class="cmp-stats" style="margin-top:5px">
         ${cr('Acessos',s.acessos,vs.acessos)}
-        ${cr('Clicou VSL',s.vsl,vs.vsl)}
-        ${cr('Iniciou Quiz',s.quiz,vs.quiz)}
-        ${cr('Completou Quiz',s.done,vs.done)}
+        ${cr('Iniciou Quiz',s.vsl,vs.vsl)}
+        ${cr('Completou Quiz',s.quiz,vs.quiz)}
+        ${cr('Viu Análise',s.done,vs.done)}
         ${cr('Checkout',s.chk,vs.chk)}
         ${cr('Vendas',s.vendas,vs.vendas)}
         ${cr('Fat. Líquido','R$ '+s.net.toFixed(2),vs.net,true)}
@@ -742,25 +785,21 @@ function updateSalesChart(){
 
 // ── FUNIL ─────────────────────────────────────────────────────────
 function updateFunnel(){
-  const total=sessions.length;
+  const ses=filteredSessions();
+  const cfg=activeCfg();
+  const total=ses.length;
   const p=v=>total>0?(v/total*100):0;
-  const nVsl=sessions.filter(s=>hasEvent(s,'vsl_clicked')).length;
-  const nQuiz=sessions.filter(s=>hasEvent(s,'quiz_started')).length;
-  const nDone=sessions.filter(s=>hasEvent(s,'quiz_completed')).length;
-  const nRes=sessions.filter(s=>hasEvent(s,'result_shown')).length;
-  const nOff=sessions.filter(s=>hasEvent(s,'offer_viewed')).length;
-  const nChk=sessions.filter(s=>isCheckout(s)).length;
   const nSale=sales.filter(s=>s.isPaid===true).length;
-  const stages=[
-    {n:'Total Acessos',c:total,p:100},
-    {n:'Clicou VSL',c:nVsl,p:p(nVsl)},
-    {n:'Iniciou Quiz (15Q)',c:nQuiz,p:p(nQuiz)},
-    {n:'Completou Quiz',c:nDone,p:p(nDone)},
-    {n:'Viu Análise',c:nRes,p:p(nRes)},
-    {n:'Visualizou Oferta',c:nOff,p:p(nOff)},
-    {n:'Clicou Checkout',c:nChk,p:p(nChk)},
-    {n:'💰 VENDAS',c:nSale,p:p(nSale)},
+  const STEPS = [
+    {n:'Total Acessos',      fn:s=>true},
+    {n:'Iniciou Quiz (8Q)',  fn:s=>hasEvent(s,'quiz_started')},
+    {n:'Completou Quiz',     fn:s=>hasEvent(s,'quiz_completed')},
+    {n:'Viu Análise',        fn:s=>hasEvent(s,'result_shown')},
+    {n:'Visualizou Oferta',  fn:s=>hasEvent(s,'offer_viewed')},
+    {n:'Clicou Checkout',    fn:s=>isCheckout(s)},
   ];
+  const stages = STEPS.map(st=>({n:st.n, c:ses.filter(st.fn).length, p:p(ses.filter(st.fn).length)}));
+  stages.push({n:'💰 VENDAS', c:nSale, p:p(nSale)});
   const el=document.getElementById('funnel-container');if(!el)return;
   el.innerHTML=stages.map((s,i)=>`
     <div class="funnel-stage">
@@ -786,11 +825,15 @@ function updateHeatmap(){
 // ── QUIZ RETENÇÃO ─────────────────────────────────────────────────
 function updateQuizRetention(){
   const el=document.getElementById('quiz-stats'),prog={};
-  for(let i=1;i<=TOTAL_Q;i++)prog[i]=0;
-  sessions.forEach(s=>{const p=s.quizProgress||0;for(let i=1;i<=Math.min(p,TOTAL_Q);i++)prog[i]++;});
-  const total=sessions.filter(s=>hasEvent(s,'quiz_started')).length;
+  const ses=filteredSessions();
+  const totalQ=getTotalQ(), qNames=getQNames();
+  for(let i=1;i<=totalQ;i++)prog[i]=0;
+  ses.forEach(s=>{const p=s.quizProgress||0;for(let i=1;i<=Math.min(p,totalQ);i++)prog[i]++;});
+  const total=ses.filter(s=>hasEvent(s,'quiz_started')).length;
+  const cfg=activeCfg();
+  document.querySelector('.quiz-retention .section-title').textContent='📈 Retenção Quiz (8Q)';
   if(total===0){el.innerHTML='<div class="empty-state">Aguardando dados do quiz...</div>';return;}
-  el.innerHTML=Q_NAMES.map((name,idx)=>{
+  el.innerHTML=qNames.map((name,idx)=>{
     const i=idx+1,cnt=prog[i],pct=Math.round(cnt/total*100);
     return `<div class="quiz-row"><div class="quiz-step">Q${i}: ${name}</div><div class="quiz-count">${cnt} (${pct}%)</div></div>`;
   }).join('');
@@ -816,7 +859,7 @@ window.filterSpy=(f,evt)=>{
 };
 function renderSpy(){
   const el=document.getElementById('spy-container');
-  const sorted=[...sessions].sort((a,b)=>{
+  const sorted=[...filteredSessions()].sort((a,b)=>{
     const tA=toDate(a.lastActivity)?.getTime()||0,tB=toDate(b.lastActivity)?.getTime()||0;return tB-tA;
   });
   const seen=new Set(),unique=sorted.filter(s=>{const id=s.sessionId||s.id;if(seen.has(id))return false;seen.add(id);return true;});
@@ -987,21 +1030,65 @@ function updateInsights() {
     });
   }
 
-  // ── CARD 4: Taxa de conversão do quiz ─────────────────────────
-  if (totalVsl > 0 && totalQuizDone > 0) {
-    const quizConv = Math.round((totalQuizDone / totalVsl) * 100);
+  // ── CARD 4: Retenção no Quiz (base = quiz_started, sem VSL) ────
+  const totalQuizStarted = sessions.filter(s=>hasEvent(s,'quiz_started')).length;
+  if (totalQuizStarted > 0 && totalQuizDone > 0) {
+    const quizConv = Math.round((totalQuizDone / totalQuizStarted) * 100);
     cards.push({
       type: quizConv >= 60 ? 'great' : quizConv >= 35 ? 'warn' : 'danger',
       icon: '📝',
       title: 'Retenção no Quiz',
       value: `${quizConv}%`,
-      desc: `${quizConv}% de quem clica no VSL <strong>completa as 15 perguntas</strong>. ${quizConv >= 60 ? '🔥 Ótima retenção! Seu quiz está engajando muito bem.' : quizConv >= 35 ? '⚡ Retenção ok. Analise em qual pergunta mais pessoas abandonam.' : '⚠️ Retenção baixa — veja no painel de retenção onde o quiz perde mais usuários.'}`,
+      desc: `${quizConv}% de quem inicia <strong>completa as 8 perguntas</strong>. ${quizConv >= 60 ? '🔥 Ótima retenção! Seu quiz está engajando muito bem.' : quizConv >= 35 ? '⚡ Retenção ok. Analise em qual pergunta mais pessoas abandonam.' : '⚠️ Retenção baixa — veja no painel de retenção onde o quiz perde mais usuários.'}`,
       progress: quizConv,
       progressColor: quizConv >= 60 ? '#00ff88' : quizConv >= 35 ? '#fbbf24' : '#ef4444'
     });
   }
 
-  // ── CARD 5: Views recentes (7 dias) ───────────────────────────
+  // ── CARD 5: Projeção do mês baseada nos acessos ──────────────
+  if (totalSessions > 0 && totalSales > 0) {
+    // Taxa de conversão histórica (vendas / acessos totais)
+    const taxaConv = totalSales / totalSessions;
+
+    // Acessos do mês atual
+    const mesInicio = new Date(); mesInicio.setDate(1); mesInicio.setHours(0,0,0,0);
+    const acessosMes = sessions.filter(s => { const d=toDate(s.enteredAt); return d&&d>=mesInicio; }).length;
+    const vendasMesAtual = sales.filter(s => s.isPaid && s.createdAt && toDate(s.createdAt) >= mesInicio).length;
+
+    // Projeção: extrapolar os acessos do mês para o fim do mês
+    const diasMes = new Date().getDate();
+    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+    const acessosProjetados = Math.round((acessosMes / diasMes) * diasNoMes);
+    const projecaoVendas = Math.round(acessosProjetados * taxaConv);
+    const faltamVendas = Math.max(0, projecaoVendas - vendasMesAtual);
+    const progMes = Math.min(Math.round((vendasMesAtual / Math.max(projecaoVendas, 1)) * 100), 100);
+    const diasRestantes = diasNoMes - diasMes;
+
+    cards.push({
+      type: progMes >= 80 ? 'great' : progMes >= 40 ? 'warn' : 'danger',
+      icon: '📅',
+      title: 'Projeção do Mês',
+      value: `${projecaoVendas} vendas`,
+      desc: `Com <strong>${acessosMes} acessos</strong> nesses ${diasMes} dias e taxa de conversão de <strong>${(taxaConv*100).toFixed(2)}%</strong>, a projeção é <strong>${projecaoVendas} vendas este mês</strong>. Você já tem <strong>${vendasMesAtual}</strong> — faltam <strong>${faltamVendas}</strong> em ${diasRestantes} dias.`,
+      progress: progMes,
+      progressColor: progMes >= 80 ? '#00ff88' : progMes >= 40 ? '#fbbf24' : '#ef4444'
+    });
+  } else if (totalSessions > 0 && totalSales === 0) {
+    const mesInicio = new Date(); mesInicio.setDate(1); mesInicio.setHours(0,0,0,0);
+    const acessosMes = sessions.filter(s => { const d=toDate(s.enteredAt); return d&&d>=mesInicio; }).length;
+    const diasMes = new Date().getDate();
+    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+    const acessosProjetados = Math.round((acessosMes / diasMes) * diasNoMes);
+    cards.push({
+      type: 'warn',
+      icon: '📅',
+      title: 'Projeção do Mês',
+      value: `${acessosProjetados} acessos/mês`,
+      desc: `Com <strong>${acessosMes} acessos</strong> em ${diasMes} dias, você projeta <strong>${acessosProjetados} pessoas no funil este mês</strong>. Assim que sair a primeira venda, calcularemos a projeção de receita automaticamente.`
+    });
+  }
+
+  // ── CARD 6: Views recentes (7 dias) + projeção ───────────────
   if (recentViews > 0) {
     const projMonth = recentViews * 4;
     const projSales = totalSales > 0 && totalViews > 0
@@ -1010,7 +1097,7 @@ function updateInsights() {
     cards.push({
       type: 'great',
       icon: '📈',
-      title: 'Projeção (últimos 7d)',
+      title: 'Projeção por Views (7d)',
       value: `${(recentViews/1000).toFixed(1)}K views/semana`,
       desc: `Seus vídeos recentes geraram <strong>${recentViews.toLocaleString('pt-BR')} views em 7 dias</strong>.${projSales ? ` Na sua taxa atual, isso projeta ~<strong>${projSales} vendas por mês</strong>.` : ' Registre mais vendas para calcular a projeção mensal.'}`
     });
