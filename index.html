@@ -19,6 +19,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .status-banner{background:rgba(0,255,0,.07);border:1px solid #00ff00;border-radius:8px;padding:10px 15px;margin-bottom:20px;font-size:12px;color:#00ff00;font-weight:700;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
 .status-dot{width:8px;height:8px;background:#00ff00;border-radius:50%;animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  <span id="realtime-indicator" style="margin-left:auto;font-size:11px;color:#00ff00;font-weight:700;display:none">
+  ⚡ TEMPO REAL ATIVO
+</span>
 
 /* ALERTAS */
 .alerts-container{position:fixed;top:20px;right:20px;z-index:9999;max-width:360px;pointer-events:none}
@@ -1018,9 +1021,10 @@ const salesQuery = ()=> {
 
 sessionsQuery();
 salesQuery();
-setInterval(()=>{updateStats();renderSpy();}, 10000);           // spy + online: 10s
-setInterval(()=>{updateSales();updateComparison();}, 60000);    // vendas + comparação: 60s
-updatePeakChart(); updateFunnel(); updateHeatmap();
+setInterval(()=>{updateStats();renderSpy();}, 3000);           // ⚡ 3s
+setInterval(()=>{updateSales();updateComparison();updateInsights();}, 5000); // ⚡ 5s
+setInterval(()=>{updateFunnel();updateQuizRetention();}, 5000);  // ⚡ 5s
+setInterval(loadChannelStats, 10000);  // ⚡ 10s
 // updateComparison() NÃO chamada aqui — será chamada pelos listeners quando os dados chegarem
 
 // ── INTELIGÊNCIA DE VENDAS ───────────────────────────────────────
@@ -1403,7 +1407,17 @@ window.loadChannelStats = function() {
 
   // Processar sessions
   filtSessions.forEach(s => {
-    const ch = s.channel || 'desconhecido';
+    let ch = s.channel || s.channelDomain || 'desconhecido';
+if (ch === 'desconhecido' && s.channelDomain) {
+    const domainMap = {
+        'method-alpha.vercel.app': 'cajado-supremo',
+        'metodo-alpha.vercel.app': 'doutor-cajado',
+        'metodo-alpha2.vercel.app': 'doutor-saude',
+        'method-alpha1.vercel.app': 'doutor-reginaldo',
+        'alpha-method.vercel.app': 'doutor-bigode'
+    };
+    ch = domainMap[s.channelDomain] || ch;
+}
     if (!data[ch]) return;
     data[ch].acessos++;
     if (hasEvent(s,'quiz_started'))   data[ch].quiz++;
