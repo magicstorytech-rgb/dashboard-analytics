@@ -54,6 +54,52 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 .ga{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:11px}
 @media(max-width:650px){.g2{grid-template-columns:1fr}}
+
+/* ── DAILY INVESTMENT TABLE ── */
+.daily-inv-wrap{width:100%}
+.month-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.month-nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:inherit;outline:none;transition:border-color .15s}
+.month-nav-btn:hover{border-color:var(--blue)}
+.month-label{font-size:14px;font-weight:900;color:#fff;min-width:160px;text-align:center}
+.daily-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px}
+.day-cell{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;transition:border-color .15s}
+.day-cell:focus-within{border-color:var(--blue)}
+.day-cell.today{border-color:rgba(59,130,246,.45);background:rgba(59,130,246,.06)}
+.day-cell.future{opacity:.35;pointer-events:none}
+.day-cell.has-value{border-color:rgba(34,197,94,.3)}
+.day-num{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.day-num .wd{color:var(--muted);font-size:8px}
+.day-inp{background:transparent;border:none;color:#fff;font-size:14px;font-weight:900;font-family:inherit;outline:none;width:100%;padding:0}
+.day-inp::placeholder{color:var(--subtle);font-weight:600;font-size:12px}
+.inv-total-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;padding:12px 14px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.18);border-radius:10px;align-items:center}
+.inv-total-item{display:flex;flex-direction:column;gap:2px}
+.inv-total-label{font-size:9px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.6px}
+.inv-total-val{font-size:16px;font-weight:900;color:#fff}
+.save-btn{background:var(--blue-dim);border:1px solid rgba(59,130,246,.3);color:var(--blue);padding:8px 16px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;outline:none;margin-left:auto}
+
+/* ── MONTHLY METRICS ── */
+.monthly-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px}
+.mm-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+.mm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mm-card.blue::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.mm-card.green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.mm-card.gold::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.mm-card.purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.mm-card.red::before{background:linear-gradient(90deg,var(--red),transparent)}
+.mm-card.cyan::before{background:linear-gradient(90deg,#06b6d4,transparent)}
+.mm-icon{font-size:22px;margin-bottom:8px;display:block}
+.mm-label{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.mm-val{font-size:28px;font-weight:900;color:#fff;line-height:1;letter-spacing:-1px;margin-bottom:4px}
+.mm-sub{font-size:10px;color:var(--muted);line-height:1.5}
+.mm-trend{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;margin-top:6px}
+.mm-trend.up{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.mm-trend.down{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.mm-trend.neutral{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.proj-bar-wrap{margin-top:10px;height:6px;background:var(--subtle);border-radius:3px;overflow:hidden}
+.proj-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width .8s ease}
+.proj-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;font-weight:700}
+
+/* rest unchanged */
 .funnel-wrap{display:flex;flex-direction:column;gap:6px;padding:8px 0}
 .funnel-step{display:flex;align-items:center;gap:12px}
 .funnel-bar-wrap{flex:1;height:32px;background:var(--surface2);border-radius:6px;overflow:hidden}
@@ -142,12 +188,6 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .tip-desc{font-size:11px;color:var(--muted);line-height:1.6}
 .tip-badge{display:inline-block;font-size:8px;font-weight:900;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
 .tip-badge.urgent{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}.tip-badge.warn{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,158,11,.2)}.tip-badge.good{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.2)}.tip-badge.info{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
-.invest-input-wrap{display:flex;flex-direction:column;gap:8px}
-.invest-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
-.invest-row label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:160px;flex-shrink:0}
-.invest-inp{background:var(--bg);border:1px solid var(--border);color:#fff;padding:7px 10px;border-radius:6px;font-size:13px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0}
-.invest-inp:focus{border-color:var(--blue)}
-.save-btn{background:var(--blue-dim);border:1px solid rgba(59,130,246,.3);color:var(--blue);padding:8px 16px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;outline:none}
 .toast-wrap{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .toast{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:12px;font-weight:800;color:#fff;opacity:0;transform:translateX(40px);transition:all .3s;pointer-events:none;max-width:280px;box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .toast.chk{background:linear-gradient(135deg,#064e3b,#065f46);border:1px solid rgba(34,197,94,.35)}
@@ -172,13 +212,15 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     </div>
   </div>
 
+  <!-- HERO CARDS -->
   <div class="invest-hero">
-    <div class="ih-card spend"><div class="ih-label">💸 Investido (manual)</div><div class="ih-val" id="h-spend">R$ 0</div><div class="ih-sub" id="h-spend-sub">Configure abaixo ↓</div><div class="ih-icon">💰</div></div>
+    <div class="ih-card spend"><div class="ih-label">💸 Investido (mês atual)</div><div class="ih-val" id="h-spend">R$ 0</div><div class="ih-sub" id="h-spend-sub">Preencha os dias abaixo ↓</div><div class="ih-icon">💰</div></div>
     <div class="ih-card revenue"><div class="ih-label">💵 Receita Líquida</div><div class="ih-val" id="h-rev">—</div><div class="ih-sub" id="h-rev-sub">aguardando…</div><div class="ih-icon">📈</div></div>
     <div class="ih-card roas"><div class="ih-label">🎯 ROAS</div><div class="ih-val" id="h-roas">—</div><div class="ih-sub" id="h-roas-sub">meta ≥ 3.0x</div><div class="ih-icon">🔥</div></div>
     <div class="ih-card profit"><div class="ih-label">💜 Lucro Líquido</div><div class="ih-val" id="h-profit">—</div><div class="ih-sub" id="h-profit-sub">receita − investimento</div><div class="ih-icon">✨</div></div>
   </div>
 
+  <!-- KPI STRIP -->
   <div class="kpi-strip">
     <div class="kpi"><div class="kpi-bar" style="background:var(--blue)"></div><span class="kpi-icon">👥</span><div class="kpi-v" id="k-access">—</div><div class="kpi-l">Leads Hoje</div></div>
     <div class="kpi"><div class="kpi-bar" style="background:var(--green)"></div><span class="kpi-icon">💰</span><div class="kpi-v" id="k-sales">—</div><div class="kpi-l">Vendas Hoje</div></div>
@@ -190,16 +232,36 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="kpi"><div class="kpi-bar" style="background:var(--blue)"></div><span class="kpi-icon">🟢</span><div class="kpi-v" id="k-online">—</div><div class="kpi-l">Online Agora</div></div>
   </div>
 
+  <!-- ══ DAILY INVESTMENT INPUT ══ -->
   <div class="card">
-    <div class="ctitle">💸 Investimento Meta Ads (Manual)<div class="cactions"><button class="save-btn" onclick="saveInvestment()">💾 Salvar</button></div></div>
-    <div class="invest-input-wrap">
-      <div class="invest-row"><label>Hoje</label><input class="invest-inp" id="inv-today" type="number" placeholder="0.00" step="0.01" min="0"></div>
-      <div class="invest-row"><label>Ontem</label><input class="invest-inp" id="inv-yesterday" type="number" placeholder="0.00" step="0.01" min="0"></div>
-      <div class="invest-row"><label>Últimos 7 dias (total)</label><input class="invest-inp" id="inv-7d" type="number" placeholder="0.00" step="0.01" min="0"></div>
-      <div class="invest-row"><label>Últimos 30 dias (total)</label><input class="invest-inp" id="inv-30d" type="number" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="ctitle">📅 Investimento Diário Meta Ads
+      <div class="cactions">
+        <button class="save-btn" onclick="saveDailyInvestment()">💾 Salvar Mês</button>
+      </div>
+    </div>
+    <div class="daily-inv-wrap">
+      <div class="month-nav">
+        <button class="month-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-label" id="month-label">—</div>
+        <button class="month-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="daily-grid" id="daily-grid"></div>
+      <div class="inv-total-row" id="inv-total-row">
+        <div class="inv-total-item"><div class="inv-total-label">Total no mês</div><div class="inv-total-val" id="inv-month-total">R$ 0,00</div></div>
+        <div class="inv-total-item"><div class="inv-total-label">Hoje</div><div class="inv-total-val" id="inv-today-total">R$ 0,00</div></div>
+        <div class="inv-total-item"><div class="inv-total-label">Últimos 7 dias</div><div class="inv-total-val" id="inv-7d-total">R$ 0,00</div></div>
+        <div class="inv-total-item"><div class="inv-total-label">Média/dia (dias com gasto)</div><div class="inv-total-val" id="inv-avg-total">R$ 0,00</div></div>
+      </div>
     </div>
   </div>
 
+  <!-- ══ MONTHLY METRICS ══ -->
+  <div class="card">
+    <div class="ctitle">📊 Métricas do Mês — Médias &amp; Projeções</div>
+    <div class="monthly-metrics" id="monthly-metrics-grid"></div>
+  </div>
+
+  <!-- INSIGHTS -->
   <div class="card">
     <div class="ctitle">💡 Inteligência &amp; Insights</div>
     <div class="itabs">
@@ -217,11 +279,13 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="ipanel" id="ip-tips"><div class="tip-list" id="tips-list"></div></div>
   </div>
 
+  <!-- COMPARISON TABLE -->
   <div class="card">
     <div class="ctitle">📅 Comparação de Períodos</div>
     <table class="cmp"><thead><tr><th>Métrica</th><th>Hoje</th><th>Ontem</th><th>7 Dias</th><th>30 Dias</th></tr></thead><tbody id="cmp-body"></tbody></table>
   </div>
 
+  <!-- SALES -->
   <div class="card">
     <div class="ctitle">💰 Vendas Meta Ads<div class="cactions"><select class="sel" id="date-filter" onchange="onFilter()"><option value="today">Hoje</option><option value="yesterday">Ontem</option><option value="7d" selected>7 Dias</option><option value="30d">30 Dias</option></select></div></div>
     <div class="g2">
@@ -235,6 +299,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="card"><div class="ctitle">📊 Pico de Leads</div><div class="chwrap"><canvas id="peakChart"></canvas></div></div>
   </div>
 
+  <!-- SPY -->
   <div class="card">
     <div class="ctitle">🕵️ Espião ao Vivo — Tela por Tela
       <div class="cactions tabs">
@@ -259,23 +324,116 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 const FB={apiKey:"AIzaSyB-GPkmK_iNQuu_96NsWBEmnZA1LhiSRR4",authDomain:"alytics-metodo-alpha.firebaseapp.com",projectId:"alytics-metodo-alpha",storageBucket:"alytics-metodo-alpha.firebasestorage.app",messagingSenderId:"389989039442",appId:"1:389989039442:web:e897945ffbfe52da210e8b"};
 const TIKTOK_CHANNELS=['doutor-cajado','doutor-reginaldo','doutor-saude','doutor-bigode','cajado-supremo'];
 const META_SOURCES=new Set(['facebook','meta','instagram','fb','ig','fb-ads','meta-ads']);
 const TQ=8;
 const SCREEN_MAP={1:'Idade',2:'Prova Social',3:'Tipo de Corpo',4:'Objetivos',5:'Assoalho Pélvico',6:'Duração Relação',7:'Ejaculação Precoce',8:'Controle Ejaculação',9:'Treino Desempenho',10:'Imagem Método',11:'Força da Ereção',12:'Tempo Dificuldade',13:'Ereções Matinais',14:'Dificuldade Ereção','14b':'Duas Vezes',15:'Músculo Bulbocavernoso',16:'Imagem Info',17:'Atividade Física',18:'Pornô',19:'Estado Civil',20:'Frequência Relações',21:'Libido',22:'Soluções Rápidas',23:'Imagem Final',24:'Loading Análise',25:'Resultado',26:'Oferta/Checkout'};
 const SCREEN_ORDER=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,'14b',15,16,17,18,19,20,21,22,23,24,25,26];
+const WEEKDAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
 let sessions=[],sales=[],spyFilter='all',schart=null,pchart=null;
 let idxSaleToSess=new Map(),idxSessToSale=new Map();
-let investment={today:0,yesterday:0,'7d':0,'30d':0};
-function loadInvestment(){const s=localStorage.getItem('meta_investment');if(s)try{investment=JSON.parse(s);}catch(e){}document.getElementById('inv-today').value=investment.today||'';document.getElementById('inv-yesterday').value=investment.yesterday||'';document.getElementById('inv-7d').value=investment['7d']||'';document.getElementById('inv-30d').value=investment['30d']||'';}
-window.saveInvestment=function(){investment.today=parseFloat(document.getElementById('inv-today').value)||0;investment.yesterday=parseFloat(document.getElementById('inv-yesterday').value)||0;investment['7d']=parseFloat(document.getElementById('inv-7d').value)||0;investment['30d']=parseFloat(document.getElementById('inv-30d').value)||0;localStorage.setItem('meta_investment',JSON.stringify(investment));renderAll();showToast('chk','💾 Salvo!','Métricas de ROAS atualizadas');};
-loadInvestment();
+
+// ── Daily investment state ──
+let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
+// dailyData: { "YYYY-MM": { "DD": value } }
+function getDailyKey(){return`${viewYear}-${String(viewMonth+1).padStart(2,'0')}`;}
+function loadDailyData(){const s=localStorage.getItem('meta_daily_inv');try{return s?JSON.parse(s):{}}catch(e){return{};}}
+function saveDailyData(data){localStorage.setItem('meta_daily_inv',JSON.stringify(data));}
+let dailyData=loadDailyData();
+
+// helper: get spend totals from daily data
+function getSpendForRange(startDate,endDate){let total=0;const cur=new Date(startDate);cur.setHours(0,0,0,0);const end=new Date(endDate);end.setHours(23,59,59,999);while(cur<=end){const key=`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}`;const dd=String(cur.getDate()).padStart(2,'0');const v=dailyData[key]?parseFloat(dailyData[key][dd])||0:0;total+=v;cur.setDate(cur.getDate()+1);}return total;}
+function getTodaySpend(){const now=new Date();const key=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;const dd=String(now.getDate()).padStart(2,'0');return dailyData[key]?parseFloat(dailyData[key][dd])||0:0;}
+function getMonthSpend(year,month){const key=`${year}-${String(month+1).padStart(2,'0')}`;const obj=dailyData[key]||{};return Object.values(obj).reduce((a,v)=>a+(parseFloat(v)||0),0);}
+function get7dSpend(){const now=new Date();const s=new Date(now);s.setDate(now.getDate()-6);s.setHours(0,0,0,0);return getSpendForRange(s,now);}
+
+window.changeMonth=function(dir){viewMonth+=dir;if(viewMonth<0){viewMonth=11;viewYear--;}else if(viewMonth>11){viewMonth=0;viewYear++;}renderDailyGrid();};
+
+window.saveDailyInvestment=function(){// collect from inputs
+  const key=getDailyKey();if(!dailyData[key])dailyData[key]={};
+  document.querySelectorAll('.day-inp').forEach(inp=>{const dd=inp.dataset.dd;const v=parseFloat(inp.value)||0;if(v>0)dailyData[key][dd]=v;else delete dailyData[key][dd];});
+  saveDailyData(dailyData);renderAll();showToast('chk','💾 Salvo!','Investimento do mês atualizado');};
+
+function renderDailyGrid(){const key=getDailyKey();const saved=dailyData[key]||{};document.getElementById('month-label').textContent=`${MONTHS[viewMonth]} ${viewYear}`;
+  const today=new Date();const isCurrentMonth=(viewYear===today.getFullYear()&&viewMonth===today.getMonth());
+  const daysInMonth=new Date(viewYear,viewMonth+1,0).getDate();
+  let html='';for(let d=1;d<=daysInMonth;d++){const dd=String(d).padStart(2,'0');const date=new Date(viewYear,viewMonth,d);const wd=WEEKDAYS[date.getDay()];const isFuture=date>today&&!isCurrentMonth||date.toDateString()>today.toDateString();const isToday=isCurrentMonth&&d===today.getDate();const hasVal=saved[dd]>0;html+=`<div class="day-cell${isToday?' today':''}${isFuture?' future':''}${hasVal&&!isFuture?' has-value':''}"><div class="day-num"><span>Dia ${d}</span><span class="wd">${wd}</span></div><input class="day-inp" type="number" placeholder="R$ 0,00" step="0.01" min="0" data-dd="${dd}" value="${saved[dd]||''}" oninput="onDayInput(this)"></div>`;}
+  document.getElementById('daily-grid').innerHTML=html;
+  updateInvTotals();}
+
+window.onDayInput=function(inp){updateInvTotals();};
+function updateInvTotals(){const key=getDailyKey();const now=new Date();
+  let monthTotal=0,daysWithSpend=0;
+  document.querySelectorAll('.day-inp').forEach(inp=>{const v=parseFloat(inp.value)||0;if(v>0){monthTotal+=v;daysWithSpend++;}});
+  const avg=daysWithSpend>0?monthTotal/daysWithSpend:0;
+  // today from current inputs if viewing current month, else from saved
+  const todayIsCurrentMonth=(viewYear===now.getFullYear()&&viewMonth===now.getMonth());
+  let todayVal=0;
+  if(todayIsCurrentMonth){const dd=String(now.getDate()).padStart(2,'0');const inp=document.querySelector(`.day-inp[data-dd="${dd}"]`);todayVal=inp?parseFloat(inp.value)||0:0;}
+  // 7d from saved data
+  const s7=new Date(now);s7.setDate(now.getDate()-6);s7.setHours(0,0,0,0);let spend7d=0;for(let i=0;i<7;i++){const d=new Date(s7);d.setDate(s7.getDate()+i);const k2=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;const ddd=String(d.getDate()).padStart(2,'0');// if viewing same month as today, read from live inputs
+    if(todayIsCurrentMonth&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()){const inp2=document.querySelector(`.day-inp[data-dd="${ddd}"]`);spend7d+=inp2?parseFloat(inp2.value)||0:parseFloat((dailyData[k2]||{})[ddd])||0;}else{spend7d+=parseFloat((dailyData[k2]||{})[ddd])||0;}}
+  document.getElementById('inv-month-total').textContent=brl(monthTotal);
+  document.getElementById('inv-today-total').textContent=brl(todayVal);
+  document.getElementById('inv-7d-total').textContent=brl(spend7d);
+  document.getElementById('inv-avg-total').textContent=brl(avg);}
+
+// ── Monthly metrics ──
+function renderMonthlyMetrics(){const now=new Date();const mStart=new Date(now.getFullYear(),now.getMonth(),1);const mEnd=new Date(now);
+  const ms=getMetaSessions(),mv=getMetaSales();
+  const mSess=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=mStart&&d<=mEnd;});
+  const mSales=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=mStart&&d<=mEnd;});
+  const mChk=mSess.filter(s=>isChk(s));
+  const daysElapsed=Math.max(now.getDate(),1);
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  // averages per day
+  const avgAccess=(mSess.length/daysElapsed).toFixed(1);
+  const avgSales=(mSales.length/daysElapsed).toFixed(1);
+  const avgChk=(mChk.length/daysElapsed).toFixed(1);
+  // conversion: sales / sessions
+  const convRate=mSess.length>0?(mSales.length/mSess.length*100).toFixed(2):0;
+  // checkout-to-sale rate
+  const chkToSale=mChk.length>0?(mSales.length/mChk.length*100).toFixed(1):0;
+  // checkouts needed per sale (inverse)
+  const chkPerSale=mSales.length>0?(mChk.length/mSales.length).toFixed(1):'—';
+  // leads needed per sale
+  const leadsPerSale=mSales.length>0?(mSess.length/mSales.length).toFixed(1):'—';
+  // revenue
+  const mRev=mSales.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);
+  const avgRevDay=mRev/daysElapsed;
+  // projection to end of month
+  const projRev=avgRevDay*daysInMonth;
+  const projSales=Math.round(parseFloat(avgSales)*daysInMonth);
+  const projSpend=getMonthSpend(now.getFullYear(),now.getMonth());
+  const projRoas=projSpend>0?(projRev/projSpend).toFixed(2):'—';
+  const projProfit=projRev-projSpend;
+  // pct of month elapsed
+  const pctElapsed=Math.round(daysElapsed/daysInMonth*100);
+  const el=document.getElementById('monthly-metrics-grid');if(!el)return;
+  const cards=[
+    {color:'blue',icon:'👥',label:'Média de Acessos/Dia',val:avgAccess,sub:`${mSess.length} leads em ${daysElapsed} dias`,trend:null},
+    {color:'green',icon:'💰',label:'Média de Vendas/Dia',val:avgSales,sub:`${mSales.length} vendas este mês`,trend:null},
+    {color:'gold',icon:'🛒',label:'Checkouts por Venda',val:chkPerSale,sub:`Taxa checkout→venda: ${chkToSale}%`,trend:parseFloat(chkToSale)>=30?'up':'down'},
+    {color:'purple',icon:'🎯',label:'Conversão do Mês',val:`${convRate}%`,sub:`${leadsPerSale} leads necessários por venda`,trend:parseFloat(convRate)>=2?'up':'down'},
+    {color:'cyan',icon:'📈',label:'Receita Acumulada',val:brl(mRev),sub:`Média ${brl(avgRevDay)}/dia`,trend:null},
+    {color:'green',icon:'🔮',label:'Projeção do Mês',val:brl(projRev),sub:`≈ ${projSales} vendas · ROAS proj. ${projRoas}x`,trend:null,proj:{pct:pctElapsed,current:mRev,target:projRev}},
+    {color:projProfit>=0?'green':'red',icon:'💜',label:'Lucro Projetado',val:brl(projProfit),sub:`${brl(projRev)} receita − ${brl(projSpend)} investido`,trend:projProfit>=0?'up':'down'},
+    {color:'gold',icon:'📊',label:'CPL Médio do Mês',val:projSpend>0&&mSess.length>0?brl(projSpend/mSess.length):'—',sub:`${brl(projSpend)} investido ÷ ${mSess.length} leads`,trend:null},
+  ];
+  el.innerHTML=cards.map(c=>{let trendHtml='';if(c.trend)trendHtml=`<div class="mm-trend ${c.trend}">${c.trend==='up'?'▲ Bom':'▼ Atenção'}</div>`;let projHtml='';if(c.proj){const pct=Math.min(Math.round(c.proj.current/Math.max(c.proj.target,1)*100),100);projHtml=`<div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:${pct}%"></div></div><div class="proj-label"><span>${pct}% atingido</span><span>${brl(c.proj.target)} meta</span></div>`;}
+    return`<div class="mm-card ${c.color}"><span class="mm-icon">${c.icon}</span><div class="mm-label">${c.label}</div><div class="mm-val">${c.val}</div><div class="mm-sub">${c.sub}</div>${trendHtml}${projHtml}</div>`;}).join('');}
+
+// ── Worker ──
 const WSRC=`const toMs=ts=>{if(!ts)return null;if(ts.seconds)return ts.seconds*1000;if(typeof ts==='number')return ts;if(typeof ts==='string'){const d=new Date(ts);return isNaN(d)?null:d.getTime();}return null;};const isPaid=s=>s.isPaid===true||s.paid===true||['pago','paid','approved','completed'].includes(String(s.status||'').toLowerCase());self.onmessage=function(e){const{sessions,sales}=e.data;const byId=new Map();sessions.forEach(s=>{const id=s.sessionId||s.id;if(!id)return;const ex=byId.get(id);if(!ex||toMs(s.lastActivity)>toMs(ex.lastActivity))byId.set(id,s);});const uniq=Array.from(byId.values());const chkIdx=[];uniq.forEach(s=>{let ms=null;if(s.events&&typeof s.events==='object'&&!Array.isArray(s.events)){ms=toMs(s.events.checkout)||toMs(s.events.checkout_reached);}if(!ms&&(s.currentStep==='checkout'||s.currentStep==='payment'))ms=toMs(s.lastActivity);if(ms)chkIdx.push({ms,sid:s.sessionId||s.id});});chkIdx.sort((a,b)=>a.ms-b.ms);const saleToSessId=new Map(),sessToSaleId=new Map();sales.forEach(sale=>{if(!isPaid(sale))return;const saleId=sale.id;const directSid=sale.sessionId||sale.externalId||sale.session_id;if(directSid&&byId.has(directSid)){saleToSessId.set(saleId,directSid);sessToSaleId.set(directSid,saleId);return;}const saleMs=toMs(sale.createdAt);if(!saleMs)return;const lo=saleMs-3600000,hi=saleMs+300000;let left=0,right=chkIdx.length;while(left<right){const mid=(left+right)>>1;chkIdx[mid].ms<lo?left=mid+1:right=mid;}let best=null,bestScore=Infinity;for(let i=left;i<chkIdx.length&&chkIdx[i].ms<=hi;i++){const{ms,sid}=chkIdx[i];if(sessToSaleId.has(sid))continue;const d=saleMs-ms;if(d<bestScore){bestScore=d;best=sid;}}if(best){saleToSessId.set(saleId,best);sessToSaleId.set(best,saleId);}});self.postMessage({saleToSessId:[...saleToSessId],sessToSaleId:[...sessToSaleId]});};`;
 const worker=new Worker(URL.createObjectURL(new Blob([WSRC],{type:'application/javascript'})));
 let workerBusy=false,workerQueued=false;
 worker.onmessage=function(e){const{saleToSessId,sessToSaleId}=e.data;idxSaleToSess.clear();idxSessToSale.clear();const sessById=new Map();sessions.forEach(s=>{const id=s.sessionId||s.id;if(id)sessById.set(id,s);});const salesById=new Map();sales.forEach(s=>salesById.set(s.id,s));saleToSessId.forEach(([sid,sessId])=>{const s=sessById.get(sessId);if(s)idxSaleToSess.set(sid,s);});sessToSaleId.forEach(([sessId,saleId])=>{const s=salesById.get(saleId);if(s&&isPaid(s))idxSessToSale.set(sessId,s);});workerBusy=false;if(workerQueued){workerQueued=false;dispatchWorker();}else{renderAll();}};
 function dispatchWorker(){if(workerBusy){workerQueued=true;return;}workerBusy=true;worker.postMessage({sessions:getMetaSessions().map(s=>({id:s.id,sessionId:s.sessionId,currentStep:s.currentStep,currentScreen:s.currentScreen,lastScreen:s.lastScreen,lastActivity:s.lastActivity,events:s.events})),sales:getMetaSales().map(s=>({id:s.id,sessionId:s.sessionId,externalId:s.externalId,utm_source:s.utm_source,utmSource:s.utmSource,createdAt:s.createdAt,isPaid:s.isPaid,paid:s.paid,status:s.status,paymentMethod:s.paymentMethod,amount:s.amount}))});}
+
 const toDate=ts=>{if(!ts)return null;if(ts.toDate)return ts.toDate();if(ts.seconds)return new Date(ts.seconds*1000);if(typeof ts==='string'||typeof ts==='number')return new Date(ts);return null;};
 const isPaid=s=>s.isPaid===true||s.paid===true||['pago','paid','approved','completed'].includes(String(s.status||'').toLowerCase());
 const isOnline=ts=>{const d=toDate(ts);return d&&Date.now()-d.getTime()<300000;};
@@ -292,30 +450,50 @@ function getMetaSales(){return sales.filter(s=>isPaid(s)&&isMetaSale(s));}
 function getLeadScreen(s){if(s.currentScreen)return parseInt(s.currentScreen)||null;if(s.lastScreen)return parseInt(s.lastScreen)||null;if(s.currentStep){const m=String(s.currentStep).match(/(\d+)/);if(m)return parseInt(m[0]);if(s.currentStep==='checkout'||s.currentStep==='payment')return 26;if(s.currentStep==='resultado')return 25;if(s.currentStep==='loading_done'||s.currentStep==='loading_started')return 24;}return null;}
 const hasEv=(s,t)=>{if(s.currentStep===t)return true;if(s.events&&typeof s.events==='object'){if(Array.isArray(s.events))return s.events.some(e=>e.type===t||e.name===t);return t in s.events;}if(t==='quiz_started'&&(s.quizProgress>0||s.currentStep==='quiz'))return true;if(t==='quiz_completed'&&s.quizProgress>=TQ)return true;return false;};
 const isChk=s=>hasEv(s,'checkout')||hasEv(s,'checkout_reached')||s.currentStep==='checkout'||s.currentStep==='payment'||(getLeadScreen(s)||0)>=26;
-function renderAll(){detectChanges();renderKPIs();renderSpy();requestAnimationFrame(()=>{renderIns();renderFunnel();renderTips();renderCmp();renderSalesList();renderSalesChart();renderHM();renderPeak();});}
-function renderKPIs(){const ms=getMetaSessions(),mv=getMetaSales();const rt=getRange('today'),r7=getRange('7d');const inR=(s,r,df)=>{const d=toDate(s[df]||s.enteredAt||s.lastActivity);return d&&d>=r.start&&d<=r.end;};const ts=ms.filter(s=>inR(s,rt,'enteredAt'));const tv=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=rt.start&&d<=rt.end;});const s7=ms.filter(s=>inR(s,r7,'enteredAt'));const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start&&d<=r7.end;});const rev=tv.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const online=ms.filter(s=>isOnline(s.lastActivity)).length;const spend=investment.today||0;const roas=spend>0?(rev/spend):0;const profit=rev-spend;txt('h-spend',brl(spend));txt('h-spend-sub',spend>0?`${brl(spend/(ts.length||1))} por lead`:'Configure abaixo ↓');txt('h-rev',brl(rev));txt('h-rev-sub',`${tv.length} venda${tv.length!==1?'s':''} hoje`);const roasEl=$('h-roas');if(roasEl){roasEl.textContent=spend>0?`${roas.toFixed(2)}x`:'—';roasEl.className='ih-val '+(roas>=3?'roas-good':roas>=1.5?'roas-warn':'roas-bad');}txt('h-roas-sub',spend>0?`${roas>=3?'✅ Ótimo':roas>=1.5?'⚠️ Ok':'❌ Abaixo'} · meta ≥ 3.0x`:'meta ≥ 3.0x');txt('h-profit',brl(profit));txt('h-profit-sub',profit>0?'✅ Lucrativo':'❌ Prejuízo');txt('k-access',ts.length);txt('k-sales',tv.length);txt('k-rev',brl(rev));txt('k-chk',ts.filter(s=>isChk(s)).length);txt('k-quiz',ts.filter(s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed')).length);txt('k-conv',s7.length>0?(v7.length/s7.length*100).toFixed(1)+'%':'0%');txt('k-cpl',ts.length>0&&spend>0?brl(spend/ts.length):'—');txt('k-online',online);txt('status-text','🟢 Tempo real ativo');}
+
+function renderAll(){detectChanges();renderKPIs();renderSpy();renderMonthlyMetrics();requestAnimationFrame(()=>{renderIns();renderFunnel();renderTips();renderCmp();renderSalesList();renderSalesChart();renderHM();renderPeak();});}
+
+function renderKPIs(){const ms=getMetaSessions(),mv=getMetaSales();const rt=getRange('today'),r7=getRange('7d');const inR=(s,r,df)=>{const d=toDate(s[df]||s.enteredAt||s.lastActivity);return d&&d>=r.start&&d<=r.end;};const ts=ms.filter(s=>inR(s,rt,'enteredAt'));const tv=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=rt.start&&d<=rt.end;});const s7=ms.filter(s=>inR(s,r7,'enteredAt'));const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start&&d<=r7.end;});const rev=tv.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const online=ms.filter(s=>isOnline(s.lastActivity)).length;const spend=getTodaySpend();const now=new Date();const mSpend=getMonthSpend(now.getFullYear(),now.getMonth());const mStart=new Date(now.getFullYear(),now.getMonth(),1);const mSales=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=mStart&&d<=now;});const mRev=mSales.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const roas=mSpend>0?(mRev/mSpend):0;const profit=mRev-mSpend;txt('h-spend',brl(mSpend));txt('h-spend-sub',mSpend>0?`Investido no mês · hoje: ${brl(spend)}`:'Preencha os dias abaixo ↓');txt('h-rev',brl(mRev));txt('h-rev-sub',`${mSales.length} venda${mSales.length!==1?'s':''} no mês`);const roasEl=$('h-roas');if(roasEl){roasEl.textContent=mSpend>0?`${roas.toFixed(2)}x`:'—';roasEl.className='ih-val '+(roas>=3?'roas-good':roas>=1.5?'roas-warn':'roas-bad');}txt('h-roas-sub',mSpend>0?`${roas>=3?'✅ Ótimo':roas>=1.5?'⚠️ Ok':'❌ Abaixo'} · meta ≥ 3.0x`:'meta ≥ 3.0x');txt('h-profit',brl(profit));txt('h-profit-sub',profit>0?'✅ Lucrativo (mês)':'❌ Prejuízo (mês)');txt('k-access',ts.length);txt('k-sales',tv.length);txt('k-rev',brl(rev));txt('k-chk',ts.filter(s=>isChk(s)).length);txt('k-quiz',ts.filter(s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed')).length);txt('k-conv',s7.length>0?(v7.length/s7.length*100).toFixed(1)+'%':'0%');txt('k-cpl',ts.length>0&&spend>0?brl(spend/ts.length):'—');txt('k-online',online);txt('status-text','🟢 Tempo real ativo');}
+
 function renderFunnel(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRange('7d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start;});const total=s7.length||1;const steps=[{label:'Entrou',count:s7.length,color:'#3b82f6'},{label:'Iniciou Quiz',count:s7.filter(s=>s.quizProgress>0||hasEv(s,'quiz_started')).length,color:'#60a5fa'},{label:'Completou Quiz',count:s7.filter(s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed')).length,color:'#818cf8'},{label:'Viu Resultado',count:s7.filter(s=>hasEv(s,'result_shown')||hasEv(s,'loading_done')||(getLeadScreen(s)||0)>=24).length,color:'#a78bfa'},{label:'Checkout',count:s7.filter(s=>isChk(s)).length,color:'#f59e0b'},{label:'Comprou',count:v7.length,color:'#22c55e'}];const el=$('funnel-wrap');if(!el)return;let html='';steps.forEach((step,i)=>{const pct=total>0?Math.round(step.count/total*100):0;const prev=i>0?steps[i-1].count:step.count;const drop=prev>0&&i>0?Math.round((1-step.count/prev)*100):0;if(i>0)html+=`<div class="funnel-arrow">▼ ${drop>0?`perdeu ${drop}%`:''}</div>`;html+=`<div class="funnel-step"><div class="funnel-step-label">${step.label}</div><div class="funnel-bar-wrap"><div class="funnel-bar-fill" style="width:${Math.max(pct,2)}%;background:${step.color}"><span class="funnel-bar-label" style="${pct<15?'display:none':''}">${pct}%</span></div></div><div class="funnel-step-val">${step.count}</div><div class="funnel-step-pct" style="color:${step.color}">${pct}%</div></div>`;});el.innerHTML=html;}
+
 function renderDrop(){const ms=getMetaSessions();const r7=getRange('7d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const screenAtLeast={};SCREEN_ORDER.forEach(k=>{screenAtLeast[k]=0;});s7.forEach(s=>{const sc=getLeadScreen(s);if(!sc)return;const scIdx=SCREEN_ORDER.indexOf(sc);if(scIdx<0)return;for(let i=0;i<=scIdx;i++){const key=SCREEN_ORDER[i];screenAtLeast[key]=(screenAtLeast[key]||0)+1;}});const el=$('drop-wrap');if(!el)return;const total=s7.length||1;const maxCount=Math.max(...Object.values(screenAtLeast),1);const hasData=Object.values(screenAtLeast).some(v=>v>0);if(!hasData){el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--muted)"><div style="font-size:32px;margin-bottom:10px">📱</div><div style="font-weight:800;color:#fff;margin-bottom:6px">Aguardando dados de tela</div><div style="font-size:12px;line-height:1.6">Instale o <strong>funil-patch.js</strong> no funil para ver o drop por tela em tempo real.</div></div>`;return;}let html='<div class="drop-grid">';SCREEN_ORDER.forEach((k,i)=>{const count=screenAtLeast[k]||0;const pct=total>0?Math.round(count/total*100):0;const prev=i>0?(screenAtLeast[SCREEN_ORDER[i-1]]||0):count;const drop=prev>0&&i>0?Math.round((1-count/prev)*100):0;const barPct=maxCount>0?Math.round(count/maxCount*100):0;const kNum=typeof k==='number'?k:parseInt(k)||14;const barColor=kNum<=9?'#3b82f6':kNum<=19?'#f59e0b':kNum<=25?'#a78bfa':'#22c55e';const rowClass=drop>=30&&i>0?'hot':drop>=15&&i>0?'warm':'';html+=`<div class="drop-row ${rowClass}"><div class="drop-num">${k}</div><div class="drop-name" title="${SCREEN_MAP[k]||'Tela '+k}">${SCREEN_MAP[k]||'Tela '+k}</div><div class="drop-bar-wrap"><div class="drop-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div><div class="drop-count">${count}</div><div class="drop-pct" style="color:${drop>=30?'var(--red)':drop>=15?'var(--gold)':'var(--muted)'}">${i>0&&drop>0?`-${drop}%`:pct+'%'}</div></div>`;});html+='</div>';html+=`<div style="font-size:10px;color:var(--muted);margin-top:12px;text-align:center">🔴 Drop ≥30% (crítico) · 🟡 Drop ≥15% (atenção) — últimos 7 dias · ${s7.length} leads</div>`;el.innerHTML=html;}
-function renderIns(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRange('7d'),r30=getRange('30d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start;});const v30=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r30.start;});const tV=v7.length,tC=s7.filter(s=>isChk(s)).length;const rev7=v7.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const rev30=v30.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const spend7=investment['7d']||0;const roas7=spend7>0?(rev7/spend7):0;const cpl7=s7.length>0&&spend7>0?spend7/s7.length:0;const abn=tC>0?((tC-tV)/tC*100).toFixed(1):0;const tick=tV>0?(rev7/tV):0;const conv=s7.length>0?(tV/s7.length*100).toFixed(2):0;const profit7=rev7-spend7;const cards=[];cards.push({t:roas7>=3?'good':roas7>=1.5?'warn':'danger',e:'🎯',tl:'ROAS 7 Dias',v:spend7>0?`${roas7.toFixed(2)}x`:'—',d:`${brl(rev7)} ÷ ${brl(spend7)} — meta ≥ 3.0x`});cards.push({t:cpl7>0&&cpl7<15?'good':cpl7<30?'warn':'danger',e:'💲',tl:'CPL 7 Dias',v:cpl7>0?brl(cpl7):'—',d:`${brl(spend7)} ÷ ${s7.length} leads`});cards.push({t:abn>50?'danger':abn>30?'warn':'good',e:'🛒',tl:'Abandono Checkout',v:`${abn}%`,d:`${tC} chegaram · ${tV} compraram`});cards.push({t:'',e:'💵',tl:'Ticket Médio',v:brl(tick),d:'Líquido por venda — 7 dias'});cards.push({t:conv<0.5?'danger':conv<2?'warn':'good',e:'🎯',tl:'Conv. Funil Completo',v:`${conv}%`,d:`${s7.length} leads → ${tV} compras`});cards.push({t:profit7>0?'good':'danger',e:'💜',tl:'Lucro 7 Dias',v:brl(profit7),d:`${brl(rev7)} − ${brl(spend7)}`});cards.push({t:'',e:'📆',tl:'Receita 30 Dias',v:brl(rev30),d:`${v30.length} vendas · média ${brl(rev30/30)}/dia`});cards.push({t:'',e:'🔮',tl:'Projeção Mensal',v:brl(rev7/7*30),d:'Baseada nos últimos 7 dias'});const el=$('ins-grid');if(!el)return;el.innerHTML=cards.map(c=>`<div class="ins-card ${c.t}"><span class="ins-e">${c.e}</span><div class="ins-t">${c.tl}</div><div class="ins-v">${c.v}</div><div class="ins-d">${c.d}</div></div>`).join('');}
+
+function renderIns(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRange('7d'),r30=getRange('30d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start;});const v30=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r30.start;});const tV=v7.length,tC=s7.filter(s=>isChk(s)).length;const rev7=v7.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const rev30=v30.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const spend7=get7dSpend();const roas7=spend7>0?(rev7/spend7):0;const cpl7=s7.length>0&&spend7>0?spend7/s7.length:0;const abn=tC>0?((tC-tV)/tC*100).toFixed(1):0;const tick=tV>0?(rev7/tV):0;const conv=s7.length>0?(tV/s7.length*100).toFixed(2):0;const profit7=rev7-spend7;const cards=[];cards.push({t:roas7>=3?'good':roas7>=1.5?'warn':'danger',e:'🎯',tl:'ROAS 7 Dias',v:spend7>0?`${roas7.toFixed(2)}x`:'—',d:`${brl(rev7)} ÷ ${brl(spend7)} — meta ≥ 3.0x`});cards.push({t:cpl7>0&&cpl7<15?'good':cpl7<30?'warn':'danger',e:'💲',tl:'CPL 7 Dias',v:cpl7>0?brl(cpl7):'—',d:`${brl(spend7)} ÷ ${s7.length} leads`});cards.push({t:abn>50?'danger':abn>30?'warn':'good',e:'🛒',tl:'Abandono Checkout',v:`${abn}%`,d:`${tC} chegaram · ${tV} compraram`});cards.push({t:'',e:'💵',tl:'Ticket Médio',v:brl(tick),d:'Líquido por venda — 7 dias'});cards.push({t:conv<0.5?'danger':conv<2?'warn':'good',e:'🎯',tl:'Conv. Funil Completo',v:`${conv}%`,d:`${s7.length} leads → ${tV} compras`});cards.push({t:profit7>0?'good':'danger',e:'💜',tl:'Lucro 7 Dias',v:brl(profit7),d:`${brl(rev7)} − ${brl(spend7)}`});cards.push({t:'',e:'📆',tl:'Receita 30 Dias',v:brl(rev30),d:`${v30.length} vendas · média ${brl(rev30/30)}/dia`});cards.push({t:'',e:'🔮',tl:'Projeção Mensal',v:brl(rev7/7*30),d:'Baseada nos últimos 7 dias'});const el=$('ins-grid');if(!el)return;el.innerHTML=cards.map(c=>`<div class="ins-card ${c.t}"><span class="ins-e">${c.e}</span><div class="ins-t">${c.tl}</div><div class="ins-v">${c.v}</div><div class="ins-d">${c.d}</div></div>`).join('');}
+
 function renderCmp(){const ms=getMetaSessions(),mv=getMetaSales();const periods=['today','yesterday','7d','30d'];const metrics=[{n:'Leads',fn:()=>true,src:'sessions',df:'enteredAt'},{n:'Iniciou Quiz',fn:s=>s.quizProgress>0||hasEv(s,'quiz_started'),src:'sessions',df:'enteredAt'},{n:'Completou Quiz',fn:s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed'),src:'sessions',df:'enteredAt'},{n:'Checkout',fn:s=>isChk(s),src:'sessions',df:'enteredAt'},{n:'Vendas',fn:s=>isPaid(s),src:'sales',df:'createdAt'}];const b=$('cmp-body');if(!b)return;b.innerHTML=metrics.map(mt=>{const vals=periods.map(p=>{const r=getRange(p),arr=mt.src==='sales'?mv:ms;return arr.filter(s=>{const d=toDate(s[mt.df]||s.lastActivity);return d&&d>=r.start&&d<=r.end&&mt.fn(s);}).length;});return`<tr><td class="cl">${mt.n}</td>${vals.map((v,i)=>`<td class="cv${i===0&&v>0?' hi':''}">${v}</td>`).join('')}</tr>`;}).join('');}
+
 function renderSalesList(){const mv=getMetaSales();const f=$('date-filter')?.value||'7d',r=getRange(f);const list=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r.start&&d<=r.end;}).sort((a,b)=>toDate(b.createdAt)-toDate(a.createdAt));const el=$('sales-list');if(!el)return;if(!list.length){el.innerHTML='<div class="empty">Nenhuma venda no período</div>';return;}el.innerHTML=list.slice(0,15).map(s=>`<div class="si"><div class="si-av">${(s.customerName||'?').charAt(0).toUpperCase()}</div><div class="si-info"><div class="si-name">${s.customerName||'Lead Meta'}</div><div class="si-meta">${ago(s.createdAt)} · ${(s.paymentMethod||'PIX').toUpperCase()}</div><div class="si-src">📘 META ADS</div></div><div class="si-amt">${brl(net(s.amount||0,s.paymentMethod))}</div></div>`).join('');}
+
 function renderSalesChart(){const mv=getMetaSales();const f=$('date-filter')?.value||'7d',r=getRange(f),byD={};mv.forEach(s=>{const d=toDate(s.createdAt);if(!d||d<r.start||d>r.end)return;const k=d.toLocaleDateString('pt-BR');byD[k]=(byD[k]||0)+1;});const days=[],counts=[],cur=new Date(r.start);while(cur<=r.end){const k=cur.toLocaleDateString('pt-BR');days.push(k);counts.push(byD[k]||0);cur.setDate(cur.getDate()+1);}const ctx=$('salesChart');if(!ctx)return;if(schart){schart.data.labels=days;schart.data.datasets[0].data=counts;schart.update('none');return;}schart=new Chart(ctx.getContext('2d'),{type:'line',data:{labels:days,datasets:[{data:counts,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',borderWidth:2,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#3b82f6'}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9},stepSize:1}}}}});}
+
 function renderHM(){const mv=getMetaSales();const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],hrs=['00h','04h','08h','12h','16h','20h'],data={};days.forEach(d=>{data[d]={};hrs.forEach(h=>{data[d][h]=0;});});mv.forEach(s=>{const d=toDate(s.createdAt);if(!d)return;const day=days[d.getDay()],h=d.getHours(),sl=h<4?'00h':h<8?'04h':h<12?'08h':h<16?'12h':h<20?'16h':'20h';data[day][sl]++;});let max=0;Object.values(data).forEach(d=>Object.values(d).forEach(v=>{if(v>max)max=v;}));const el=$('hm-wrap');if(!el)return;let html=`<table class="hmt"><thead><tr><th></th>${hrs.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;days.forEach(d=>{html+=`<tr><td class="hm-day">${d}</td>`;hrs.forEach(h=>{const v=data[d][h],c=max>0&&v>0?(v/max>=.65?'h':v/max>=.3?'m':'l'):'e';html+=`<td class="hmc ${c}">${v||''}</td>`;});html+=`</tr>`;});html+=`</tbody></table><div class="hm-leg"><div class="hm-li"><div class="hm-lc" style="background:rgba(34,197,94,.35)"></div>Alto</div><div class="hm-li"><div class="hm-lc" style="background:rgba(245,158,11,.25)"></div>Médio</div><div class="hm-li"><div class="hm-lc" style="background:rgba(59,130,246,.16)"></div>Baixo</div></div>`;el.innerHTML=html;}
+
 function renderPeak(){const ms=getMetaSessions();const byH={};ms.forEach(s=>{const d=toDate(s.enteredAt);if(!d)return;const h=d.getHours();if(!byH[h])byH[h]=new Set();byH[h].add(s.sessionId||s.id);});const labels=Array.from({length:24},(_,i)=>i.toString().padStart(2,'0')+'h');const data=Array.from({length:24},(_,i)=>byH[i]?byH[i].size:0);const ctx=$('peakChart');if(!ctx)return;if(pchart){pchart.data.labels=labels;pchart.data.datasets[0].data=data;pchart.update('none');return;}pchart=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(59,130,246,.28)',borderColor:'#3b82f6',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9},stepSize:1}}}}});}
+
 window.setSpy=(f,btn)=>{spyFilter=f;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSpy();};
 function getScreenBadgeClass(n){if(!n)return'screen-early';const num=parseInt(n)||1;if(num>=26)return'screen-sale';if(num>=24)return'screen-checkout';if(num>=20)return'screen-late';if(num>=10)return'screen-mid';return'screen-early';}
 function renderSpy(){const ms=getMetaSessions();const el=$('spy-grid');if(!el)return;let list=ms;if(spyFilter==='online')list=ms.filter(s=>isOnline(s.lastActivity));if(spyFilter==='checkout')list=ms.filter(s=>isChk(s));if(spyFilter==='sale')list=ms.filter(s=>idxSessToSale.has(s.sessionId||s.id));list=list.sort((a,b)=>(toDate(b.lastActivity)||0)-(toDate(a.lastActivity)||0)).slice(0,40);if(!list.length){el.innerHTML='<div class="empty">Nenhum lead encontrado</div>';return;}
 const next=list.map(s=>{const sid=s.sessionId||s.id;const online=isOnline(s.lastActivity);const short=sid.substr(-6).toUpperCase();const sale=idxSessToSale.get(sid);const hasSale=!!sale;const chk=isChk(s);const n=hasSale?net(sale.amount||0,sale.paymentMethod).toFixed(2):0;const screenNum=getLeadScreen(s)||(hasSale?26:chk?26:null);const screenName=screenNum?(SCREEN_MAP[screenNum]||'Tela '+screenNum):null;const badgeClass=hasSale?'screen-sale':getScreenBadgeClass(screenNum);
-const currentIdx=screenNum?SCREEN_ORDER.indexOf(typeof screenNum==='number'?screenNum:parseInt(screenNum)):- 1;
+const currentIdx=screenNum?SCREEN_ORDER.indexOf(typeof screenNum==='number'?screenNum:parseInt(screenNum)):-1;
 const stepper=SCREEN_ORDER.map((_,i)=>{if(hasSale)return`<div class="ss sale-done"></div>`;if(i<currentIdx)return`<div class="ss done"></div>`;if(i===currentIdx)return`<div class="ss current"></div>`;return`<div class="ss"></div>`;}).join('');
 return`<div class="spy-item${hasSale?' sale':chk?' checkout':online?' online-now':''}"><div class="spy-av">${short.charAt(0)}</div><div class="spy-b"><div class="spy-row"><div class="spy-id">Lead #${short}</div><div class="spy-t">${ago(s.lastActivity)}</div></div><div class="tela-badge ${badgeClass}">📍 ${screenNum?`T${screenNum} · ${screenName}`:'Tela desconhecida'}</div><div class="spy-src">📘 META${online?' · 🟢 ONLINE':''}</div><div class="screen-stepper">${stepper}</div><div style="font-size:8px;color:var(--muted);margin-top:3px;font-weight:700">${screenNum?`Tela ${screenNum}/${SCREEN_ORDER.length}${hasSale?' · ✅ COMPROU':''}`:''}</div></div><div class="spy-r">${online&&!hasSale?'<div class="odot"></div>':''}${chk&&!hasSale?'<div class="bchk">CHK</div>':''}${hasSale?`<div class="bsale">R$\u00a0${n}</div>`:''}</div></div>`;}).join('');
 if(el.innerHTML!==next)el.innerHTML=next;}
-function renderTips(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRange('7d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start;});const tV=v7.length,tC=s7.filter(s=>isChk(s)).length;const rev7=v7.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const spend7=investment['7d']||0;const roas7=spend7>0?(rev7/spend7):0;const cpl7=s7.length>0&&spend7>0?spend7/s7.length:0;const abn=tC>0?(tC-tV)/tC*100:0;const conv7=s7.length>0?tV/s7.length*100:0;const tick=tV>0?rev7/tV:0;const tips=[];if(spend7===0)tips.push({cls:'info',badge:'info',icon:'💸',title:'Configure seu investimento',desc:'Preencha os valores acima para calcular ROAS, CPL e lucro líquido.'});if(spend7>0){if(roas7<1.5)tips.push({cls:'urgent',badge:'urgent',icon:'🚨',title:`ROAS crítico: ${roas7.toFixed(2)}x`,desc:`Você está perdendo dinheiro. Revise criativos e segmentação.`});else if(roas7<3)tips.push({cls:'warn',badge:'warn',icon:'⚠️',title:`ROAS abaixo do ideal: ${roas7.toFixed(2)}x`,desc:`Meta é ≥ 3.0x. Teste variações de criativos e públicos lookalike.`});else tips.push({cls:'good',badge:'good',icon:'🚀',title:`ROAS excelente: ${roas7.toFixed(2)}x`,desc:`Escale o orçamento! Para cada R$ 1 investido você retorna R$ ${roas7.toFixed(2)}.`});if(cpl7>30)tips.push({cls:'urgent',badge:'urgent',icon:'💲',title:`CPL alto: ${brl(cpl7)}`,desc:`Acima de R$ 30. Teste públicos mais amplos e melhore o hook do anúncio.`});else if(cpl7>15)tips.push({cls:'warn',badge:'warn',icon:'💲',title:`CPL moderado: ${brl(cpl7)}`,desc:`Ideal abaixo de R$ 15. Refine o público e melhore o CTR.`});else if(cpl7>0)tips.push({cls:'good',badge:'good',icon:'💲',title:`CPL eficiente: ${brl(cpl7)}`,desc:`Excelente! Considere escalar o orçamento gradualmente.`});}if(abn>60)tips.push({cls:'urgent',badge:'urgent',icon:'🛒',title:'Abandono crítico no checkout',desc:`${abn.toFixed(0)}% abandonam. Verifique o message match entre anúncio e landing page.`});if(conv7<1)tips.push({cls:'urgent',badge:'urgent',icon:'🎯',title:'Conversão muito baixa para tráfego pago',desc:`${conv7.toFixed(2)}% de conversão. Meta é acima de 2% para Meta Ads.`});tips.push({cls:'info',badge:'info',icon:'📉',title:'Use "Drop por Tela" para ver onde leads saem',desc:'Com o funil-patch.js instalado, você vê exatamente em qual tela há mais abandono e pode corrigir.'});tips.push({cls:'info',badge:'info',icon:'🎬',title:'Criativos: teste A/B constante',desc:'Troque criativos a cada 7–14 dias para evitar fadiga. Teste 2–3 variações simultâneas.'});tips.push({cls:'info',badge:'info',icon:'🎯',title:'LAL + Retargeting',desc:'Lookalike dos compradores (1–3%) + retargeting de quem visitou o checkout mas não comprou.'});const el=$('tips-list');if(!el)return;el.innerHTML=tips.map(t=>`<div class="tip ${t.cls}"><div class="tip-icon">${t.icon}</div><div class="tip-body"><span class="tip-badge ${t.badge}">${t.badge==='urgent'?'URGENTE':t.badge==='warn'?'ATENÇÃO':t.badge==='good'?'BOM':'DICA'}</span><div class="tip-title">${t.title}</div><div class="tip-desc">${t.desc}</div></div></div>`).join('');}
+
+function renderTips(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRange('7d');const s7=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r7.start;});const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start;});const tV=v7.length,tC=s7.filter(s=>isChk(s)).length;const rev7=v7.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const spend7=get7dSpend();const roas7=spend7>0?(rev7/spend7):0;const cpl7=s7.length>0&&spend7>0?spend7/s7.length:0;const abn=tC>0?(tC-tV)/tC*100:0;const conv7=s7.length>0?tV/s7.length*100:0;const tips=[];if(spend7===0)tips.push({cls:'info',badge:'info',icon:'💸',title:'Configure seu investimento',desc:'Preencha o valor investido por dia na tabela acima para calcular ROAS, CPL e lucro líquido.'});if(spend7>0){if(roas7<1.5)tips.push({cls:'urgent',badge:'urgent',icon:'🚨',title:`ROAS crítico: ${roas7.toFixed(2)}x`,desc:`Você está perdendo dinheiro. Revise criativos e segmentação.`});else if(roas7<3)tips.push({cls:'warn',badge:'warn',icon:'⚠️',title:`ROAS abaixo do ideal: ${roas7.toFixed(2)}x`,desc:`Meta é ≥ 3.0x. Teste variações de criativos e públicos lookalike.`});else tips.push({cls:'good',badge:'good',icon:'🚀',title:`ROAS excelente: ${roas7.toFixed(2)}x`,desc:`Escale o orçamento! Para cada R$ 1 investido você retorna R$ ${roas7.toFixed(2)}.`});if(cpl7>30)tips.push({cls:'urgent',badge:'urgent',icon:'💲',title:`CPL alto: ${brl(cpl7)}`,desc:`Acima de R$ 30. Teste públicos mais amplos e melhore o hook do anúncio.`});else if(cpl7>15)tips.push({cls:'warn',badge:'warn',icon:'💲',title:`CPL moderado: ${brl(cpl7)}`,desc:`Ideal abaixo de R$ 15. Refine o público e melhore o CTR.`});else if(cpl7>0)tips.push({cls:'good',badge:'good',icon:'💲',title:`CPL eficiente: ${brl(cpl7)}`,desc:`Excelente! Considere escalar o orçamento gradualmente.`});}if(abn>60)tips.push({cls:'urgent',badge:'urgent',icon:'🛒',title:'Abandono crítico no checkout',desc:`${abn.toFixed(0)}% abandonam. Verifique o message match entre anúncio e landing page.`});if(conv7<1)tips.push({cls:'urgent',badge:'urgent',icon:'🎯',title:'Conversão muito baixa para tráfego pago',desc:`${conv7.toFixed(2)}% de conversão. Meta é acima de 2% para Meta Ads.`});tips.push({cls:'info',badge:'info',icon:'📉',title:'Use "Drop por Tela" para ver onde leads saem',desc:'Com o funil-patch.js instalado, você vê exatamente em qual tela há mais abandono e pode corrigir.'});tips.push({cls:'info',badge:'info',icon:'🎬',title:'Criativos: teste A/B constante',desc:'Troque criativos a cada 7–14 dias para evitar fadiga. Teste 2–3 variações simultâneas.'});tips.push({cls:'info',badge:'info',icon:'🎯',title:'LAL + Retargeting',desc:'Lookalike dos compradores (1–3%) + retargeting de quem visitou o checkout mas não comprou.'});const el=$('tips-list');if(!el)return;el.innerHTML=tips.map(t=>`<div class="tip ${t.cls}"><div class="tip-icon">${t.icon}</div><div class="tip-body"><span class="tip-badge ${t.badge}">${t.badge==='urgent'?'URGENTE':t.badge==='warn'?'ATENÇÃO':t.badge==='good'?'BOM':'DICA'}</span><div class="tip-title">${t.title}</div><div class="tip-desc">${t.desc}</div></div></div>`).join('');}
+
 window.setITab=(tab,btn)=>{document.querySelectorAll('.itab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.ipanel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');$('ip-'+tab)?.classList.add('active');if(tab==='drop')renderDrop();};
+
 const prevChk=new Set(),prevSale=new Set();let firstLoad=true;
 function detectChanges(){const ms=getMetaSessions(),mv=getMetaSales();if(firstLoad){ms.forEach(s=>{if(isChk(s))prevChk.add(s.sessionId||s.id);});mv.forEach(s=>{if(isPaid(s))prevSale.add(s.id);});firstLoad=false;return;}ms.forEach(s=>{const sid=s.sessionId||s.id;if(isChk(s)&&!prevChk.has(sid)){prevChk.add(sid);showToast('chk','🛒 Novo Checkout Meta!','Lead chegou ao pagamento');}});mv.forEach(s=>{if(isPaid(s)&&!prevSale.has(s.id)){prevSale.add(s.id);showToast('sale',`💰 VENDA Meta! ${brl(net(s.amount||0,s.paymentMethod))}`,s.customerName||'Lead Meta');}});}
+
 function showToast(type,title,sub){const wrap=$('toast-wrap');if(!wrap)return;const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<div class="toast-icon">${type==='sale'?'💰':'🛒'}</div><div><div>${title}</div><div class="toast-sub">${sub}</div></div>`;wrap.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350);},4500);}
+
 window.onFilter=()=>{renderSalesList();renderSalesChart();};
+
+// Init daily grid
+renderDailyGrid();
+
 const app=initializeApp(FB),db=getFirestore(app);
 onSnapshot(collection(db,'sessions'),snap=>{sessions=snap.docs.map(d=>({id:d.id,...d.data()}));dispatchWorker();});
 onSnapshot(collection(db,'sales'),snap=>{sales=snap.docs.map(d=>({id:d.id,...d.data()}));dispatchWorker();});
