@@ -335,7 +335,7 @@ const FB={apiKey:"AIzaSyB-GPkmK_iNQuu_96NsWBEmnZA1LhiSRR4",authDomain:"alytics-m
 const TIKTOK_CHANNELS=['doutor-cajado','doutor-reginaldo','doutor-saude','doutor-bigode','cajado-supremo'];
 const META_SOURCES=new Set(['facebook','meta','instagram','fb','ig','fb-ads','meta-ads']);
 const TQ=8;
-const SCREEN_MAP={1:'Idade',2:'Prova Social',3:'Tipo de Corpo',4:'Objetivos',5:'Assoalho Pélvico',6:'Duração Relação',7:'Ejaculação Precoce',8:'Controle Ejaculação',9:'Treino Desempenho',10:'Imagem Método',11:'Força da Ereção',12:'Tempo Dificuldade',13:'Ereções Matinais',14:'Dificuldade Ereção','14b':'Duas Vezes',15:'Músculo Bulbocavernoso',16:'Imagem Info',17:'Atividade Física',18:'Pornô',19:'Estado Civil',20:'Frequência Relações',21:'Libido',22:'Soluções Rápidas',23:'Imagem Final',24:'Loading Análise',25:'Resultado',26:'Oferta'};
+const SCREEN_MAP={1:'Idade',2:'Prova Social',3:'Tipo de Corpo',4:'Objetivos',5:'Assoalho Pélvico',6:'Duração Relação',7:'Ejaculação Precoce',8:'Controle Ejaculação',9:'Treino Desempenho',10:'Imagem Método',11:'Força da Ereção',12:'Tempo Dificuldade',13:'Ereções Matinais',14:'Dificuldade Ereção','14b':'Duas Vezes',15:'Músculo Bulbocavernoso',16:'Imagem Info',17:'Atividade Física',18:'Pornô',19:'Estado Civil',20:'Frequência Relações',21:'Libido',22:'Soluções Rápidas',23:'Imagem Final',24:'Loading Análise',25:'Resultado',26:'Oferta/Checkout'};
 const SCREEN_ORDER=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,'14b',15,16,17,18,19,20,21,22,23,24,25,26];
 const WEEKDAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -434,7 +434,7 @@ function renderMonthlyMetrics(){const now=new Date();const mStart=new Date(now.g
     return`<div class="mm-card ${c.color}"><span class="mm-icon">${c.icon}</span><div class="mm-label">${c.label}</div><div class="mm-val">${c.val}</div><div class="mm-sub">${c.sub}</div>${trendHtml}${projHtml}</div>`;}).join('');}
 
 // ── Worker ──
-const WSRC=`const toMs=ts=>{if(!ts)return null;if(ts.seconds)return ts.seconds*1000;if(typeof ts==='number')return ts;if(typeof ts==='string'){const d=new Date(ts);return isNaN(d)?null:d.getTime();}return null;};const isPaid=s=>s.isPaid===true||s.paid===true||['pago','paid','approved','completed'].includes(String(s.status||'').toLowerCase());self.onmessage=function(e){const{sessions,sales}=e.data;const byId=new Map();sessions.forEach(s=>{const id=s.sessionId||s.id;if(!id)return;const ex=byId.get(id);if(!ex||toMs(s.lastActivity)>toMs(ex.lastActivity))byId.set(id,s);});const uniq=Array.from(byId.values());const chkIdx=[];uniq.forEach(s=>{let ms=null;if(s.events&&typeof s.events==='object'&&!Array.isArray(s.events)){ms=toMs(s.events.checkout)||toMs(s.events.checkout_clicked)||toMs(s.events.cta_clicked)||toMs(s.events.wiapy_redirect);}if(ms)chkIdx.push({ms,sid:s.sessionId||s.id});});chkIdx.sort((a,b)=>a.ms-b.ms);const saleToSessId=new Map(),sessToSaleId=new Map();sales.forEach(sale=>{if(!isPaid(sale))return;const saleId=sale.id;const directSid=sale.sessionId||sale.externalId||sale.session_id;if(directSid&&byId.has(directSid)){saleToSessId.set(saleId,directSid);sessToSaleId.set(directSid,saleId);return;}const saleMs=toMs(sale.createdAt);if(!saleMs)return;const lo=saleMs-3600000,hi=saleMs+300000;let left=0,right=chkIdx.length;while(left<right){const mid=(left+right)>>1;chkIdx[mid].ms<lo?left=mid+1:right=mid;}let best=null,bestScore=Infinity;for(let i=left;i<chkIdx.length&&chkIdx[i].ms<=hi;i++){const{ms,sid}=chkIdx[i];if(sessToSaleId.has(sid))continue;const d=saleMs-ms;if(d<bestScore){bestScore=d;best=sid;}}if(best){saleToSessId.set(saleId,best);sessToSaleId.set(best,saleId);}});self.postMessage({saleToSessId:[...saleToSessId],sessToSaleId:[...sessToSaleId]});};`;
+const WSRC=`const toMs=ts=>{if(!ts)return null;if(ts.seconds)return ts.seconds*1000;if(typeof ts==='number')return ts;if(typeof ts==='string'){const d=new Date(ts);return isNaN(d)?null:d.getTime();}return null;};const isPaid=s=>s.isPaid===true||s.paid===true||['pago','paid','approved','completed'].includes(String(s.status||'').toLowerCase());self.onmessage=function(e){const{sessions,sales}=e.data;const byId=new Map();sessions.forEach(s=>{const id=s.sessionId||s.id;if(!id)return;const ex=byId.get(id);if(!ex||toMs(s.lastActivity)>toMs(ex.lastActivity))byId.set(id,s);});const uniq=Array.from(byId.values());const chkIdx=[];uniq.forEach(s=>{let ms=null;if(s.events&&typeof s.events==='object'&&!Array.isArray(s.events)){ms=toMs(s.events.checkout)||toMs(s.events.checkout_reached);}if(!ms&&(s.currentStep==='checkout'||s.currentStep==='payment'))ms=toMs(s.lastActivity);if(ms)chkIdx.push({ms,sid:s.sessionId||s.id});});chkIdx.sort((a,b)=>a.ms-b.ms);const saleToSessId=new Map(),sessToSaleId=new Map();sales.forEach(sale=>{if(!isPaid(sale))return;const saleId=sale.id;const directSid=sale.sessionId||sale.externalId||sale.session_id;if(directSid&&byId.has(directSid)){saleToSessId.set(saleId,directSid);sessToSaleId.set(directSid,saleId);return;}const saleMs=toMs(sale.createdAt);if(!saleMs)return;const lo=saleMs-3600000,hi=saleMs+300000;let left=0,right=chkIdx.length;while(left<right){const mid=(left+right)>>1;chkIdx[mid].ms<lo?left=mid+1:right=mid;}let best=null,bestScore=Infinity;for(let i=left;i<chkIdx.length&&chkIdx[i].ms<=hi;i++){const{ms,sid}=chkIdx[i];if(sessToSaleId.has(sid))continue;const d=saleMs-ms;if(d<bestScore){bestScore=d;best=sid;}}if(best){saleToSessId.set(saleId,best);sessToSaleId.set(best,saleId);}});self.postMessage({saleToSessId:[...saleToSessId],sessToSaleId:[...sessToSaleId]});};`;
 const worker=new Worker(URL.createObjectURL(new Blob([WSRC],{type:'application/javascript'})));
 let workerBusy=false,workerQueued=false;
 worker.onmessage=function(e){const{saleToSessId,sessToSaleId}=e.data;idxSaleToSess.clear();idxSessToSale.clear();const sessById=new Map();sessions.forEach(s=>{const id=s.sessionId||s.id;if(id)sessById.set(id,s);});const salesById=new Map();sales.forEach(s=>salesById.set(s.id,s));saleToSessId.forEach(([sid,sessId])=>{const s=sessById.get(sessId);if(s)idxSaleToSess.set(sid,s);});sessToSaleId.forEach(([sessId,saleId])=>{const s=salesById.get(saleId);if(s&&isPaid(s))idxSessToSale.set(sessId,s);});workerBusy=false;if(workerQueued){workerQueued=false;dispatchWorker();}else{renderAll();}};
@@ -455,34 +455,19 @@ function getMetaSessions(){const byId=new Map();sessions.forEach(s=>{if(!isMetaS
 function getMetaSales(){return sales.filter(s=>isPaid(s)&&isMetaSale(s));}
 function getLeadScreen(s){if(s.currentScreen)return parseInt(s.currentScreen)||null;if(s.lastScreen)return parseInt(s.lastScreen)||null;if(s.currentStep){const m=String(s.currentStep).match(/(\d+)/);if(m)return parseInt(m[0]);if(s.currentStep==='checkout'||s.currentStep==='payment')return 26;if(s.currentStep==='resultado')return 25;if(s.currentStep==='loading_done'||s.currentStep==='loading_started')return 24;}return null;}
 const hasEv=(s,t)=>{if(s.currentStep===t)return true;if(s.events&&typeof s.events==='object'){if(Array.isArray(s.events))return s.events.some(e=>e.type===t||e.name===t);return t in s.events;}if(t==='quiz_started'&&(s.quizProgress>0||s.currentStep==='quiz'))return true;if(t==='quiz_completed'&&s.quizProgress>=TQ)return true;return false;};
-// Checkout = events.checkout gravado quando lead clica no CTA e vai para Wiapy
-// currentStep='checkout' é gravado ao CHEGAR na tela 26 (só visualização) — NÃO conta
-const isChk=s=>{
-  if(s.events&&typeof s.events==='object'&&!Array.isArray(s.events)){
-    if(s.events.checkout||s.events.checkout_clicked||s.events.cta_clicked||s.events.wiapy_redirect)return true;
-  }
-  if(Array.isArray(s.events)&&s.events.some(e=>['checkout','checkout_clicked','cta_clicked','wiapy_redirect'].includes(e.type||e.name)))return true;
-  return false;
-};
+const isChk=s=>hasEv(s,'checkout')||hasEv(s,'checkout_reached')||s.currentStep==='checkout'||s.currentStep==='payment'||(getLeadScreen(s)||0)>=26;
 
 // ── Age extraction ──
 // AGE_RANGES used for bucketing quiz screen 1 answers and checkout age fields
 const AGE_RANGES=['18-24','25-34','35-44','45-54','55-64','65+'];
 function getAge(s,sess){
-  // 1. direto no registro da venda
+  // 1. from sale record directly
   const directAge=s.age||s.customerAge||s.customer_age||s.buyerAge;
   if(directAge)return String(directAge).trim();
-  // 2. na sessão vinculada — campo answers.idade (confirmado no Firestore)
+  // 2. from linked session quiz answer (screen 1 = Idade)
   const src=sess||idxSaleToSess.get(s.id);
   if(src){
-    const a=
-      (src.answers&&src.answers.idade)||  // ✅ campo real: answers.idade
-      src.age||src.ageRange||
-      (src.answers&&src.answers.age)||
-      (src.quizAnswers&&src.quizAnswers.idade)||
-      (src.quizAnswers&&src.quizAnswers.age)||
-      (src.quizAnswers&&src.quizAnswers['1'])||
-      src.screen1Answer;
+    const a=src.age||src.customerAge||src.quizAnswers?.age||src.answers?.age||(src.quizAnswers&&src.quizAnswers['1'])||src.screen1Answer||src.ageRange;
     if(a)return String(a).trim();
   }
   return null;
@@ -523,7 +508,7 @@ function renderAgeChart(){
   const BUCKETS=['18-24','25-34','35-44','45-54','55-64','65+','Desconhecida'];
   BUCKETS.forEach(b=>{saleCounts[b]=0;sessCounts[b]=0;});
   salesInRange.forEach(s=>{const raw=getAge(s,null);const b=raw?bucketAge(raw):'Desconhecida';saleCounts[b]=(saleCounts[b]||0)+1;});
-  sessInRange.forEach(s=>{const raw=(s.answers&&s.answers.idade)||s.age||s.ageRange||(s.quizAnswers&&s.quizAnswers.idade)||(s.quizAnswers&&s.quizAnswers['1'])||s.screen1Answer;const b=raw?bucketAge(String(raw)):'Desconhecida';sessCounts[b]=(sessCounts[b]||0)+1;});
+  sessInRange.forEach(s=>{const raw=s.age||s.ageRange||s.quizAnswers?.age||(s.quizAnswers&&s.quizAnswers['1'])||s.screen1Answer;const b=raw?bucketAge(String(raw)):'Desconhecida';sessCounts[b]=(sessCounts[b]||0)+1;});
   const labels=BUCKETS.filter(b=>b!=='Desconhecida');
   const saleData=labels.map(b=>saleCounts[b]||0);
   const sessData=labels.map(b=>sessCounts[b]||0);
