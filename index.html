@@ -164,6 +164,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .si-meta{font-size:9px;color:var(--muted);margin-top:1px}
 .si-src{font-size:8px;color:var(--blue);font-weight:800;text-transform:uppercase;margin-top:1px}
 .si-amt{font-size:13px;font-weight:900;color:var(--gold);flex-shrink:0}
+.si-age{display:inline-flex;align-items:center;gap:3px;margin-top:3px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.22);color:var(--purple);font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.2px}
 .chwrap{height:220px;position:relative}
 .hmt{width:100%;border-collapse:separate;border-spacing:2px}
 .hmt th{font-size:8px;color:var(--muted);text-transform:uppercase;padding:3px;text-align:center;font-weight:700}
@@ -299,6 +300,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <div class="card"><div class="ctitle">📊 Pico de Leads</div><div class="chwrap"><canvas id="peakChart"></canvas></div></div>
   </div>
 
+  <div class="g2">
+    <div class="card"><div class="ctitle">🎂 Faixa Etária dos Compradores<div class="cactions"><select class="sel" id="age-filter" onchange="onAgeFilter()"><option value="30d" selected>30 Dias</option><option value="7d">7 Dias</option><option value="today">Hoje</option></select></div></div><div class="chwrap"><canvas id="ageChart"></canvas></div></div>
+    <div class="card"><div class="ctitle">📊 Faixa Etária — Leads vs Compradores</div><div id="age-breakdown"></div></div>
+  </div>
+
   <!-- SPY -->
   <div class="card">
     <div class="ctitle">🕵️ Espião ao Vivo — Tela por Tela
@@ -334,7 +340,7 @@ const SCREEN_ORDER=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,'14b',15,16,17,18,19,20,21,
 const WEEKDAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-let sessions=[],sales=[],spyFilter='all',schart=null,pchart=null;
+let sessions=[],sales=[],spyFilter='all',schart=null,pchart=null,achart=null;
 let idxSaleToSess=new Map(),idxSessToSale=new Map();
 
 // ── Daily investment state ──
@@ -449,9 +455,53 @@ function getMetaSessions(){const byId=new Map();sessions.forEach(s=>{if(!isMetaS
 function getMetaSales(){return sales.filter(s=>isPaid(s)&&isMetaSale(s));}
 function getLeadScreen(s){if(s.currentScreen)return parseInt(s.currentScreen)||null;if(s.lastScreen)return parseInt(s.lastScreen)||null;if(s.currentStep){const m=String(s.currentStep).match(/(\d+)/);if(m)return parseInt(m[0]);if(s.currentStep==='checkout'||s.currentStep==='payment')return 26;if(s.currentStep==='resultado')return 25;if(s.currentStep==='loading_done'||s.currentStep==='loading_started')return 24;}return null;}
 const hasEv=(s,t)=>{if(s.currentStep===t)return true;if(s.events&&typeof s.events==='object'){if(Array.isArray(s.events))return s.events.some(e=>e.type===t||e.name===t);return t in s.events;}if(t==='quiz_started'&&(s.quizProgress>0||s.currentStep==='quiz'))return true;if(t==='quiz_completed'&&s.quizProgress>=TQ)return true;return false;};
-const isChk=s=>hasEv(s,'checkout')||hasEv(s,'checkout_reached')||s.currentStep==='checkout'||s.currentStep==='payment'||(getLeadScreen(s)||0)>=26;
+// Checkout = lead clicou no CTA e foi para a Wiapy (events.checkout gravado pelo funil)
+// NÃO conta apenas chegar na tela 26 (oferta) — isso é só visualização da página
+const isChk=s=>{
+  // evento explícito de clique no botão de compra
+  if(s.events&&typeof s.events==='object'&&!Array.isArray(s.events)){
+    if(s.events.checkout)return true;
+    if(s.events.checkout_clicked||s.events.cta_clicked||s.events.wiapy_redirect)return true;
+  }
+  if(Array.isArray(s.events)&&s.events.some(e=>['checkout','checkout_clicked','cta_clicked','wiapy_redirect'].includes(e.type||e.name)))return true;
+  // currentStep='checkout' só é gravado junto com events.checkout, mas checar como fallback
+  if(s.currentStep==='checkout'||s.currentStep==='payment')return true;
+  return false;
+};
 
-function renderAll(){detectChanges();renderKPIs();renderSpy();renderMonthlyMetrics();requestAnimationFrame(()=>{renderIns();renderFunnel();renderTips();renderCmp();renderSalesList();renderSalesChart();renderHM();renderPeak();});}
+// ── Age extraction ──
+// AGE_RANGES used for bucketing quiz screen 1 answers and checkout age fields
+const AGE_RANGES=['18-24','25-34','35-44','45-54','55-64','65+'];
+function getAge(s,sess){
+  // 1. direto no registro da venda
+  const directAge=s.age||s.customerAge||s.customer_age||s.buyerAge;
+  if(directAge)return String(directAge).trim();
+  // 2. na sessão vinculada — campo answers.idade (confirmado no Firestore)
+  const src=sess||idxSaleToSess.get(s.id);
+  if(src){
+    const a=
+      (src.answers&&src.answers.idade)||  // ✅ campo real: answers.idade
+      src.age||src.ageRange||
+      (src.answers&&src.answers.age)||
+      (src.quizAnswers&&src.quizAnswers.idade)||
+      (src.quizAnswers&&src.quizAnswers.age)||
+      (src.quizAnswers&&src.quizAnswers['1'])||
+      src.screen1Answer;
+    if(a)return String(a).trim();
+  }
+  return null;
+}
+function bucketAge(raw){
+  if(!raw)return'Desconhecida';
+  const n=parseInt(raw);
+  if(!isNaN(n)){if(n<18)return'<18';if(n<=24)return'18-24';if(n<=34)return'25-34';if(n<=44)return'35-44';if(n<=54)return'45-54';if(n<=64)return'55-64';return'65+';}
+  // already a range string
+  for(const r of AGE_RANGES)if(raw.includes(r.split('-')[0]))return r;
+  return raw;
+}
+
+function renderAll(){detectChanges();renderKPIs();renderSpy();renderMonthlyMetrics();requestAnimationFrame(()=>{renderIns();renderFunnel();renderTips();renderCmp();renderSalesList();renderSalesChart();renderHM();renderPeak();renderAgeChart();});}
+window.onAgeFilter=()=>{renderAgeChart();};
 
 function renderKPIs(){const ms=getMetaSessions(),mv=getMetaSales();const rt=getRange('today'),r7=getRange('7d');const inR=(s,r,df)=>{const d=toDate(s[df]||s.enteredAt||s.lastActivity);return d&&d>=r.start&&d<=r.end;};const ts=ms.filter(s=>inR(s,rt,'enteredAt'));const tv=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=rt.start&&d<=rt.end;});const s7=ms.filter(s=>inR(s,r7,'enteredAt'));const v7=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r7.start&&d<=r7.end;});const rev=tv.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const online=ms.filter(s=>isOnline(s.lastActivity)).length;const spend=getTodaySpend();const now=new Date();const mSpend=getMonthSpend(now.getFullYear(),now.getMonth());const mStart=new Date(now.getFullYear(),now.getMonth(),1);const mSales=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=mStart&&d<=now;});const mRev=mSales.reduce((a,s)=>a+net(s.amount||0,s.paymentMethod),0);const roas=mSpend>0?(mRev/mSpend):0;const profit=mRev-mSpend;txt('h-spend',brl(mSpend));txt('h-spend-sub',mSpend>0?`Investido no mês · hoje: ${brl(spend)}`:'Preencha os dias abaixo ↓');txt('h-rev',brl(mRev));txt('h-rev-sub',`${mSales.length} venda${mSales.length!==1?'s':''} no mês`);const roasEl=$('h-roas');if(roasEl){roasEl.textContent=mSpend>0?`${roas.toFixed(2)}x`:'—';roasEl.className='ih-val '+(roas>=3?'roas-good':roas>=1.5?'roas-warn':'roas-bad');}txt('h-roas-sub',mSpend>0?`${roas>=3?'✅ Ótimo':roas>=1.5?'⚠️ Ok':'❌ Abaixo'} · meta ≥ 3.0x`:'meta ≥ 3.0x');txt('h-profit',brl(profit));txt('h-profit-sub',profit>0?'✅ Lucrativo (mês)':'❌ Prejuízo (mês)');txt('k-access',ts.length);txt('k-sales',tv.length);txt('k-rev',brl(rev));txt('k-chk',ts.filter(s=>isChk(s)).length);txt('k-quiz',ts.filter(s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed')).length);txt('k-conv',s7.length>0?(v7.length/s7.length*100).toFixed(1)+'%':'0%');txt('k-cpl',ts.length>0&&spend>0?brl(spend/ts.length):'—');txt('k-online',online);txt('status-text','🟢 Tempo real ativo');}
 
@@ -463,10 +513,35 @@ function renderIns(){const ms=getMetaSessions(),mv=getMetaSales();const r7=getRa
 
 function renderCmp(){const ms=getMetaSessions(),mv=getMetaSales();const periods=['today','yesterday','7d','30d'];const metrics=[{n:'Leads',fn:()=>true,src:'sessions',df:'enteredAt'},{n:'Iniciou Quiz',fn:s=>s.quizProgress>0||hasEv(s,'quiz_started'),src:'sessions',df:'enteredAt'},{n:'Completou Quiz',fn:s=>s.quizProgress>=TQ||hasEv(s,'quiz_completed'),src:'sessions',df:'enteredAt'},{n:'Checkout',fn:s=>isChk(s),src:'sessions',df:'enteredAt'},{n:'Vendas',fn:s=>isPaid(s),src:'sales',df:'createdAt'}];const b=$('cmp-body');if(!b)return;b.innerHTML=metrics.map(mt=>{const vals=periods.map(p=>{const r=getRange(p),arr=mt.src==='sales'?mv:ms;return arr.filter(s=>{const d=toDate(s[mt.df]||s.lastActivity);return d&&d>=r.start&&d<=r.end&&mt.fn(s);}).length;});return`<tr><td class="cl">${mt.n}</td>${vals.map((v,i)=>`<td class="cv${i===0&&v>0?' hi':''}">${v}</td>`).join('')}</tr>`;}).join('');}
 
-function renderSalesList(){const mv=getMetaSales();const f=$('date-filter')?.value||'7d',r=getRange(f);const list=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r.start&&d<=r.end;}).sort((a,b)=>toDate(b.createdAt)-toDate(a.createdAt));const el=$('sales-list');if(!el)return;if(!list.length){el.innerHTML='<div class="empty">Nenhuma venda no período</div>';return;}el.innerHTML=list.slice(0,15).map(s=>`<div class="si"><div class="si-av">${(s.customerName||'?').charAt(0).toUpperCase()}</div><div class="si-info"><div class="si-name">${s.customerName||'Lead Meta'}</div><div class="si-meta">${ago(s.createdAt)} · ${(s.paymentMethod||'PIX').toUpperCase()}</div><div class="si-src">📘 META ADS</div></div><div class="si-amt">${brl(net(s.amount||0,s.paymentMethod))}</div></div>`).join('');}
+function renderSalesList(){const mv=getMetaSales();const f=$('date-filter')?.value||'7d',r=getRange(f);const list=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r.start&&d<=r.end;}).sort((a,b)=>toDate(b.createdAt)-toDate(a.createdAt));const el=$('sales-list');if(!el)return;if(!list.length){el.innerHTML='<div class="empty">Nenhuma venda no período</div>';return;}el.innerHTML=list.slice(0,15).map(s=>{const rawAge=getAge(s,null);const ageBucket=rawAge?bucketAge(rawAge):null;const ageBadge=ageBucket&&ageBucket!=='Desconhecida'?`<div class="si-age">🎂 ${ageBucket} anos</div>`:'';return`<div class="si"><div class="si-av">${(s.customerName||'?').charAt(0).toUpperCase()}</div><div class="si-info"><div class="si-name">${s.customerName||'Lead Meta'}</div><div class="si-meta">${ago(s.createdAt)} · ${(s.paymentMethod||'PIX').toUpperCase()}</div><div class="si-src">📘 META ADS</div>${ageBadge}</div><div class="si-amt">${brl(net(s.amount||0,s.paymentMethod))}</div></div>`;}).join('');}
 
 function renderSalesChart(){const mv=getMetaSales();const f=$('date-filter')?.value||'7d',r=getRange(f),byD={};mv.forEach(s=>{const d=toDate(s.createdAt);if(!d||d<r.start||d>r.end)return;const k=d.toLocaleDateString('pt-BR');byD[k]=(byD[k]||0)+1;});const days=[],counts=[],cur=new Date(r.start);while(cur<=r.end){const k=cur.toLocaleDateString('pt-BR');days.push(k);counts.push(byD[k]||0);cur.setDate(cur.getDate()+1);}const ctx=$('salesChart');if(!ctx)return;if(schart){schart.data.labels=days;schart.data.datasets[0].data=counts;schart.update('none');return;}schart=new Chart(ctx.getContext('2d'),{type:'line',data:{labels:days,datasets:[{data:counts,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.08)',borderWidth:2,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#3b82f6'}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9},stepSize:1}}}}});}
 
+function renderAgeChart(){
+  const mv=getMetaSales();const ms=getMetaSessions();
+  const f=$('age-filter')?.value||'30d',r=getRange(f);
+  const salesInRange=mv.filter(s=>{const d=toDate(s.createdAt);return d&&d>=r.start&&d<=r.end;});
+  const sessInRange=ms.filter(s=>{const d=toDate(s.enteredAt||s.lastActivity);return d&&d>=r.start&&d<=r.end;});
+  // count by bucket
+  const saleCounts={};const sessCounts={};
+  const BUCKETS=['18-24','25-34','35-44','45-54','55-64','65+','Desconhecida'];
+  BUCKETS.forEach(b=>{saleCounts[b]=0;sessCounts[b]=0;});
+  salesInRange.forEach(s=>{const raw=getAge(s,null);const b=raw?bucketAge(raw):'Desconhecida';saleCounts[b]=(saleCounts[b]||0)+1;});
+  sessInRange.forEach(s=>{const raw=(s.answers&&s.answers.idade)||s.age||s.ageRange||(s.quizAnswers&&s.quizAnswers.idade)||(s.quizAnswers&&s.quizAnswers['1'])||s.screen1Answer;const b=raw?bucketAge(String(raw)):'Desconhecida';sessCounts[b]=(sessCounts[b]||0)+1;});
+  const labels=BUCKETS.filter(b=>b!=='Desconhecida');
+  const saleData=labels.map(b=>saleCounts[b]||0);
+  const sessData=labels.map(b=>sessCounts[b]||0);
+  const ctx=$('ageChart');
+  if(ctx){if(achart){achart.data.labels=labels;achart.data.datasets[0].data=saleData;achart.data.datasets[1].data=sessData;achart.update('none');}else{achart=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Compradores',data:saleData,backgroundColor:'rgba(34,197,94,.55)',borderColor:'#22c55e',borderWidth:1,borderRadius:4},{label:'Leads',data:sessData,backgroundColor:'rgba(59,130,246,.2)',borderColor:'rgba(59,130,246,.5)',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:true,labels:{color:'#5a5d6b',font:{size:10,family:'Space Grotesk',weight:'700'},boxWidth:10,boxHeight:10,padding:14}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:10}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9},stepSize:1}}}}});}}
+  // breakdown table
+  const bd=$('age-breakdown');if(!bd)return;
+  const total=salesInRange.length||1;
+  let html='<div style="display:flex;flex-direction:column;gap:5px;padding-top:4px">';
+  const known=BUCKETS.filter(b=>b!=='Desconhecida');
+  const topBucket=known.reduce((a,b)=>saleCounts[b]>saleCounts[a]?b:a,known[0]);
+  known.forEach(b=>{const n=saleCounts[b]||0;const pct=Math.round(n/total*100);const isTop=b===topBucket&&n>0;const barW=Math.max(pct,1);html+=`<div style="display:flex;align-items:center;gap:10px;padding:6px 9px;background:var(--surface2);border:1px solid ${isTop?'rgba(34,197,94,.3)':'var(--border)'};border-radius:7px"><div style="width:52px;font-size:10px;font-weight:800;color:${isTop?'var(--green)':'var(--text)'};flex-shrink:0">${b}</div><div style="flex:1;height:10px;background:var(--subtle);border-radius:3px;overflow:hidden"><div style="width:${barW}%;height:100%;background:${isTop?'var(--green)':'var(--blue)'};border-radius:3px;opacity:${isTop?'1':'.55'}"></div></div><div style="width:28px;font-size:12px;font-weight:900;color:#fff;text-align:right;flex-shrink:0">${n}</div><div style="width:34px;font-size:10px;font-weight:700;color:${isTop?'var(--green)':'var(--muted)'};text-align:right;flex-shrink:0">${pct}%</div>${isTop?'<div style="font-size:9px;font-weight:900;color:var(--green);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);padding:1px 5px;border-radius:3px;white-space:nowrap">TOP</div>':''}</div>`;});
+  if(saleCounts['Desconhecida']>0)html+=`<div style="font-size:9px;color:var(--muted);text-align:center;margin-top:4px">⚠️ ${saleCounts['Desconhecida']} venda(s) sem dados de idade</div>`;
+  html+='</div>';bd.innerHTML=html;}
 function renderHM(){const mv=getMetaSales();const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],hrs=['00h','04h','08h','12h','16h','20h'],data={};days.forEach(d=>{data[d]={};hrs.forEach(h=>{data[d][h]=0;});});mv.forEach(s=>{const d=toDate(s.createdAt);if(!d)return;const day=days[d.getDay()],h=d.getHours(),sl=h<4?'00h':h<8?'04h':h<12?'08h':h<16?'12h':h<20?'16h':'20h';data[day][sl]++;});let max=0;Object.values(data).forEach(d=>Object.values(d).forEach(v=>{if(v>max)max=v;}));const el=$('hm-wrap');if(!el)return;let html=`<table class="hmt"><thead><tr><th></th>${hrs.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;days.forEach(d=>{html+=`<tr><td class="hm-day">${d}</td>`;hrs.forEach(h=>{const v=data[d][h],c=max>0&&v>0?(v/max>=.65?'h':v/max>=.3?'m':'l'):'e';html+=`<td class="hmc ${c}">${v||''}</td>`;});html+=`</tr>`;});html+=`</tbody></table><div class="hm-leg"><div class="hm-li"><div class="hm-lc" style="background:rgba(34,197,94,.35)"></div>Alto</div><div class="hm-li"><div class="hm-lc" style="background:rgba(245,158,11,.25)"></div>Médio</div><div class="hm-li"><div class="hm-lc" style="background:rgba(59,130,246,.16)"></div>Baixo</div></div>`;el.innerHTML=html;}
 
 function renderPeak(){const ms=getMetaSessions();const byH={};ms.forEach(s=>{const d=toDate(s.enteredAt);if(!d)return;const h=d.getHours();if(!byH[h])byH[h]=new Set();byH[h].add(s.sessionId||s.id);});const labels=Array.from({length:24},(_,i)=>i.toString().padStart(2,'0')+'h');const data=Array.from({length:24},(_,i)=>byH[i]?byH[i].size:0);const ctx=$('peakChart');if(!ctx)return;if(pchart){pchart.data.labels=labels;pchart.data.datasets[0].data=data;pchart.update('none');return;}pchart=new Chart(ctx.getContext('2d'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(59,130,246,.28)',borderColor:'#3b82f6',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5a5d6b',font:{size:9},stepSize:1}}}}});}
